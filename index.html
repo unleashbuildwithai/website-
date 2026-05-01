@@ -231,31 +231,142 @@ p{line-height:1.6;color:var(--muted);}
 .ctrl-wrist:hover{filter:drop-shadow(0 0 8px #00ff64);}
 /* ─── RESPONSIVE — tablet & mobile */
 @media(max-width:768px){
-  .flip-card{width:min(350px,88vw);height:auto;min-height:460px;}
+  /* ── Navigation */
+  .ver-nav{top:8px;right:8px;}
+  .ver-nav span,.ver-nav a{font-size:.6rem;padding:5px 10px;}
+  #admin-btn{top:auto;left:8px;bottom:auto;width:30px;height:30px;font-size:.85rem;}
+
+  /* ── Top initiate button — repositioned so it doesn't collide */
+  .initiate-btn-top{left:46px;top:6px;padding:8px 14px 6px;font-size:.65rem;}
+  .btn-helper{display:none;}
+
+  /* ── Flip card */
+  .flip-card{width:min(340px,88vw);height:auto;min-height:460px;}
   .flip-card-front,.flip-card-back{border-radius:16px;}
-  .feature-grid{grid-template-columns:1fr;}
+  .flip-card-front{padding:26px 18px;}
+
+  /* ── Content sections */
+  .section{padding:15px 15px 60px;}
+  .feature-grid{grid-template-columns:1fr;gap:18px;}
+  .feature-box{padding:22px 18px;}
+
+  /* ── Timeline */
   .timeline-item{width:100%;left:0!important;padding:8px 16px 8px 44px;}
   .timeline::after{left:16px;}
   .timeline-item::after{left:8px!important;right:auto!important;}
-  .section{padding:15px 15px 60px;}
+
+  /* ── Section headers */
   .arsenal-header{font-size:1.8rem;letter-spacing:4px;}
   .process-header{font-size:1.5rem;letter-spacing:3px;}
   .neon-text{font-size:2.5rem;}
-  #hand-animator{width:240px;}
+
+  /* ── CTA */
+  .cta-section h2{font-size:1.6rem;letter-spacing:1px;}
+  .initiate-btn{padding:14px 32px;font-size:.95rem;}
+
+  /* ── Grab bar */
+  .grab-bar{width:80%;}
+
+  /* ── Admin inbox — stack vertically */
+  .inbox-header{flex-direction:column;gap:10px;padding:14px 16px;align-items:flex-start;}
+  .inbox-tabs{flex-wrap:wrap;gap:5px;}
+  .inbox-tab{padding:5px 11px;font-size:.63rem;}
+  .inbox-close{align-self:flex-end;}
+  .inbox-body{flex-direction:column;overflow:auto;}
+  .msg-list{width:100%;border-right:none;border-bottom:1px solid rgba(0,255,204,.15);max-height:220px;overflow-y:auto;}
+  .msg-detail{flex:none;padding:18px 16px;overflow-y:auto;max-height:calc(100vh - 380px);}
+  .msg-action-row{flex-wrap:wrap;gap:8px;}
+
+  /* ── Modal */
+  .modal-box{padding:28px 18px;max-width:96%;margin:8px;}
+  .modal-title{font-size:1.2rem;letter-spacing:2px;}
+  .modal-actions{flex-direction:column;}
+  .modal-submit,.modal-close-btn{width:100%;text-align:center;}
+
+  /* ── Admin login */
+  .admin-login-box{padding:30px 22px;}
+
+  /* ── Scroll indicator */
+  .scroll-indicator{font-size:.7rem;letter-spacing:2px;}
+
+  /* ── Hand animator — hide on mobile (desktop tool only) */
+  #hand-animator{display:none!important;}
 }
+
 @media(max-width:480px){
-  .flip-card{width:92vw;min-height:420px;}
-  .flip-card-front{padding:22px 16px;}
-  .pitch-headline{font-size:1rem;}
-  .pitch-body{font-size:.8rem;}
-  .name{font-size:1.4rem;}
-  .initiate-btn-top{left:50px;padding:7px 14px 5px;font-size:.65rem;}
-  .btn-helper{display:none;}
-  .ver-nav span{font-size:.55rem;padding:4px 9px;}
-  .scroll-indicator{font-size:.65rem;letter-spacing:2px;}
-  .arsenal-header{font-size:1.4rem;letter-spacing:2px;}
-  .grab-bar{width:86%;}
-  .neon-text{font-size:2rem;letter-spacing:2px;}
+  /* ── Navigation */
+  .ver-nav{top:6px;right:6px;}
+  .ver-nav span,.ver-nav a{font-size:.52rem;padding:4px 8px;letter-spacing:1px;}
+  #admin-btn{top:48px;left:6px;width:28px;height:28px;font-size:.8rem;}
+  .initiate-btn-top{left:40px;top:5px;padding:6px 11px 5px;font-size:.58rem;}
+
+  /* ── Flip card */
+  .flip-card{width:min(320px,93vw);min-height:430px;}
+  .flip-card-front{padding:20px 15px;}
+  .pitch-headline{font-size:.95rem;letter-spacing:.5px;}
+  .pitch-body{font-size:.78rem;}
+  .pitch-highlight{font-size:.82rem;}
+  .name{font-size:1.35rem;letter-spacing:2px;}
+  .value{font-size:.85rem;}
+  .neon-text{font-size:1.9rem;letter-spacing:2px;}
+
+  /* ── Content headers */
+  .arsenal-header{font-size:1.35rem;letter-spacing:2px;}
+  .process-header{font-size:1.2rem;letter-spacing:2px;}
+
+  /* ── Grab bar */
+  .grab-bar{width:88%;}
+  .grab-handle{width:40px;}
+
+  /* ── CTA */
+  .cta-section h2{font-size:1.3rem;}
+  .cta-section p{font-size:.85rem;}
+  .initiate-btn{padding:12px 24px;font-size:.88rem;letter-spacing:1px;}
+
+  /* ── Scroll indicator */
+  .scroll-indicator{font-size:.6rem;letter-spacing:1.5px;}
+  
+  /* ── Admin inbox */
+  .inbox-header{padding:10px 12px;gap:8px;}
+  .inbox-tab{padding:4px 8px;font-size:.58rem;}
+  .msg-list{max-height:180px;}
+  .msg-detail{padding:12px 12px;max-height:calc(100vh - 340px);}
+  .msg-detail-name{font-size:1.1rem;letter-spacing:2px;}
+  .msg-action-btn{padding:8px 14px;font-size:.7rem;}
+
+  /* ── Modal */
+  .modal-box{padding:22px 14px;}
+  .modal-title{font-size:1.1rem;}
+  .modal-input,.modal-textarea,.modal-select{font-size:.85rem;padding:10px 12px;}
+  
+  /* ── Timeline */
+  .timeline-content{padding:10px 14px;}
+  .timeline-content h3{font-size:.82rem;}
+  .timeline-content p{font-size:.73rem;}
+
+  /* ── Feature boxes */
+  .feature-box{padding:18px 15px;}
+  .feature-icon{font-size:2rem;}
+  .feature-title{font-size:1rem;}
+
+  /* ── Trash confirm */
+  .trash-confirm-box{padding:28px 20px;}
+}
+
+/* ─── Extra small screens (older/small phones) */
+@media(max-width:360px){
+  .flip-card{width:96vw;}
+  .flip-card-front{padding:16px 12px;}
+  .name{font-size:1.2rem;}
+  .neon-text{font-size:1.6rem;}
+  .arsenal-header,.process-header{font-size:1.1rem;letter-spacing:1px;}
+}
+
+/* ─── Touch device — disable hover-only effects that don't work on touch */
+@media(hover:none){
+  .flip-card{cursor:pointer;}
+  .feature-box:hover{border-color:rgba(0,255,204,.2);box-shadow:0 10px 30px rgba(0,0,0,.5);}
+  .cta-btn:hover,.initiate-btn:hover{transform:none;}
 }
 </style>
 </head>
@@ -1870,6 +1981,116 @@ document.addEventListener('keydown', e => {
     HA.toggle();
   }
 });
+
+// ═══════════════════════════════════════════════════════
+// ─── MOBILE ENHANCEMENTS
+// ═══════════════════════════════════════════════════════
+(function(){
+  const isMobile = window.matchMedia('(max-width:768px)').matches || ('ontouchstart' in window);
+  const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+  // ── TAP-TO-FLIP on touch devices
+  if(isTouchDevice){
+    const flipCard = document.querySelector('.flip-card');
+    const fci = document.querySelector('.flip-card-inner');
+    if(flipCard && fci){
+      let mobileFlipped = false;
+      let tapFlipping = false;
+      const mcp = {r:0};
+
+      // Add a subtle tap hint label on mobile
+      const tapHint = document.createElement('div');
+      tapHint.style.cssText = [
+        'position:absolute',
+        'bottom:-36px',
+        'left:50%',
+        'transform:translateX(-50%)',
+        'color:rgba(0,255,204,.55)',
+        'font-size:.62rem',
+        'letter-spacing:2px',
+        'text-transform:uppercase',
+        'white-space:nowrap',
+        'pointer-events:none',
+        'opacity:1',
+        'transition:opacity .5s'
+      ].join(';');
+      tapHint.textContent = '👆 Tap card to flip';
+      flipCard.parentElement.appendChild(tapHint);
+
+      flipCard.addEventListener('touchend', e => {
+        // Only handle tap (not scroll-initiated touches)
+        if(tapFlipping) return;
+        if(window.scrollY / MAX_S > 0.09) return;
+        e.preventDefault();
+        tapFlipping = true;
+
+        // Hide tap hint after first tap
+        tapHint.style.opacity = '0';
+
+        const currentRot = mcp.r;
+        const targetRot = mobileFlipped
+          ? Math.round(currentRot / 360) * 360        // nearest front
+          : Math.round(currentRot / 360) * 360 + 180; // nearest back
+
+        mobileFlipped = !mobileFlipped;
+
+        gsap.to(mcp, {
+          r: targetRot,
+          duration: 0.7,
+          ease: 'power2.inOut',
+          onUpdate: () => { fci.style.transform = `rotateY(${mcp.r}deg)`; },
+          onComplete: () => { tapFlipping = false; }
+        });
+      }, { passive: false });
+    }
+  }
+
+  // ── MODAL: make it scrollable on mobile so forms don't get cut off
+  if(isMobile){
+    const modal = document.getElementById('initiate-modal');
+    if(modal){
+      modal.style.alignItems = 'flex-start';
+      modal.style.overflowY = 'auto';
+      modal.style.paddingTop = '20px';
+      modal.style.paddingBottom = '20px';
+    }
+  }
+
+  // ── Prevent body scroll when modal is open on mobile
+  const openModal_orig = window.openModal;
+  const modalEl = document.getElementById('initiate-modal');
+  if(modalEl){
+    const observer = new MutationObserver(() => {
+      if(isTouchDevice){
+        document.body.style.overflow = modalEl.classList.contains('open') ? 'hidden' : '';
+      }
+    });
+    observer.observe(modalEl, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // ── Admin inbox: auto-scroll to detail on mobile when message selected
+  if(isMobile){
+    const msgListEl = document.getElementById('msg-list');
+    const msgDetailEl = document.getElementById('msg-detail');
+    if(msgListEl && msgDetailEl){
+      msgListEl.addEventListener('click', e => {
+        if(e.target.closest('.msg-item')){
+          setTimeout(() => {
+            msgDetailEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
+        }
+      });
+    }
+  }
+
+  // ── Disable 'H' animator key on mobile (it's hidden via CSS already, but extra safety)
+  if(isMobile){
+    document.addEventListener('keydown', e => {
+      if(e.key.toLowerCase() === 'h') e.stopImmediatePropagation();
+    }, true);
+  }
+
+}());
 
 // ─── DEBUG OVERLAY (press 'D')
 const dbg=document.createElement('div');
