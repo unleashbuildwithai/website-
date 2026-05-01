@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ardy W | Genius Unleashed — No Road</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#03050a;--neon:#00ffcc;--text:#fff;--muted:#e2e8f0;}
+body{background:var(--bg);font-family:'Inter','Arial',sans-serif;color:var(--text);overflow-x:hidden;}
+h1,h2,h3{text-transform:uppercase;letter-spacing:2px;}
+p{line-height:1.6;color:var(--muted);}
+.ver-nav{position:fixed;top:14px;right:14px;z-index:9999;display:flex;gap:8px;}
+.ver-nav a,.ver-nav span{padding:5px 13px;border-radius:20px;font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;transition:all .3s;cursor:pointer;}
+.ver-nav a{background:rgba(0,255,204,.07);border:1px solid rgba(0,255,204,.35);color:#00ffcc;}
+.ver-nav a:hover{background:rgba(0,255,204,.18);}
+.ver-nav span{background:rgba(0,255,204,.18);border:1px solid rgba(0,255,204,.8);color:#00ffcc;box-shadow:0 0 12px rgba(0,255,204,.3);}
+.bg-robot-container{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-2;pointer-events:none;display:flex;justify-content:center;align-items:flex-start;}
+.bg-robot-svg{width:100%;height:120%;max-width:1200px;overflow:visible;}
+.hero-wrapper{position:fixed;top:0;left:0;width:100vw;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;perspective:1200px;z-index:10;pointer-events:none;}
+.hero-section{transform-origin:center;will-change:transform,opacity;pointer-events:auto;}
+.scroll-indicator{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);color:var(--neon);font-size:.8rem;letter-spacing:3px;text-transform:uppercase;animation:bounce 2s infinite;opacity:.7;}
+@keyframes bounce{0%,20%,50%,80%,100%{transform:translateY(0) translateX(-50%);}40%{transform:translateY(-10px) translateX(-50%);}60%{transform:translateY(-5px) translateX(-50%);}}
+.flip-card{background-color:transparent;width:350px;height:480px;perspective:1000px;cursor:pointer;}
+.flip-card-inner{position:relative;width:100%;height:100%;text-align:center;transform-style:preserve-3d;}
+/* hover flip removed — scroll velocity controls rotation via JS */
+.flip-card-front,.flip-card-back{position:absolute;width:100%;height:100%;-webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:20px;overflow:hidden;}
+.flip-card-front{background:rgba(10,18,28,.92);backdrop-filter:blur(30px);border:1px solid rgba(0,255,204,.5);border-top:1px solid rgba(0,255,204,.9);border-left:1px solid rgba(0,255,204,.9);box-shadow:inset 0 0 50px rgba(0,255,204,.15),0 25px 60px rgba(0,0,0,.95),0 0 25px rgba(0,255,204,.25);display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;padding:35px 25px;text-align:left;}
+.pitch-section{z-index:2;display:flex;flex-direction:column;gap:12px;}
+.pitch-headline{color:#fff;font-size:1.15rem;font-weight:800;line-height:1.3;text-transform:uppercase;letter-spacing:1px;text-shadow:0 0 10px rgba(0,255,204,.4);}
+.pitch-body{color:#e2e8f0;font-size:.85rem;line-height:1.5;opacity:.9;}
+.pitch-highlight{color:#00ffcc;font-size:.9rem;font-weight:700;border-left:3px solid #00ffcc;padding-left:12px;margin-top:5px;line-height:1.4;}
+.contact-section{z-index:2;display:flex;flex-direction:column;align-items:flex-start;gap:12px;width:100%;}
+.name{font-size:1.8rem;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:3px;text-shadow:0 0 15px rgba(0,255,204,.8),0 0 30px rgba(0,255,204,.4);margin-bottom:5px;width:100%;border-bottom:1px solid rgba(0,255,204,.3);padding-bottom:10px;}
+.info-group{display:flex;flex-direction:column;align-items:flex-start;gap:2px;}
+.label{font-size:.7rem;color:#00ffcc;text-transform:uppercase;letter-spacing:2px;font-weight:bold;opacity:.8;}
+.value{font-size:.95rem;color:#e2e8f0;font-weight:500;letter-spacing:1px;}
+.flip-card-back{background-color:#1a2530;transform:rotateY(180deg);display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 25px 50px rgba(0,0,0,.8),0 0 30px rgba(0,255,204,.15);border-radius:20px;}
+.back-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;}
+.neon-text{font-size:3.5rem;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:4px;text-shadow:0 0 5px #fff,0 0 10px #fff,0 0 20px #00ffcc,0 0 40px #00ffcc,0 0 80px #00ffcc;margin-bottom:25px;display:flex;align-items:center;justify-content:center;}
+.letter-g{position:relative;display:inline-block;z-index:1;}
+.robot-wrapper{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:90px;height:90px;pointer-events:none;z-index:-1;}
+.robot-svg{width:100%;height:100%;}
+.sketch-line{fill:none;stroke:#b0c4de;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.sketch-line-thick{fill:none;stroke:#8a9cb5;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+.neon-accent{fill:none;stroke:#00ffcc;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 0 5px #00ffcc);}
+.neon-fill{fill:#00ffcc;filter:drop-shadow(0 0 8px #00ffcc);}
+.welding-spark{fill:#00ffcc;filter:drop-shadow(0 0 8px #00ffcc);animation:weld-pulse .3s ease-in-out infinite alternate;}
+@keyframes weld-pulse{from{r:4;opacity:.7;}to{r:8;opacity:1;}}
+.falling-sparks{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:1px;height:1px;pointer-events:none;}
+.falling-sparks i{display:block;position:absolute;width:2px;height:2px;background:#00ffcc;border-radius:50%;box-shadow:0 0 4px #00ffcc;animation:spark-fall .7s ease-in infinite;}
+.falling-sparks i:nth-child(1){left:-12px;animation-delay:0s;}
+.falling-sparks i:nth-child(2){left:-4px;animation-delay:.18s;}
+.falling-sparks i:nth-child(3){left:4px;animation-delay:.07s;}
+.falling-sparks i:nth-child(4){left:12px;animation-delay:.28s;}
+@keyframes spark-fall{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(28px) scale(0);opacity:0;}}
+.sub-text-container{position:relative;display:flex;flex-direction:column;align-items:center;width:82%;}
+.neon-line{width:100%;height:2px;background:#00ffcc;box-shadow:0 0 5px #00ffcc,0 0 15px #00ffcc;margin-bottom:18px;position:relative;}
+.sub-text{color:#00ffcc;font-size:.95rem;letter-spacing:6px;text-transform:uppercase;font-weight:bold;opacity:.8;width:100%;text-align:center;}
+.small-robot-wrapper{position:absolute;top:-25px;left:50%;transform:translateX(-50%);width:38px;height:52px;pointer-events:none;z-index:1;}
+.small-robot-wrapper svg{width:100%;height:100%;}
+#content-layer{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:22;pointer-events:none;}
+.content-section-wrapper{position:absolute;top:100vh;width:100%;will-change:transform,opacity;opacity:0;pointer-events:none;}
+.grab-bar{width:66.66%;max-width:800px;height:6px;background:linear-gradient(90deg,transparent,var(--neon),transparent);margin:0 auto 50px;border-radius:5px;box-shadow:0 0 20px rgba(0,255,204,.8),0 0 40px rgba(0,255,204,.4);position:relative;display:flex;justify-content:space-between;}
+.grab-handle{width:60px;height:15px;background:var(--neon);border-radius:2px;box-shadow:0 0 15px var(--neon);transform:translateY(-4px);}
+.grab-handle.left{margin-left:-30px;}.grab-handle.right{margin-right:-30px;}
+.section{padding:20px 20px 80px;max-width:1000px;width:100%;margin:0 auto;}
+.arsenal-header-wrap{margin-bottom:45px;display:inline-flex;flex-direction:column;align-items:flex-start;}
+.arsenal-header{font-size:2.5rem;color:var(--text);text-shadow:0 0 10px rgba(0,255,204,.3);text-transform:uppercase;letter-spacing:8px;display:flex;align-items:baseline;}
+.a-char{display:inline-block;opacity:0;transform:perspective(500px) translateY(70px) rotateX(38deg);transform-origin:50% 100%;will-change:opacity,transform;}.a-char.spacer{opacity:1;transform:none;width:.35em;}
+.arsenal-underline{height:3px;width:0%;background:var(--neon);box-shadow:0 0 8px var(--neon);margin-top:8px;opacity:0;}
+.process-header-wrap{margin-bottom:30px;display:flex;flex-direction:column;align-items:center;width:100%;}
+.process-header{font-size:2rem;color:var(--text);text-shadow:0 0 10px rgba(0,255,204,.3);text-transform:uppercase;letter-spacing:6px;display:flex;align-items:baseline;justify-content:center;}
+.p-char{display:inline-block;opacity:0;transform:perspective(500px) translateY(70px) rotateX(38deg);transform-origin:50% 100%;will-change:opacity,transform;}.p-char.spacer{opacity:1;transform:none;width:.35em;}
+.process-underline{height:3px;width:60%;background:var(--neon);box-shadow:0 0 8px var(--neon);margin:6px auto 0;opacity:0;transform:scaleX(0);transform-origin:center center;}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:30px;}
+.feature-box{padding:30px;border-radius:15px;border:1px solid rgba(0,255,204,.2);background:rgba(26,37,48,.8);box-shadow:0 10px 30px rgba(0,0,0,.5);will-change:opacity,transform;opacity:0;transition:border-color .3s,box-shadow .3s;}
+.feature-box:hover{border-color:rgba(0,255,204,.5);box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 20px rgba(0,255,204,.1);}
+.feature-icon{font-size:2.5rem;color:var(--neon);margin-bottom:20px;}
+.feature-title{font-size:1.2rem;margin-bottom:15px;color:#fff;text-transform:uppercase;letter-spacing:1px;}
+.timeline{position:relative;max-width:800px;margin:0 auto;}
+.timeline::after{content:'';position:absolute;width:2px;background:rgba(0,255,204,.3);top:0;bottom:0;left:50%;margin-left:-1px;}
+.timeline-item{padding:10px 28px;position:relative;background:inherit;width:50%;will-change:opacity,transform;opacity:0;}
+.timeline-item.left{left:0;}.timeline-item.right{left:50%;}
+.timeline-item::after{content:'';position:absolute;width:20px;height:20px;right:-10px;background:var(--bg);border:3px solid var(--neon);top:18px;border-radius:50%;z-index:1;box-shadow:0 0 10px var(--neon);}
+.timeline-item.right::after{left:-10px;}
+.timeline-content{padding:12px 18px;background:rgba(26,37,48,.8);border-radius:10px;border:1px solid rgba(0,255,204,.2);}
+.timeline-content h3{margin-bottom:6px;color:var(--neon);font-size:.9rem;}
+.timeline-content p{font-size:.78rem;line-height:1.5;}
+.cta-section{text-align:center;padding:50px 20px 150px;background:linear-gradient(to top,rgba(0,255,204,.05),transparent);will-change:opacity,transform;pointer-events:auto;}
+.cta-btn{display:inline-block;margin-top:30px;padding:15px 40px;background:transparent;color:var(--neon);border:2px solid var(--neon);border-radius:30px;font-size:1.1rem;font-weight:bold;text-transform:uppercase;letter-spacing:2px;cursor:pointer;text-decoration:none;box-shadow:0 0 15px rgba(0,255,204,.2);transition:all .3s;}
+.cta-btn:hover{background:rgba(0,255,204,.1);box-shadow:0 0 30px rgba(0,255,204,.4);transform:scale(1.05);}
+/* ─── INITIATE BUTTON */
+.initiate-btn{display:inline-flex;align-items:center;gap:10px;margin-top:30px;padding:18px 45px;background:transparent;color:var(--neon);border:2px solid var(--neon);border-radius:30px;font-size:1.1rem;font-weight:bold;text-transform:uppercase;letter-spacing:2px;cursor:pointer;box-shadow:0 0 15px rgba(0,255,204,.2),inset 0 0 20px rgba(0,255,204,.05);transition:all .2s;position:relative;overflow:hidden;font-family:inherit;pointer-events:auto;}
+.initiate-btn::after{content:'';position:absolute;inset:0;border-radius:30px;background:radial-gradient(circle at center,rgba(0,255,204,.25),transparent 70%);opacity:0;transition:opacity .15s;}
+.initiate-btn:hover{background:rgba(0,255,204,.1);box-shadow:0 0 30px rgba(0,255,204,.5),0 0 60px rgba(0,255,204,.2);}
+.initiate-btn:hover::after{opacity:1;}
+.initiate-btn:active{transform:scale(0.96);box-shadow:0 0 50px rgba(0,255,204,.9),0 0 20px rgba(0,255,204,.5);}
+.initiate-btn:active::after{opacity:1;}
+@keyframes btn-pulse{0%{box-shadow:0 0 15px rgba(0,255,204,.2);}50%{box-shadow:0 0 40px rgba(0,255,204,.7),0 0 80px rgba(0,255,204,.3);}100%{box-shadow:0 0 15px rgba(0,255,204,.2);}}
+/* ─── MODAL */
+#initiate-modal{display:none;position:fixed;inset:0;z-index:99998;align-items:center;justify-content:center;background:rgba(0,0,0,.82);backdrop-filter:blur(14px);}
+#initiate-modal.open{display:flex;}
+.modal-box{background:rgba(4,6,10,.97);border:1px solid rgba(0,255,204,.35);border-top:2px solid rgba(0,255,204,.85);border-radius:20px;padding:42px 38px;max-width:560px;width:92%;box-shadow:0 0 70px rgba(0,255,204,.12),0 35px 90px rgba(0,0,0,.95);animation:modal-in .45s cubic-bezier(.175,.885,.32,1.275) forwards;}
+@keyframes modal-in{from{opacity:0;transform:translateY(50px) scale(0.9);}to{opacity:1;transform:translateY(0) scale(1);}}
+.modal-title{font-size:1.4rem;font-weight:900;color:#00ffcc;text-transform:uppercase;letter-spacing:4px;margin-bottom:6px;text-shadow:0 0 20px rgba(0,255,204,.5);}
+.modal-sub{font-size:.75rem;color:rgba(0,255,204,.55);letter-spacing:2px;text-transform:uppercase;margin-bottom:26px;}
+.modal-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,255,204,.35),transparent);margin-bottom:22px;}
+.modal-field{margin-bottom:16px;}
+.modal-label{display:block;font-size:.68rem;color:#00ffcc;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;opacity:.8;}
+.modal-input,.modal-textarea,.modal-select{width:100%;background:rgba(0,255,204,.06);border:1px solid rgba(0,255,204,.32);border-radius:8px;padding:11px 14px;color:#e2e8f0;font-size:.9rem;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s;cursor:text;pointer-events:auto;}
+.modal-input:focus,.modal-textarea:focus,.modal-select:focus{border-color:rgba(0,255,204,.8);box-shadow:0 0 16px rgba(0,255,204,.18);background:rgba(0,255,204,.09);}
+.modal-input:hover,.modal-textarea:hover{border-color:rgba(0,255,204,.5);}
+.modal-input::placeholder,.modal-textarea::placeholder{color:rgba(226,232,240,.38);}
+.modal-select{cursor:pointer;}
+.modal-select:hover{border-color:rgba(0,255,204,.5);}
+.modal-textarea{resize:vertical;min-height:76px;}
+.modal-select option{background:#05080c;color:#e2e8f0;}
+.modal-actions{display:flex;gap:12px;margin-top:22px;}
+.modal-submit{flex:1;padding:14px 20px;background:rgba(0,255,204,.1);color:#00ffcc;border:2px solid #00ffcc;border-radius:25px;font-size:.9rem;font-weight:bold;text-transform:uppercase;letter-spacing:2px;cursor:pointer;transition:all .2s;box-shadow:0 0 15px rgba(0,255,204,.2);font-family:inherit;}
+.modal-submit:hover{background:rgba(0,255,204,.2);box-shadow:0 0 28px rgba(0,255,204,.4);}
+.modal-submit:active{transform:scale(0.97);}
+.modal-close-btn{padding:14px 22px;background:transparent;color:rgba(0,255,204,.45);border:1px solid rgba(0,255,204,.22);border-radius:25px;font-size:.82rem;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:all .2s;font-family:inherit;}
+.modal-close-btn:hover{border-color:rgba(0,255,204,.5);color:#00ffcc;}
+/* ─── TYPEWRITER */
+.tw-char{display:inline-block;opacity:0;will-change:opacity;}
+.feature-title{min-height:1.5em;letter-spacing:1px;}
+/* ─── ADMIN PANEL */
+#admin-btn{position:fixed;top:14px;left:14px;z-index:9999;width:34px;height:34px;border-radius:50%;background:rgba(0,255,204,.07);border:1px solid rgba(0,255,204,.25);color:rgba(0,255,204,.5);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;}
+#admin-btn:hover{background:rgba(0,255,204,.18);color:#00ffcc;border-color:rgba(0,255,204,.8);}
+#admin-overlay{display:none;position:fixed;inset:0;z-index:99990;background:rgba(0,0,0,.88);backdrop-filter:blur(16px);align-items:center;justify-content:center;}
+#admin-overlay.open{display:flex;}
+.admin-login-box{background:rgba(4,6,10,.97);border:1px solid rgba(0,255,204,.35);border-top:2px solid rgba(0,255,204,.85);border-radius:20px;padding:40px 36px;max-width:380px;width:92%;box-shadow:0 0 60px rgba(0,255,204,.1),0 30px 80px rgba(0,0,0,.9);}
+.admin-login-title{font-size:1.1rem;font-weight:900;color:#00ffcc;text-transform:uppercase;letter-spacing:4px;margin-bottom:24px;text-align:center;}
+.admin-login-err{color:#ff4a4a;font-size:.75rem;letter-spacing:1px;margin-top:8px;display:none;}
+#admin-inbox{display:none;position:fixed;inset:0;z-index:99990;background:rgba(3,5,10,.97);backdrop-filter:blur(20px);flex-direction:column;}
+#admin-inbox.open{display:flex;}
+.inbox-header{display:flex;align-items:center;justify-content:space-between;padding:20px 30px;border-bottom:1px solid rgba(0,255,204,.2);}
+.inbox-title{font-size:1.1rem;font-weight:900;color:#00ffcc;text-transform:uppercase;letter-spacing:4px;}
+.inbox-close{padding:8px 20px;background:transparent;color:rgba(0,255,204,.5);border:1px solid rgba(0,255,204,.2);border-radius:20px;font-size:.75rem;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:all .2s;font-family:inherit;}
+.inbox-close:hover{color:#00ffcc;border-color:rgba(0,255,204,.6);}
+.inbox-body{display:flex;flex:1;overflow:hidden;}
+.msg-list{width:340px;border-right:1px solid rgba(0,255,204,.15);overflow-y:auto;padding:16px;}
+.msg-item{padding:14px 16px;border-radius:10px;border:1px solid rgba(0,255,204,.12);background:rgba(0,255,204,.03);margin-bottom:10px;cursor:pointer;transition:all .2s;}
+.msg-item:hover{border-color:rgba(0,255,204,.4);background:rgba(0,255,204,.07);}
+.msg-item.active{border-color:#00ffcc;background:rgba(0,255,204,.1);}
+.msg-item-name{font-size:.9rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;}
+.msg-item-email{font-size:.72rem;color:rgba(0,255,204,.6);margin-top:2px;}
+.msg-item-date{font-size:.65rem;color:rgba(255,255,255,.35);margin-top:4px;}
+.msg-detail{flex:1;padding:30px 36px;overflow-y:auto;}
+.msg-detail-empty{display:flex;align-items:center;justify-content:center;height:100%;color:rgba(0,255,204,.25);font-size:.9rem;letter-spacing:2px;text-transform:uppercase;}
+.msg-detail-name{font-size:1.5rem;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:3px;margin-bottom:6px;}
+.msg-detail-email{font-size:.85rem;color:#00ffcc;margin-bottom:24px;}
+.msg-detail-label{font-size:.65rem;color:rgba(0,255,204,.5);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;}
+.msg-detail-text{color:#e2e8f0;font-size:.9rem;line-height:1.6;background:rgba(0,255,204,.03);border:1px solid rgba(0,255,204,.12);border-radius:8px;padding:14px 16px;margin-bottom:20px;}
+.msg-detail-reply{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:rgba(0,255,204,.1);color:#00ffcc;border:1px solid rgba(0,255,204,.4);border-radius:20px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;cursor:pointer;text-decoration:none;transition:all .2s;}
+.msg-detail-reply:hover{background:rgba(0,255,204,.2);}
+.inbox-empty{display:flex;align-items:center;justify-content:center;flex:1;color:rgba(0,255,204,.2);font-size:.9rem;letter-spacing:2px;text-transform:uppercase;}
+/* ─── INBOX TABS & STATUS */
+.inbox-tabs{display:flex;gap:7px;align-items:center;flex-wrap:wrap;}
+.inbox-tab{padding:7px 15px;background:transparent;color:rgba(0,255,204,.4);border:1px solid rgba(0,255,204,.18);border-radius:20px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;cursor:pointer;transition:all .2s;font-family:inherit;}
+.inbox-tab:hover{color:#00ffcc;border-color:rgba(0,255,204,.5);}
+.inbox-tab.active{color:#00ffcc;border-color:rgba(0,255,204,.8);background:rgba(0,255,204,.1);box-shadow:0 0 10px rgba(0,255,204,.15);}
+.inbox-filter-btn{padding:7px 15px;background:transparent;color:rgba(0,255,204,.4);border:1px solid rgba(0,255,204,.2);border-radius:20px;font-size:.68rem;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:all .2s;font-family:inherit;margin-left:4px;}
+.inbox-filter-btn:hover,.inbox-filter-btn.active{background:rgba(0,255,204,.1);color:#00ffcc;border-color:rgba(0,255,204,.6);}
+.msg-status-badge{display:inline-block;font-size:.58rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:10px;margin-left:6px;vertical-align:middle;}
+.msg-action-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
+.msg-action-btn{padding:10px 18px;background:transparent;border-radius:20px;font-size:.77rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;cursor:pointer;transition:all .2s;font-family:inherit;}
+.msg-action-accept{color:#ffa040;border:1px solid rgba(255,160,64,.5);}
+.msg-action-accept:hover{background:rgba(255,160,64,.12);}
+.msg-action-archive{color:#8888cc;border:1px solid rgba(136,136,200,.4);}
+.msg-action-archive:hover{background:rgba(136,136,200,.1);}
+.msg-action-complete{color:#40ff80;border:1px solid rgba(64,255,128,.5);}
+.msg-action-complete:hover{background:rgba(64,255,128,.1);}
+.msg-action-reopen{color:rgba(0,255,204,.65);border:1px solid rgba(0,255,204,.3);}
+.msg-action-reopen:hover{background:rgba(0,255,204,.08);}
+.msg-action-delete{color:#ff6060;border:1px solid rgba(255,96,96,.45);}
+.msg-action-delete:hover{background:rgba(255,96,96,.1);}
+.msg-action-restore{color:#40ffaa;border:1px solid rgba(64,255,170,.45);}
+.msg-action-restore:hover{background:rgba(64,255,170,.1);}
+.msg-action-perm{color:#ff2020;border:2px solid rgba(255,32,32,.6);font-weight:900;}
+.msg-action-perm:hover{background:rgba(255,32,32,.15);}
+/* ─── TRASH CONFIRM */
+#trash-confirm{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;background:rgba(0,0,0,.88);backdrop-filter:blur(14px);}
+#trash-confirm.open{display:flex;}
+.trash-confirm-box{background:rgba(4,6,10,.97);border:1px solid rgba(255,96,96,.4);border-top:2px solid rgba(255,96,96,.85);border-radius:20px;padding:40px 36px;max-width:420px;width:92%;box-shadow:0 0 60px rgba(255,96,96,.08),0 30px 80px rgba(0,0,0,.9);text-align:center;animation:modal-in .4s cubic-bezier(.175,.885,.32,1.275) forwards;}
+.trash-confirm-icon{font-size:2.8rem;margin-bottom:14px;}
+.trash-confirm-title{font-size:1.05rem;font-weight:900;color:#ff6060;text-transform:uppercase;letter-spacing:3px;margin-bottom:10px;}
+.trash-confirm-sub{font-size:.82rem;color:rgba(226,232,240,.55);margin-bottom:28px;line-height:1.7;}
+.trash-confirm-actions{display:flex;gap:12px;justify-content:center;}
+.trash-btn-delete{padding:13px 24px;background:rgba(255,96,96,.1);color:#ff6060;border:2px solid rgba(255,96,96,.7);border-radius:25px;font-size:.85rem;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;cursor:pointer;transition:all .2s;font-family:inherit;}
+.trash-btn-delete:hover{background:rgba(255,96,96,.22);box-shadow:0 0 20px rgba(255,96,96,.3);}
+.trash-btn-view{padding:13px 22px;background:transparent;color:rgba(0,255,204,.5);border:1px solid rgba(0,255,204,.22);border-radius:25px;font-size:.82rem;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:all .2s;font-family:inherit;}
+.trash-btn-view:hover{border-color:rgba(0,255,204,.5);color:#00ffcc;}
+/* ─── EMPTY TRASH HEADER BTN */
+.empty-trash-btn{padding:7px 15px;background:transparent;color:rgba(255,96,96,.5);border:1px solid rgba(255,96,96,.25);border-radius:20px;font-size:.68rem;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:all .2s;font-family:inherit;margin-left:8px;}
+.empty-trash-btn:hover{background:rgba(255,96,96,.1);color:#ff6060;border-color:rgba(255,96,96,.6);}
+</style>
+</head>
+<body>
+
+<nav class="ver-nav">
+  <span>🌍 ARDY W | COSMIC</span>
+</nav>
+
+<!-- ADMIN LOGIN BUTTON -->
+<button id="admin-btn" title="Admin">🔐</button>
+
+<!-- ADMIN LOGIN OVERLAY -->
+<div id="admin-overlay">
+  <div class="admin-login-box">
+    <div class="admin-login-title">Admin Access</div>
+    <div class="modal-field"><label class="modal-label">Username</label><input class="modal-input" id="a-user" type="text" placeholder="Username" autocomplete="off"/></div>
+    <div class="modal-field"><label class="modal-label">Password</label><input class="modal-input" id="a-pass" type="password" placeholder="Password"/></div>
+    <div class="admin-login-err" id="a-err">Incorrect credentials.</div>
+    <div class="modal-actions" style="margin-top:20px;">
+      <button class="modal-submit" id="a-login">Enter Inbox</button>
+      <button class="modal-close-btn" id="a-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN INBOX PANEL -->
+<div id="admin-inbox">
+  <div class="inbox-header">
+    <div class="inbox-title">📥 Build Requests</div>
+    <div class="inbox-tabs">
+      <button class="inbox-tab active" data-tab="new">Inbox</button>
+      <button class="inbox-tab" data-tab="accepted">Accepted</button>
+      <button class="inbox-tab" data-tab="archived">Archived</button>
+      <button class="inbox-tab" data-tab="completed">Completed</button>
+      <button class="inbox-tab" data-tab="trash" style="color:rgba(255,96,96,.5);border-color:rgba(255,96,96,.22);" id="trash-tab-btn">🗑 Trash</button>
+      <button class="inbox-filter-btn" id="inbox-filter-btn">Show All</button>
+    </div>
+    <button class="inbox-close" id="inbox-close-btn">Close</button>
+  </div>
+  <div class="inbox-body">
+    <div class="msg-list" id="msg-list"></div>
+    <div class="msg-detail" id="msg-detail">
+      <div class="msg-detail-empty">Select a message to view details</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN SVG BACKGROUND -->
+<div class="bg-robot-container">
+<svg id="mainSVG" class="bg-robot-svg" viewBox="0 0 1200 950" preserveAspectRatio="xMidYMin meet" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <filter id="nf" x="-10%" y="-10%" width="120%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <radialGradient id="nebula" cx="50%" cy="22%" r="45%">
+    <stop offset="0%" stop-color="#080820" stop-opacity="0.9"/>
+    <stop offset="60%" stop-color="#04060f" stop-opacity="0.5"/>
+    <stop offset="100%" stop-color="#03050a" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="mouth-glow" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#000000" stop-opacity="1"/>
+    <stop offset="70%" stop-color="#050508" stop-opacity="0.95"/>
+    <stop offset="100%" stop-color="#000" stop-opacity="0.6"/>
+  </radialGradient>
+  <!-- Grass gradient: solid at base, fades to transparent at vanishing point -->
+  <linearGradient id="grassGradL" x1="0" y1="1" x2="0" y2="0" gradientUnits="objectBoundingBox">
+    <stop offset="0%"   stop-color="#153a12" stop-opacity="1"/>
+    <stop offset="30%"  stop-color="#153a12" stop-opacity="0.75"/>
+    <stop offset="65%"  stop-color="#153a12" stop-opacity="0.2"/>
+    <stop offset="100%" stop-color="#153a12" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="grassGradR" x1="0" y1="1" x2="0" y2="0" gradientUnits="objectBoundingBox">
+    <stop offset="0%"   stop-color="#153a12" stop-opacity="1"/>
+    <stop offset="30%"  stop-color="#153a12" stop-opacity="0.75"/>
+    <stop offset="65%"  stop-color="#153a12" stop-opacity="0.2"/>
+    <stop offset="100%" stop-color="#153a12" stop-opacity="0"/>
+  </linearGradient>
+  <!-- World fade mask: black at top (y=180), white (opaque) at y=460 -->
+  <linearGradient id="wfade" gradientUnits="userSpaceOnUse" x1="0" y1="180" x2="0" y2="460">
+    <stop offset="0%" stop-color="black"/>
+    <stop offset="100%" stop-color="white"/>
+  </linearGradient>
+  <mask id="world-mask">
+    <rect x="0" y="0" width="1200" height="950" fill="url(#wfade)"/>
+  </mask>
+  <!-- Road over body: trapezoid fade — transparent at mouth top, opaque below body -->
+  <linearGradient id="rfg" gradientUnits="userSpaceOnUse" x1="0" y1="193" x2="0" y2="640">
+    <stop offset="0%"   stop-color="white" stop-opacity="0"/>
+    <stop offset="40%"  stop-color="white" stop-opacity="0"/>
+    <stop offset="100%" stop-color="white" stop-opacity="1"/>
+  </linearGradient>
+  <mask id="road-fade-mask">
+    <!-- Straight rectangular road mask — full width up to y=215 -->
+    <polygon points="443,950 757,950 757,215 443,215" fill="url(#rfg)"/>
+  </mask>
+  <!-- Arm / robot styles -->
+  <style>
+    .arm-seg{fill:none;stroke:#7a8fa8;stroke-width:9;stroke-linecap:round;}
+    .arm-neon{fill:none;stroke:#00ffcc;stroke-width:2.5;stroke-linecap:round;filter:drop-shadow(0 0 6px #00ffcc);}
+    .claw-line{fill:none;stroke:#b0c4de;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;}
+    .claw-neon{fill:none;stroke:#00ffcc;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 0 5px #00ffcc);}
+    .neon-dot{fill:#00ffcc;filter:drop-shadow(0 0 10px #00ffcc);}
+    .joint{fill:#05080c;stroke:#b0c4de;stroke-width:3;}
+    .joint-dot{fill:#00ffcc;filter:drop-shadow(0 0 8px #00ffcc);}
+    .arm-wrist{fill:#05080c;stroke:#b0c4de;stroke-width:2.5;}
+    .body-h{fill:none;stroke:#7a8fa8;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+    .body-l{fill:none;stroke:#b0c4de;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+    .body-n{fill:none;stroke:#00ffcc;stroke-width:2.5;stroke-linecap:round;filter:drop-shadow(0 0 8px #00ffcc);}
+  </style>
+</defs>
+
+<!-- COSMIC BACKGROUND -->
+<rect x="0" y="0" width="1200" height="950" fill="#03050a"/>
+<rect x="0" y="0" width="1200" height="950" fill="url(#nebula)"/>
+<g id="stars-group"/>
+
+<!-- ===================== ROBOT BODY ===================== -->
+<g id="robot-body" opacity="0.70" filter="url(#nf)">
+
+  <!-- === HEAD === -->
+  <!-- Main head polygon -->
+  <polygon points="487,8 713,8 745,38 752,95 740,155 706,175 494,175 460,155 448,95 455,38" fill="#05080c" stroke="#7a8fa8" stroke-width="3"/>
+  <!-- Inner head panel -->
+  <polygon points="497,16 703,16 732,44 738,92 727,148 698,166 502,166 472,148 462,92 468,44" fill="#05080c" stroke="#b0c4de" stroke-width="1.5"/>
+  <!-- Head detail line -->
+  <line x1="452" y1="125" x2="748" y2="125" stroke="#b0c4de" stroke-width="1.5" opacity="0.6"/>
+  <!-- Ear vents left -->
+  <rect x="433" y="58" width="18" height="48" rx="4" fill="#05080c" stroke="#7a8fa8" stroke-width="2"/>
+  <line x1="435" y1="68" x2="450" y2="68" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="435" y1="76" x2="450" y2="76" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="435" y1="84" x2="450" y2="84" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="435" y1="92" x2="450" y2="92" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="435" y1="100" x2="450" y2="100" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <!-- Ear vents right -->
+  <rect x="749" y="58" width="18" height="48" rx="4" fill="#05080c" stroke="#7a8fa8" stroke-width="2"/>
+  <line x1="751" y1="68" x2="766" y2="68" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="751" y1="76" x2="766" y2="76" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="751" y1="84" x2="766" y2="84" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="751" y1="92" x2="766" y2="92" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="751" y1="100" x2="766" y2="100" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <!-- Antenna -->
+  <line x1="600" y1="8" x2="600" y2="-8" stroke="#7a8fa8" stroke-width="3.5"/>
+  <circle cx="600" cy="-12" r="7" fill="#05080c" stroke="#b0c4de" stroke-width="1.8"/>
+  <circle cx="600" cy="-12" r="4" class="neon-dot"/>
+  <line x1="576" y1="4" x2="569" y2="-4" stroke="#b0c4de" stroke-width="1.5"/>
+  <circle cx="567" cy="-6" r="3.5" fill="#05080c" stroke="#b0c4de" stroke-width="1.2"/><circle cx="567" cy="-6" r="1.8" class="neon-dot"/>
+  <line x1="624" y1="4" x2="631" y2="-4" stroke="#b0c4de" stroke-width="1.5"/>
+  <circle cx="633" cy="-6" r="3.5" fill="#05080c" stroke="#b0c4de" stroke-width="1.2"/><circle cx="633" cy="-6" r="1.8" class="neon-dot"/>
+  <!-- Visor -->
+  <rect x="494" y="50" width="212" height="58" rx="8" fill="#05080c" stroke="#00ffcc" stroke-width="1.5" opacity="0.4"/>
+  <rect x="596" y="50" width="4" height="58" fill="none" stroke="#7a8fa8" stroke-width="1" opacity="0.35"/>
+  <!-- LEFT EYE -->
+  <circle cx="547" cy="79" r="22" fill="#05080c" stroke="#b0c4de" stroke-width="2"/>
+  <circle cx="547" cy="79" r="15" fill="#00ffcc" style="filter:drop-shadow(0 0 20px #00ffcc)"/>
+  <circle cx="540" cy="73" r="5" fill="#fff" opacity=".9"/>
+  <circle cx="547" cy="79" r="6" fill="#004433" opacity="0.6"/>
+  <!-- RIGHT EYE -->
+  <circle cx="653" cy="79" r="22" fill="#05080c" stroke="#b0c4de" stroke-width="2"/>
+  <circle cx="653" cy="79" r="15" fill="#00ffcc" style="filter:drop-shadow(0 0 20px #00ffcc)"/>
+  <circle cx="646" cy="73" r="5" fill="#fff" opacity=".9"/>
+  <circle cx="653" cy="79" r="6" fill="#004433" opacity="0.6"/>
+  <!-- Head bottom panel -->
+  <rect x="455" y="130" width="290" height="24" rx="3" fill="#080d12" stroke="#7a8fa8" stroke-width="1.5"/>
+  <line x1="462" y1="140" x2="738" y2="140" stroke="#00ffcc" stroke-width="1" opacity="0.3"/>
+
+  <!-- === UPPER JAW (with teeth pointing down) === -->
+  <rect x="460" y="154" width="280" height="22" fill="#080c10" stroke="#7a8fa8" stroke-width="2"/>
+  <!-- Teeth (upper) - 7 teeth -->
+  <polygon points="467,176 484,176 480,193 471,193" fill="#c8d0da" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="490,176 507,176 503,194 494,194" fill="#c8d0da" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="514,176 530,176 527,195 518,195" fill="#d0d8e2" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="537,176 554,176 551,196 542,196" fill="#c8d0da" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="562,176 578,176 575,196 566,196" fill="#d0d8e2" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="621,176 638,176 635,196 625,196" fill="#d0d8e2" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="646,176 663,176 659,195 650,195" fill="#c8d0da" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="670,176 687,176 683,194 674,194" fill="#d0d8e2" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="693,176 710,176 706,193 697,193" fill="#c8d0da" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="716,176 732,176 728,192 719,192" fill="#c8d0da" stroke="#8a9aaa" stroke-width="1"/>
+
+  <!-- === MOUTH VOID (black abyss) === -->
+  <rect x="460" y="193" width="280" height="44" fill="url(#mouth-glow)"/>
+  <rect x="462" y="193" width="276" height="44" fill="#000000"/>
+  <!-- Mouth shadow/depth -->
+  <ellipse cx="600" cy="210" rx="130" ry="16" fill="#050508" opacity="0.8"/>
+
+  <!-- === LOWER JAW (with teeth pointing up) === -->
+  <!-- Lower teeth - offset from upper -->
+  <polygon points="477,237 493,237 489,222 480,222" fill="#b8c0ca" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="500,237 517,237 513,221 504,221" fill="#c0c8d2" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="524,237 540,237 537,220 528,220" fill="#b8c0ca" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="548,237 564,237 561,220 552,220" fill="#c0c8d2" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="635,237 651,237 648,220 639,220" fill="#b8c0ca" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="658,237 675,237 671,221 662,221" fill="#c0c8d2" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="682,237 699,237 695,222 686,222" fill="#b8c0ca" stroke="#8a9aaa" stroke-width="1"/>
+  <polygon points="706,237 722,237 718,222 709,222" fill="#c0c8d2" stroke="#8a9aaa" stroke-width="1"/>
+  <rect x="460" y="237" width="280" height="24" fill="#080c10" stroke="#7a8fa8" stroke-width="2"/>
+  <!-- Lower jaw curved bottom lip -->
+  <path d="M 460,261 Q 600,285 740,261 L 740,268 Q 600,294 460,268 Z" fill="#05080c" stroke="#7a8fa8" stroke-width="1.5"/>
+
+  <!-- === NECK === -->
+  <rect x="569" y="268" width="62" height="28" rx="5" fill="#05080c" stroke="#7a8fa8" stroke-width="2"/>
+  <line x1="580" y1="268" x2="580" y2="296" stroke="#b0c4de" stroke-width="1" opacity=".6"/>
+  <line x1="592" y1="268" x2="592" y2="296" stroke="#b0c4de" stroke-width="1" opacity=".6"/>
+  <line x1="608" y1="268" x2="608" y2="296" stroke="#b0c4de" stroke-width="1" opacity=".6"/>
+  <line x1="620" y1="268" x2="620" y2="296" stroke="#b0c4de" stroke-width="1" opacity=".6"/>
+
+  <!-- === TORSO === -->
+  <polygon points="460,296 740,296 712,490 488,490" fill="#05080c" stroke="#7a8fa8" stroke-width="3.5"/>
+  <polygon points="472,308 728,308 704,480 496,480" fill="#05080c" stroke="#b0c4de" stroke-width="1.5"/>
+  <!-- Torso horizontal lines -->
+  <line x1="462" y1="348" x2="738" y2="348" stroke="#b0c4de" stroke-width="1.5"/>
+  <line x1="470" y1="390" x2="730" y2="390" stroke="#b0c4de" stroke-width="1.5" stroke-dasharray="6 4" opacity=".6"/>
+  <line x1="480" y1="432" x2="720" y2="432" stroke="#b0c4de" stroke-width="1" opacity=".4"/>
+  <!-- Energy core -->
+  <circle cx="600" cy="395" r="44" fill="#05080c" stroke="#b0c4de" stroke-width="1.8"/>
+  <circle cx="600" cy="395" r="28" fill="#05080c" stroke="#b0c4de" stroke-width="1.2" stroke-dasharray="5 3"/>
+  <circle cx="600" cy="395" r="16" fill="#00ffcc" style="filter:drop-shadow(0 0 22px #00ffcc)"/>
+  <circle cx="600" cy="395" r="6" fill="#fff"/>
+  <!-- Chest badge -->
+  <path d="M 588,372 L 600,360 L 596,366 L 612,360 L 600,372 L 604,367 Z" stroke="#00ffcc" stroke-width="1.8" fill="none" style="filter:drop-shadow(0 0 5px #00ffcc)"/>
+  <!-- Hip belt -->
+  <rect x="496" y="470" width="208" height="18" rx="5" fill="#05080c" stroke="#b0c4de" stroke-width="1.5"/>
+  <rect x="572" y="470" width="56" height="18" rx="4" fill="none" stroke="#00ffcc" stroke-width="1.5" opacity=".5"/>
+
+  <!-- === LEFT SHOULDER PAD === -->
+  <path d="M 460,296 L 325,296 L 298,342 L 305,400 L 360,420 L 460,408 L 468,350 Z" fill="#05080c" stroke="#7a8fa8" stroke-width="2.5"/>
+  <line x1="325" y1="308" x2="325" y2="392" stroke="#b0c4de" stroke-width="1" opacity=".6"/>
+  <line x1="342" y1="298" x2="342" y2="408" stroke="#b0c4de" stroke-width="1" opacity=".4"/>
+  <!-- Left shoulder socket -->
+  <circle cx="338" cy="402" r="26" fill="#05080c" stroke="#b0c4de" stroke-width="3"/>
+  <circle cx="338" cy="402" r="13" class="neon-dot"/>
+  <!-- Left piston housing -->
+  <rect id="l-piston-housing" x="278" y="360" width="60" height="22" rx="4" fill="#05080c" stroke="#7a8fa8" stroke-width="2"/>
+  <rect id="l-piston-rod" x="248" y="366" width="32" height="10" rx="3" fill="#8a9cb5" stroke="#6a7c95" stroke-width="1"/>
+  <rect x="278" y="363" width="4" height="16" rx="1" fill="#00ffcc" opacity="0.5"/>
+  <!-- Left piston housing 2 -->
+  <rect x="285" y="390" width="55" height="18" rx="3" fill="#05080c" stroke="#7a8fa8" stroke-width="1.5"/>
+  <rect id="l-piston-rod2" x="258" y="395" width="28" height="8" rx="2" fill="#6a7c95" stroke="#4a5c75" stroke-width="1"/>
+
+  <!-- === RIGHT SHOULDER PAD === -->
+  <path d="M 740,296 L 875,296 L 902,342 L 895,400 L 840,420 L 740,408 L 732,350 Z" fill="#05080c" stroke="#7a8fa8" stroke-width="2.5"/>
+  <line x1="875" y1="308" x2="875" y2="392" stroke="#b0c4de" stroke-width="1" opacity=".6"/>
+  <line x1="858" y1="298" x2="858" y2="408" stroke="#b0c4de" stroke-width="1" opacity=".4"/>
+  <!-- Right shoulder socket -->
+  <circle cx="862" cy="402" r="26" fill="#05080c" stroke="#b0c4de" stroke-width="3"/>
+  <circle cx="862" cy="402" r="13" class="neon-dot"/>
+  <!-- Right piston housing -->
+  <rect id="r-piston-housing" x="862" y="360" width="60" height="22" rx="4" fill="#05080c" stroke="#7a8fa8" stroke-width="2"/>
+  <rect id="r-piston-rod" x="920" y="366" width="32" height="10" rx="3" fill="#8a9cb5" stroke="#6a7c95" stroke-width="1"/>
+  <rect x="918" y="363" width="4" height="16" rx="1" fill="#00ffcc" opacity="0.5"/>
+  <!-- Right piston housing 2 -->
+  <rect x="860" y="390" width="55" height="18" rx="3" fill="#05080c" stroke="#7a8fa8" stroke-width="1.5"/>
+  <rect id="r-piston-rod2" x="914" y="395" width="28" height="8" rx="2" fill="#6a7c95" stroke="#4a5c75" stroke-width="1"/>
+
+</g><!-- end robot-body -->
+
+<!-- arms moved to overlay SVG -->
+</svg>
+</div>
+
+<!-- HERO CARD -->
+<div class="hero-wrapper">
+  <section class="hero-section" id="hero-card">
+    <div class="flip-card">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="pitch-section">
+            <div class="pitch-headline">Got a vision, but blocked by development costs?</div>
+            <div class="pitch-body">Skip the $150/hr agency fees and heavy retainers. I leverage cutting-edge AI to build smarter, faster, and leaner.</div>
+            <div class="pitch-highlight">Zero risk. Pay a flat $1,000 only when I deliver your working MVP.</div>
+          </div>
+          <div class="contact-section">
+            <div class="name">ardy W</div>
+            <div class="info-group"><div class="label">Email</div><div class="value">unleashbuildwithai@gmail.com</div></div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="back-content">
+            <div class="neon-text">
+              <span class="letter-g">G
+                <div class="robot-wrapper">
+                  <svg class="robot-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+                    <defs><filter id="pt3" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.5" xChannelSelector="R" yChannelSelector="G"/></filter></defs>
+                    <line x1="22" y1="133" x2="118" y2="133" class="sketch-line"/>
+                    <rect x="36" y="127" width="20" height="7" rx="2" class="sketch-line-thick"/>
+                    <rect x="84" y="127" width="20" height="7" rx="2" class="sketch-line-thick"/>
+                    <line x1="52" y1="97" x2="46" y2="114" class="sketch-line-thick" stroke-width="5"/>
+                    <circle cx="46" cy="114" r="6" class="sketch-line"/><circle cx="46" cy="114" r="3" class="sketch-line-thick"/><circle cx="46" cy="114" r="1.5" class="neon-fill" opacity="0.6"/>
+                    <line x1="46" y1="114" x2="45" y2="127" class="sketch-line-thick" stroke-width="4"/>
+                    <line x1="88" y1="97" x2="94" y2="114" class="sketch-line-thick" stroke-width="5"/>
+                    <circle cx="94" cy="114" r="6" class="sketch-line"/><circle cx="94" cy="114" r="3" class="sketch-line-thick"/><circle cx="94" cy="114" r="1.5" class="neon-fill" opacity="0.6"/>
+                    <line x1="94" y1="114" x2="95" y2="127" class="sketch-line-thick" stroke-width="4"/>
+                    <polygon points="42,50 100,50 106,97 36,97" class="sketch-line-thick"/>
+                    <polygon points="49,56 93,56 98,91 44,91" class="sketch-line"/>
+                    <circle cx="70" cy="61" r="9" class="sketch-line"/><circle cx="70" cy="61" r="6" class="sketch-line" stroke-dasharray="3,2"/><circle cx="70" cy="61" r="3.5" class="neon-fill" opacity="0.85"/>
+                    <rect x="48" y="87" width="44" height="6" rx="2" class="sketch-line"/>
+                    <path d="M 42 52 L 24 52 L 20 65 L 24 76 L 42 76 L 44 68 Z" class="sketch-line-thick"/>
+                    <circle cx="22" cy="74" r="5" class="sketch-line"/><circle cx="22" cy="74" r="2.5" class="neon-fill" opacity="0.5"/>
+                    <path d="M 98 52 L 116 52 L 120 65 L 116 76 L 98 76 L 96 68 Z" class="sketch-line-thick"/>
+                    <circle cx="118" cy="74" r="5" class="sketch-line"/><circle cx="118" cy="74" r="2.5" class="neon-fill" opacity="0.5"/>
+                    <line x1="22" y1="74" x2="14" y2="56" class="sketch-line-thick" stroke-width="5"/>
+                    <circle cx="14" cy="56" r="6" class="sketch-line"/><circle cx="14" cy="56" r="3" class="sketch-line-thick"/>
+                    <line x1="14" y1="56" x2="8" y2="36" class="sketch-line-thick" stroke-width="4"/>
+                    <circle cx="8" cy="36" r="4" class="sketch-line"/><circle cx="8" cy="36" r="2" class="neon-fill" opacity="0.65"/>
+                    <line x1="7" y1="26" x2="8" y2="18" class="neon-accent" stroke-width="2.5"/>
+                    <circle cx="8" cy="16" r="5" class="welding-spark"/>
+                    <line x1="118" y1="74" x2="128" y2="88" class="sketch-line-thick" stroke-width="5"/>
+                    <circle cx="128" cy="88" r="6" class="sketch-line"/>
+                    <line x1="128" y1="88" x2="134" y2="76" class="sketch-line-thick" stroke-width="4"/>
+                    <rect x="128" y="66" width="14" height="11" rx="2" class="sketch-line"/>
+                    <rect x="60" y="42" width="20" height="10" rx="3" class="sketch-line-thick"/>
+                    <path d="M 44 14 L 92 14 L 101 22 L 102 40 L 94 46 L 42 46 L 34 40 L 34 22 Z" class="sketch-line-thick"/>
+                    <rect x="42" y="20" width="52" height="17" rx="4" class="sketch-line-thick"/>
+                    <circle cx="57" cy="29" r="5" class="sketch-line"/><circle cx="57" cy="29" r="3.5" class="neon-fill"/>
+                    <circle cx="77" cy="29" r="5" class="sketch-line"/><circle cx="77" cy="29" r="3.5" class="neon-fill"/>
+                    <line x1="68" y1="6" x2="68" y2="4" class="sketch-line-thick" stroke-width="3"/>
+                    <circle cx="68" cy="4" r="4" class="sketch-line"/><circle cx="68" cy="4" r="2.5" class="neon-fill"/>
+                  </svg>
+                  <div class="falling-sparks"><i></i><i></i><i></i><i></i></div>
+                </div>
+              </span>enius
+            </div>
+            <div class="sub-text-container">
+              <div class="neon-line"></div>
+              <div class="small-robot-wrapper">
+                <svg viewBox="0 0 50 60" xmlns="http://www.w3.org/2000/svg">
+                  <defs><filter id="pts3" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1" xChannelSelector="R" yChannelSelector="G"/></filter></defs>
+                  <style>.sl4{fill:none;stroke:#b0c4de;stroke-width:1;stroke-linecap:round;filter:url(#pts3)}.slt4{fill:none;stroke:#8a9cb5;stroke-width:1.5;filter:url(#pts3)}.nc4{fill:#00ffcc;filter:drop-shadow(0 0 3px #00ffcc)}</style>
+                  <line x1="25" y1="4" x2="25" y2="1" class="slt4"/><circle cx="25" cy="1" r="1.5" class="nc4"/>
+                  <rect x="14" y="4" width="22" height="15" rx="4" class="slt4"/>
+                  <rect x="17" y="7" width="16" height="9" rx="2" class="sl4"/>
+                  <path d="M 18 12 Q 21 9 23 12" fill="none" stroke="#00ffcc" stroke-width="1.5"/>
+                  <path d="M 27 12 Q 30 9 32 12" fill="none" stroke="#00ffcc" stroke-width="1.5"/>
+                  <rect x="13" y="19" width="24" height="9" rx="3" class="slt4"/>
+                  <circle cx="25" cy="24" r="1.5" class="nc4"/>
+                  <path d="M 13 22 Q 8 24 7 27" class="slt4"/><circle cx="7" cy="27" r="1.5" class="nc4"/>
+                  <path d="M 37 22 Q 42 24 43 27" class="slt4"/><circle cx="43" cy="27" r="1.5" class="nc4"/>
+                  <line x1="17" y1="28" x2="33" y2="28" class="sl4" opacity="0.5"/>
+                  <g>
+                    <line x1="19" y1="28" x2="17" y2="40" class="slt4"><animateTransform attributeName="transform" type="rotate" values="-20 19 28; 24 19 28; -20 19 28" dur="1.4s" repeatCount="indefinite"/></line>
+                    <circle cx="17" cy="40" r="1.8" class="sl4"><animateTransform attributeName="transform" type="rotate" values="-20 19 28; 24 19 28; -20 19 28" dur="1.4s" repeatCount="indefinite"/></circle>
+                    <line x1="17" y1="40" x2="13" y2="50" class="slt4"><animateTransform attributeName="transform" type="rotate" values="-20 19 28; 24 19 28; -20 19 28" dur="1.4s" repeatCount="indefinite"/></line>
+                    <line x1="10" y1="50" x2="16" y2="50" class="slt4"><animateTransform attributeName="transform" type="rotate" values="-20 19 28; 24 19 28; -20 19 28" dur="1.4s" repeatCount="indefinite"/></line>
+                  </g>
+                  <g>
+                    <line x1="31" y1="28" x2="33" y2="40" class="slt4"><animateTransform attributeName="transform" type="rotate" values="24 31 28; -20 31 28; 24 31 28" dur="1.4s" repeatCount="indefinite"/></line>
+                    <circle cx="33" cy="40" r="1.8" class="sl4"><animateTransform attributeName="transform" type="rotate" values="24 31 28; -20 31 28; 24 31 28" dur="1.4s" repeatCount="indefinite"/></circle>
+                    <line x1="33" y1="40" x2="37" y2="50" class="slt4"><animateTransform attributeName="transform" type="rotate" values="24 31 28; -20 31 28; 24 31 28" dur="1.4s" repeatCount="indefinite"/></line>
+                    <line x1="34" y1="50" x2="40" y2="50" class="slt4"><animateTransform attributeName="transform" type="rotate" values="24 31 28; -20 31 28; 24 31 28" dur="1.4s" repeatCount="indefinite"/></line>
+                  </g>
+                </svg>
+              </div>
+              <div class="sub-text">Unleashed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator" id="scroll-prompt">Scroll to Initiate Build Sequence</div>
+  </section>
+</div>
+
+<!-- CONTENT LAYER -->
+<div id="content-layer">
+  <div class="content-section-wrapper" id="section-1">
+    <div class="grab-bar"><div class="grab-handle left"></div><div class="grab-handle right"></div></div>
+    <section class="section">
+      <div class="arsenal-header-wrap">
+        <h2 class="arsenal-header" id="arsenal-header">
+          <span class="a-char" data-i="0">T</span><span class="a-char" data-i="1">H</span><span class="a-char" data-i="2">E</span><span class="a-char spacer">&nbsp;</span><span class="a-char" data-i="3">A</span><span class="a-char" data-i="4">R</span><span class="a-char" data-i="5">S</span><span class="a-char" data-i="6">E</span><span class="a-char" data-i="7">N</span><span class="a-char" data-i="8">A</span><span class="a-char" data-i="9">L</span>
+        </h2>
+        <div class="arsenal-underline" id="arsenal-underline"></div>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-box" id="box1">
+          <div class="feature-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <h3 class="feature-title">Reality</h3>
+          <p>While traditional devs spend weeks writing boilerplate, I use AI to lay the foundation in hours — straight to the custom logic that makes your idea unique.</p>
+        </div>
+        <div class="feature-box" id="box2">
+          <div class="feature-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+          <h3 class="feature-title" style="text-decoration:underline;text-decoration-color:#00ffcc;text-underline-offset:5px;">Full-Stack|Architecture</h3>
+          <p>From database to sleek frontend. I build scalable, modern applications designed to handle real users from day one.</p>
+        </div>
+        <div class="feature-box" id="box3">
+          <div class="feature-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <h3 class="feature-title">Risk Model</h3>
+          <p>You shouldn't pay for promises. I deliver a functional MVP before you pay the flat $1,000 fee. If I don't build it, you don't pay.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="content-section-wrapper" id="section-2">
+    <div class="grab-bar"><div class="grab-handle left"></div><div class="grab-handle right"></div></div>
+    <section class="section">
+      <div class="process-header-wrap">
+        <h2 class="process-header" id="process-header"><span class="p-char" data-i="0">T</span><span class="p-char" data-i="1">H</span><span class="p-char" data-i="2">E</span><span class="p-char spacer">&nbsp;</span><span class="p-char" data-i="3">B</span><span class="p-char" data-i="4">L</span><span class="p-char" data-i="5">U</span><span class="p-char" data-i="6">E</span><span class="p-char" data-i="7">P</span><span class="p-char" data-i="8">R</span><span class="p-char" data-i="9">I</span><span class="p-char" data-i="10">N</span><span class="p-char" data-i="11">T</span></h2>
+        <div class="process-underline" id="process-underline"></div>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item left"  id="time1"><div class="timeline-content"><h3>Discord Updates</h3><p>Want to be extra specific? A quick Discord call to walk through your vision and make sure we're aligned — so I build exactly what you need.</p></div></div>
+        <div class="timeline-item right" id="time2"><div class="timeline-content"><h3>02. The Forge</h3><p>After I accept your message via email, I get straight to work. If no data inquiry is needed — product is <em style="color:#00ffcc;">immediately underway.</em></p></div></div>
+        <div class="timeline-item left"  id="time3"><div class="timeline-content"><h3>03. The Reveal</h3><p>We meet up so you have live access to the app and see it work in real-time. After payment, I'll distribute it with a USB of your providing.</p></div></div>
+      </div>
+    </section>
+  </div>
+  <div class="content-section-wrapper" id="section-3">
+    <div class="grab-bar"><div class="grab-handle left"></div><div class="grab-handle right"></div></div>
+    <section class="cta-section" id="cta">
+      <h2 style="font-size:2rem;margin-bottom:20px;text-shadow:0 0 10px rgba(0,255,204,.5);text-transform:uppercase;letter-spacing:2px;">Ready to Unleash Your Genius?</h2>
+      <p>Stop waiting for a dream developer. I'm here now.</p>
+      <button class="initiate-btn" id="initiate-btn">⚡ INITIATE BUILD SEQUENCE</button>
+    </section>
+  </div>
+</div>
+
+<!-- INITIATE MODAL -->
+<div id="initiate-modal">
+  <div class="modal-box">
+    <div class="modal-title">⚡ Initiate Build Sequence</div>
+    <div class="modal-sub">Zero risk — Flat $1,000 only when I deliver your MVP</div>
+    <div class="modal-divider"></div>
+    <div class="modal-field"><label class="modal-label">Your Name</label><input class="modal-input" id="m-name" type="text" placeholder="Full name" autocomplete="off"/></div>
+    <div class="modal-field"><label class="modal-label">Email Address</label><input class="modal-input" id="m-email" type="email" placeholder="you@example.com" autocomplete="off"/></div>
+    <div class="modal-field"><label class="modal-label">Describe Your Vision</label><textarea class="modal-textarea" id="m-vision" placeholder="What are you building? What problem does it solve?"></textarea></div>
+    <div class="modal-field"><label class="modal-label">Core Features Needed</label><textarea class="modal-textarea" id="m-features" placeholder="List the 3–5 must-have features for your MVP..." style="min-height:60px"></textarea></div>
+    <div class="modal-field"><label class="modal-label">Discord <span style="font-size:.68rem;color:rgba(0,255,204,.7);font-weight:400;letter-spacing:0;">(Optional — quick call to align on your vision)</span></label><input class="modal-input" id="m-discord" type="text" placeholder="YourUsername#0000" autocomplete="off"/></div>
+    <div class="modal-field"><label class="modal-label">Timeline</label><select class="modal-select" id="m-timeline"><option value="">Select timeline...</option><option>ASAP — I needed this yesterday</option><option>2–4 weeks</option><option>1–2 months</option><option>Flexible</option></select></div>
+    <div class="modal-actions">
+      <button class="modal-submit" id="m-submit">🚀 Launch My Build</button>
+      <button class="modal-close-btn" id="m-close">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ARM & HAND OVERLAY SVG (z-index 20, renders in front of content so hands visually grip bars) -->
+<svg id="armSVG" style="position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:1200px;height:120%;z-index:20;pointer-events:none;overflow:visible;" viewBox="0 0 1200 950" preserveAspectRatio="xMidYMin meet" xmlns="http://www.w3.org/2000/svg">
+<style>
+.as{fill:none;stroke:#7a8fa8;stroke-width:9;stroke-linecap:round;}
+.an{fill:none;stroke:#00ffcc;stroke-width:2.5;stroke-linecap:round;filter:drop-shadow(0 0 6px #00ffcc);}
+.aj{fill:#05080c;stroke:#b0c4de;stroke-width:3;}
+.ad{fill:#00ffcc;filter:drop-shadow(0 0 8px #00ffcc);}
+.ag{fill:none;stroke:#8a9cb5;stroke-width:4;stroke-dasharray:9 6;}
+.aw{fill:#05080c;stroke:#b0c4de;stroke-width:2.5;}
+.ap{fill:#05080c;stroke:#8a9cb5;stroke-width:2.5;stroke-linejoin:round;}
+.af{fill:none;stroke:#7a8fa8;stroke-width:5.5;stroke-linecap:round;}
+.afn{fill:none;stroke:#00ffcc;stroke-width:1.8;stroke-linecap:round;filter:drop-shadow(0 0 4px #00ffcc);opacity:0.7;}
+.afj{fill:#05080c;stroke:#8a9cb5;stroke-width:1.8;}
+.aft{fill:#00ffcc;filter:drop-shadow(0 0 6px #00ffcc);}
+</style>
+<!-- LEFT ARM segments -->
+<line id="lo-l-upper" class="as"/><line id="lo-l-upper-n" class="an"/>
+<circle id="lo-l-elbow" class="aj" r="18"/><circle id="lo-l-elbow-d" class="ad" r="9"/>
+<circle id="lo-l-gear" class="ag" r="22"/>
+<line id="lo-l-lower" class="as"/><line id="lo-l-lower-n" class="an"/>
+<rect id="lo-l-wrist" class="aw" width="44" height="22" rx="6"/>
+<!-- Left 5-finger hand -->
+<polygon id="lo-l-palm" class="ap"/>
+<line id="lo-l-f0s1" class="af"/><line id="lo-l-f0s2" class="af"/><line id="lo-l-f0n1" class="afn"/><line id="lo-l-f0n2" class="afn"/><circle id="lo-l-f0j" class="afj" r="5.5"/><circle id="lo-l-f0t" class="aft" r="4"/>
+<line id="lo-l-f1s1" class="af"/><line id="lo-l-f1s2" class="af"/><line id="lo-l-f1n1" class="afn"/><line id="lo-l-f1n2" class="afn"/><circle id="lo-l-f1j" class="afj" r="5.5"/><circle id="lo-l-f1t" class="aft" r="4"/>
+<line id="lo-l-f2s1" class="af"/><line id="lo-l-f2s2" class="af"/><line id="lo-l-f2n1" class="afn"/><line id="lo-l-f2n2" class="afn"/><circle id="lo-l-f2j" class="afj" r="5.5"/><circle id="lo-l-f2t" class="aft" r="4"/>
+<line id="lo-l-f3s1" class="af"/><line id="lo-l-f3s2" class="af"/><line id="lo-l-f3n1" class="afn"/><line id="lo-l-f3n2" class="afn"/><circle id="lo-l-f3j" class="afj" r="5.5"/><circle id="lo-l-f3t" class="aft" r="4"/>
+<line id="lo-l-f4s1" class="af"/><line id="lo-l-f4s2" class="af"/><line id="lo-l-f4n1" class="afn"/><line id="lo-l-f4n2" class="afn"/><circle id="lo-l-f4j" class="afj" r="5.5"/><circle id="lo-l-f4t" class="aft" r="4"/>
+<!-- RIGHT ARM segments -->
+<line id="lo-r-upper" class="as"/><line id="lo-r-upper-n" class="an"/>
+<circle id="lo-r-elbow" class="aj" r="18"/><circle id="lo-r-elbow-d" class="ad" r="9"/>
+<circle id="lo-r-gear" class="ag" r="22"/>
+<line id="lo-r-lower" class="as"/><line id="lo-r-lower-n" class="an"/>
+<rect id="lo-r-wrist" class="aw" width="44" height="22" rx="6"/>
+<!-- Right 5-finger hand -->
+<polygon id="lo-r-palm" class="ap"/>
+<line id="lo-r-f0s1" class="af"/><line id="lo-r-f0s2" class="af"/><line id="lo-r-f0n1" class="afn"/><line id="lo-r-f0n2" class="afn"/><circle id="lo-r-f0j" class="afj" r="5.5"/><circle id="lo-r-f0t" class="aft" r="4"/>
+<line id="lo-r-f1s1" class="af"/><line id="lo-r-f1s2" class="af"/><line id="lo-r-f1n1" class="afn"/><line id="lo-r-f1n2" class="afn"/><circle id="lo-r-f1j" class="afj" r="5.5"/><circle id="lo-r-f1t" class="aft" r="4"/>
+<line id="lo-r-f2s1" class="af"/><line id="lo-r-f2s2" class="af"/><line id="lo-r-f2n1" class="afn"/><line id="lo-r-f2n2" class="afn"/><circle id="lo-r-f2j" class="afj" r="5.5"/><circle id="lo-r-f2t" class="aft" r="4"/>
+<line id="lo-r-f3s1" class="af"/><line id="lo-r-f3s2" class="af"/><line id="lo-r-f3n1" class="afn"/><line id="lo-r-f3n2" class="afn"/><circle id="lo-r-f3j" class="afj" r="5.5"/><circle id="lo-r-f3t" class="aft" r="4"/>
+<line id="lo-r-f4s1" class="af"/><line id="lo-r-f4s2" class="af"/><line id="lo-r-f4n1" class="afn"/><line id="lo-r-f4n2" class="afn"/><circle id="lo-r-f4j" class="afj" r="5.5"/><circle id="lo-r-f4t" class="aft" r="4"/>
+</svg>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// ─── PAGE SETUP
+const VH=window.innerHeight, TOTAL_H=VH*9;
+document.body.style.height=TOTAL_H+'px';
+const MAX_S=TOTAL_H-VH, PULL_DIST=VH-130;
+
+// ─── TIMING ANCHORS (all units = scrollPx/MAX_S)
+const HAND_START = 300/MAX_S;   // arms start reaching at scroll 300
+const AP         = 500/MAX_S;   // Arsenal section starts at scroll 500
+const LSTG       = 100/MAX_S;   // Arsenal letter stagger (~100px each)
+const LXSTG      = 45/MAX_S;    // Arsenal letter exit stagger
+const AP_EXIT    = 1900/MAX_S;  // Arsenal exit starts at scroll 1900
+const PLSTG      = 85/MAX_S;    // Blueprint letter stagger
+const PLXSTG     = 40/MAX_S;    // Blueprint exit stagger
+// PP and CP defined inside timeline (const PP=AP+0.44, const CP=PP+0.48)
+
+// ─── MOUTH TARGET
+const MOUTH_DX=0;
+const MOUTH_DY=-(VH*0.27);
+
+// ─── STARS
+(function(){
+  const g=document.getElementById('stars-group'),NS='http://www.w3.org/2000/svg';
+  for(let i=0;i<110;i++){
+    const c=document.createElementNS(NS,'circle');
+    const x=Math.random()*1200,y=Math.random()*580,r=Math.random()*1.8+0.3,op=Math.random()*0.75+0.2;
+    c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',r);
+    c.setAttribute('fill',r>1.2?'#e8f0ff':'#ffffff');c.setAttribute('opacity',op);
+    g.appendChild(c);
+    if(r>1.4&&Math.random()>0.5) gsap.to(c,{attr:{opacity:op*0.3},duration:Math.random()*2+1,yoyo:true,repeat:-1,ease:'sine.inOut',delay:Math.random()*3});
+  }
+  for(let i=0;i<8;i++){
+    const c=document.createElementNS(NS,'circle');
+    c.setAttribute('cx',Math.random()*1200);c.setAttribute('cy',Math.random()*400);
+    c.setAttribute('r',1.5);c.setAttribute('fill','#00ffcc');c.setAttribute('opacity',0.5);
+    c.setAttribute('style','filter:drop-shadow(0 0 3px #00ffcc)');g.appendChild(c);
+  }
+}());
+
+// ─── ARM GEOMETRY
+// L_UP / R_UP wrist positions kept BELOW shoulder (LS_Y=402) to prevent IK flip
+const LS_X=338,LS_Y=402, RS_X=862,RS_Y=402, ARM_L=270;
+const L_INIT={wx:175,wy:560}, L_DOWN={wx:575,wy:820}, L_UP={wx:220,wy:500};
+const R_INIT={wx:1025,wy:560},R_DOWN={wx:625,wy:820}, R_UP={wx:980,wy:500};
+
+// GSAP proxies — grip (0=open hand, 1=fist)
+const LP={wx:L_INIT.wx,wy:L_INIT.wy,grip:0};
+const RP={wx:R_INIT.wx,wy:R_INIT.wy,grip:0};
+const gProxy={y:0}, gearL={rot:0}, gearR={rot:0};
+const barOp={b1:1,b2:1,b3:1};
+
+// ─── IK SOLVER — with natural elbow constraint (over-bicep mechanic)
+function solveIK(sx,sy,tx,ty,L1,L2,flip){
+  const dx=tx-sx,dy=ty-sy,d=Math.hypot(dx,dy);
+  const maxR=L1+L2-0.1,dc=Math.min(d,maxR);
+  const tx2=d>maxR?sx+dx/d*dc:tx,ty2=d>maxR?sy+dy/d*dc:ty;
+  const dx2=tx2-sx,dy2=ty2-sy,d2=Math.hypot(dx2,dy2);
+  const base=Math.atan2(dy2,dx2);
+  const cosA=Math.max(-1,Math.min(1,(d2*d2+L1*L1-L2*L2)/(2*d2*L1)));
+  const ea=base+flip*Math.acos(cosA);
+  let ex=sx+L1*Math.cos(ea);
+  let ey=sy+L1*Math.sin(ea);
+  const MIN_EY=sy-L1*0.28;
+  if(ey<MIN_EY){
+    ey=MIN_EY;
+    const dh=Math.sqrt(Math.max(0,L1*L1-(ey-sy)*(ey-sy)));
+    ex=sx-flip*dh;
+  }
+  return{ex,ey,wx:tx2,wy:ty2};
+}
+
+// ─── 5-FINGER HAND GEOMETRY (local space: wrist at origin, fingers DOWN)
+const F_OPEN=[
+  {b:[-22,40],m:[-30,65],t:[-34,82]},
+  {b:[-11,43],m:[-14,70],t:[-15,88]},
+  {b:[-1, 45],m:[-1, 73],t:[-1, 92]},
+  {b:[9,  43],m:[13, 70],t:[15, 88]},
+  {b:[21, 30],m:[33, 48],t:[40, 64]},
+];
+const F_FIST=[
+  {b:[-22,40],m:[-20,55],t:[-16,49]},
+  {b:[-11,43],m:[-8, 57],t:[-4, 51]},
+  {b:[-1, 45],m:[0,  59],t:[2,  53]},
+  {b:[9,  43],m:[9,  57],t:[7,  51]},
+  {b:[21, 30],m:[12, 47],t:[2,  54]},
+];
+function lrp(a,b,t){return a*(1-t)+b*t;}
+function rPt(px,py,a){const c=Math.cos(a),s=Math.sin(a);return[px*c-py*s,px*s+py*c];}
+
+// pfx = 'lo-l' or 'lo-r' | mirror = -1 left, 1 right (flips thumb side)
+function updateHand(pfx,wx,wy,grip,angle,mirror){
+  const pel=document.getElementById(pfx+'-palm');
+  if(!pel)return;
+  const pL=[[-26,0],[26,0],[28,46],[-28,46]];
+  pel.setAttribute('points',pL.map(p=>{
+    const[rx,ry]=rPt(p[0]*mirror,p[1],angle);
+    return`${(wx+rx).toFixed(1)},${(wy+ry).toFixed(1)}`;
+  }).join(' '));
+  for(let i=0;i<5;i++){
+    const fo=F_OPEN[i],ff=F_FIST[i];
+    const bx=lrp(fo.b[0],ff.b[0],grip),by=lrp(fo.b[1],ff.b[1],grip);
+    const mx=lrp(fo.m[0],ff.m[0],grip),my=lrp(fo.m[1],ff.m[1],grip);
+    const tx=lrp(fo.t[0],ff.t[0],grip),ty=lrp(fo.t[1],ff.t[1],grip);
+    const[brx,bry]=rPt(bx*mirror,by,angle);
+    const[mrx,mry]=rPt(mx*mirror,my,angle);
+    const[trx,try_]=rPt(tx*mirror,ty,angle);
+    const Bx=wx+brx,By=wy+bry,Mx=wx+mrx,My=wy+mry,Tx=wx+trx,Ty=wy+try_;
+    function sl(id,x1,y1,x2,y2){const e=document.getElementById(id);if(e){e.setAttribute('x1',x1);e.setAttribute('y1',y1);e.setAttribute('x2',x2);e.setAttribute('y2',y2);}}
+    function sc(id,cx,cy){const e=document.getElementById(id);if(e){e.setAttribute('cx',cx);e.setAttribute('cy',cy);}}
+    sl(pfx+'-f'+i+'s1',Bx,By,Mx,My); sl(pfx+'-f'+i+'s2',Mx,My,Tx,Ty);
+    sl(pfx+'-f'+i+'n1',Bx,By,Mx,My); sl(pfx+'-f'+i+'n2',Mx,My,Tx,Ty);
+    sc(pfx+'-f'+i+'j',Mx,My); sc(pfx+'-f'+i+'t',Tx,Ty);
+  }
+}
+
+// ─── ELEMENT REFS (overlay SVG lo-* elements)
+const q=id=>document.getElementById(id);
+const lU=q('lo-l-upper'),lUN=q('lo-l-upper-n');
+const lEl=q('lo-l-elbow'),lED=q('lo-l-elbow-d'),lEG=q('lo-l-gear');
+const lLo=q('lo-l-lower'),lLN=q('lo-l-lower-n');
+const lW=q('lo-l-wrist');
+const rU=q('lo-r-upper'),rUN=q('lo-r-upper-n');
+const rEl=q('lo-r-elbow'),rED=q('lo-r-elbow-d'),rEG=q('lo-r-gear');
+const rLo=q('lo-r-lower'),rLN=q('lo-r-lower-n');
+const rW=q('lo-r-wrist');
+const globeScene=q('globe-scene');
+const lPistonRod=q('l-piston-rod'),lPistonRod2=q('l-piston-rod2');
+const rPistonRod=q('r-piston-rod'),rPistonRod2=q('r-piston-rod2');
+const grabBar1=document.querySelector('#section-1 .grab-bar');
+const grabBar2=document.querySelector('#section-2 .grab-bar');
+const grabBar3=document.querySelector('#section-3 .grab-bar');
+
+function ln(el,x1,y1,x2,y2){if(!el)return;el.setAttribute('x1',x1);el.setAttribute('y1',y1);el.setAttribute('x2',x2);el.setAttribute('y2',y2);}
+function cxy(el,x,y){if(!el)return;el.setAttribute('cx',x);el.setAttribute('cy',y);}
+
+// ─── ROAD STREAMING — scroll-velocity drives the scene continuously
+const roadBonus={y:0};
+let lastScrollY_r=0,scrollVel_r=0,roadTicking=false;
+window.addEventListener('scroll',()=>{
+  const delta=scrollY-lastScrollY_r;
+  lastScrollY_r=scrollY;
+  scrollVel_r=delta*0.45; // road speed multiplier
+  if(!roadTicking){roadTicking=true;requestAnimationFrame(roadLoop);}
+},{passive:true});
+
+function roadLoop(){
+  if(Math.abs(scrollVel_r)>0.1){
+    roadBonus.y-=scrollVel_r;
+    scrollVel_r*=0.85; // friction decay
+    // Seamless loop: scene content height = 1400 local units
+    if(roadBonus.y<-1400)roadBonus.y+=1400;
+    if(roadBonus.y>100)roadBonus.y=0;
+    updateAll();
+    requestAnimationFrame(roadLoop);
+  } else {
+    scrollVel_r=0;
+    roadTicking=false;
+  }
+}
+
+// ─── MAIN UPDATE
+function updateAll(){
+  if(globeScene)globeScene.setAttribute('transform',`translate(0,${900+gProxy.y+roadBonus.y})`);
+  const L=solveIK(LS_X,LS_Y,LP.wx,LP.wy,ARM_L,ARM_L,1);
+  const R=solveIK(RS_X,RS_Y,RP.wx,RP.wy,ARM_L,ARM_L,-1);
+  // Left arm
+  ln(lU,LS_X,LS_Y,L.ex,L.ey); ln(lUN,LS_X,LS_Y,L.ex,L.ey);
+  cxy(lEl,L.ex,L.ey); cxy(lED,L.ex,L.ey); cxy(lEG,L.ex,L.ey);
+  ln(lLo,L.ex,L.ey,L.wx,L.wy); ln(lLN,L.ex,L.ey,L.wx,L.wy);
+  if(lW){lW.setAttribute('x',L.wx-22);lW.setAttribute('y',L.wy-11);}
+  // Right arm
+  ln(rU,RS_X,RS_Y,R.ex,R.ey); ln(rUN,RS_X,RS_Y,R.ex,R.ey);
+  cxy(rEl,R.ex,R.ey); cxy(rED,R.ex,R.ey); cxy(rEG,R.ex,R.ey);
+  ln(rLo,R.ex,R.ey,R.wx,R.wy); ln(rLN,R.ex,R.ey,R.wx,R.wy);
+  if(rW){rW.setAttribute('x',R.wx-22);rW.setAttribute('y',R.wy-11);}
+  // Elbow gears
+  if(lEG)lEG.setAttribute('transform',`rotate(${gearL.rot},${L.ex},${L.ey})`);
+  if(rEG)rEG.setAttribute('transform',`rotate(${gearR.rot},${R.ex},${R.ey})`);
+  // 5-finger hands
+  const lAng=Math.atan2(L.wy-L.ey,L.wx-L.ex)-Math.PI/2;
+  const rAng=Math.atan2(R.wy-R.ey,R.wx-R.ex)-Math.PI/2;
+  updateHand('lo-l',L.wx,L.wy,LP.grip,lAng,-1);
+  updateHand('lo-r',R.wx,R.wy,RP.grip,rAng, 1);
+  // Pistons
+  const pExtL=Math.max(0,Math.min(1,(LP.wy-500)/320))*38;
+  const pExtR=Math.max(0,Math.min(1,(RP.wy-500)/320))*38;
+  if(lPistonRod) lPistonRod.setAttribute('x',258-pExtL);
+  if(lPistonRod2)lPistonRod2.setAttribute('x',260-pExtL*0.6);
+  if(rPistonRod) rPistonRod.setAttribute('x',920+pExtR);
+  if(rPistonRod2)rPistonRod2.setAttribute('x',914+pExtR*0.6);
+  // Grab bar dimming
+  if(grabBar1)grabBar1.style.opacity=barOp.b1;
+  if(grabBar2)grabBar2.style.opacity=barOp.b2;
+  if(grabBar3)grabBar3.style.opacity=barOp.b3;
+}
+updateAll();
+
+// ─── CONTENT REFS
+const heroCard=q('hero-card'),scrollPmt=q('scroll-prompt');
+const section1=q('section-1'),section2=q('section-2'),section3=q('section-3');
+const arsenalChs=Array.from(document.querySelectorAll('.a-char:not(.spacer)'));
+const arsenalUL=q('arsenal-underline');
+const processChs=Array.from(document.querySelectorAll('.p-char:not(.spacer)'));
+const processUL=q('process-underline');
+const box1=q('box1'),box2=q('box2'),box3=q('box3');
+const time1=q('time1'),time2=q('time2'),time3=q('time3');
+const cta=q('cta');
+
+// ─── TYPEWRITER SETUP — letter-by-letter for box titles (| = line break)
+function setupTypewriter(boxEl){
+  const t=boxEl.querySelector('.feature-title');
+  if(!t)return[];
+  const orig=t.textContent.trim();
+  t.innerHTML='';
+  const spans=[];
+  [...orig].forEach(ch=>{
+    if(ch==='|'){t.appendChild(document.createElement('br'));return;}
+    const s=document.createElement('span');
+    s.className='tw-char';
+    s.textContent=ch===' '?'\u00a0':ch;
+    t.appendChild(s);
+    spans.push(s);
+  });
+  return spans;
+}
+const b1chars=setupTypewriter(box1);
+const b2chars=setupTypewriter(box2);
+const b3chars=setupTypewriter(box3);
+
+// ─── INITIAL STATES
+gsap.set(heroCard,{opacity:1,scale:1,x:0,y:0,transformOrigin:'center center'});
+gsap.set(scrollPmt,{opacity:1});
+gsap.set([section1,section2,section3],{opacity:0,y:0});
+gsap.set(arsenalChs[0],{opacity:0,y:400,scale:0.4});
+gsap.set(arsenalChs.slice(1),{opacity:0,y:120});
+gsap.set(arsenalUL,{opacity:0,width:'0%'});
+gsap.set(processChs[0],{opacity:0,y:400,scale:0.4});
+gsap.set(processChs.slice(1),{opacity:0,y:120});
+gsap.set(processUL,{opacity:0,scaleX:0});
+gsap.set([box1,box2,box3],{opacity:0,y:40});
+gsap.set(time1,{opacity:0,y:70,scale:0.88});
+gsap.set(time2,{opacity:0,y:70,scale:0.88});
+gsap.set(time3,{opacity:0,y:70,scale:0.88});
+gsap.set(cta,{opacity:0,y:45});
+
+// ─── HERO CARD: scroll spins, hover flips
+(function(){
+  const fci=document.querySelector('.flip-card-inner');
+  const flipCardEl=document.querySelector('.flip-card');
+  if(!fci||!flipCardEl)return;
+  fci.style.transition='none';
+  let cardRot=0,cardVel=0,lastSY_c=0,settling=false,settled=false,hoverFlipped=false;
+  const cp={r:0};
+
+  // ── Scroll: add velocity to spin card
+  window.addEventListener('scroll',()=>{
+    if(scrollY/MAX_S>0.09)return;
+    const delta=scrollY-lastSY_c;
+    lastSY_c=scrollY;
+    if(settling){gsap.killTweensOf(cp);settling=false;settled=false;hoverFlipped=false;}
+    cardVel+=delta*1.4;
+  },{passive:true});
+
+  // ── Hover: flip to back on enter, flip to front on leave
+  flipCardEl.addEventListener('mouseenter',()=>{
+    if(scrollY/MAX_S>0.09)return;
+    if(Math.abs(cardVel)>2)return; // spinning — don't interfere
+    if(hoverFlipped)return;
+    hoverFlipped=true;
+    settling=true; settled=false;
+    gsap.killTweensOf(cp);
+    // Find nearest "back" face (180°, 540°, -180°…)
+    const norm=((cardRot%360)+360)%360;
+    const isOnFront=(norm<90||norm>270);
+    const base=cardRot-norm;
+    const targetBack=isOnFront?base+180:cardRot; // already on back, no move
+    cp.r=cardRot;
+    gsap.to(cp,{r:targetBack,duration:0.75,ease:'power2.inOut',
+      onUpdate:()=>{fci.style.transform=`rotateY(${cp.r}deg)`;cardRot=cp.r;},
+      onComplete:()=>{settling=false;settled=true;}
+    });
+  });
+
+  flipCardEl.addEventListener('mouseleave',()=>{
+    if(scrollY/MAX_S>0.09)return;
+    if(!hoverFlipped)return;
+    hoverFlipped=false;
+    settling=true; settled=false;
+    gsap.killTweensOf(cp);
+    // Snap to nearest front face (0°, 360°, -360°…)
+    const nearestFront=Math.round(cardRot/360)*360;
+    cp.r=cardRot;
+    gsap.to(cp,{r:nearestFront,duration:0.75,ease:'power2.inOut',
+      onUpdate:()=>{fci.style.transform=`rotateY(${cp.r}deg)`;cardRot=cp.r;},
+      onComplete:()=>{settling=false;settled=true;}
+    });
+  });
+
+  // ── Animation loop: apply velocity + friction
+  (function cardLoop(){
+    if(!settled){
+      if(Math.abs(cardVel)>0.25){
+        cardRot+=cardVel;
+        cardVel*=0.87;
+        fci.style.transform=`rotateY(${cardRot}deg)`;
+      } else if(cardVel!==0&&!settling){
+        settling=true; cardVel=0;
+        // Snap to nearest face (front preferred over back to avoid getting stuck)
+        const nearestFront=Math.round(cardRot/360)*360;
+        const nearestBack=Math.round((cardRot-180)/360)*360+180;
+        const distFront=Math.abs(cardRot-nearestFront);
+        const distBack=Math.abs(cardRot-nearestBack);
+        const target=distFront<=distBack?nearestFront:nearestBack;
+        cp.r=cardRot;
+        gsap.to(cp,{r:target,duration:1.1,ease:'power3.out',
+          onUpdate:()=>{fci.style.transform=`rotateY(${cp.r}deg)`;},
+          onComplete:()=>{cardRot=target;settling=false;settled=true;}
+        });
+      }
+    }
+    requestAnimationFrame(cardLoop);
+  }());
+}());
+
+// ─── MASTER TIMELINE
+const tl=gsap.timeline({
+  scrollTrigger:{trigger:'body',start:'top top',end:`+=${MAX_S}`,scrub:true},
+  defaults:{ease:'none'}
+});
+
+// ── HANDS ANIMATE FIRST — appear to grab/sweep the hero card into the mouth
+// Left hand: swoops in from left side toward center-left
+tl.to(LP,{duration:0.05,wx:490,wy:420,grip:0.4,onUpdate:updateAll},0);
+tl.to(gearL,{duration:0.05,rot:-120,onUpdate:updateAll},0);
+// Right hand: swoops in from right side toward center-right
+tl.to(RP,{duration:0.05,wx:710,wy:420,grip:0.4,onUpdate:updateAll},0);
+tl.to(gearR,{duration:0.05,rot:120,onUpdate:updateAll},0);
+// Both converge upward as card shrinks into mouth
+tl.to(LP,{duration:0.05,wx:555,wy:280,grip:0.85,onUpdate:updateAll},0.04);
+tl.to(RP,{duration:0.05,wx:645,wy:280,grip:0.85,onUpdate:updateAll},0.04);
+// Hands retract to init after card is gone
+tl.to(LP,{duration:0.04,wx:L_INIT.wx,wy:L_INIT.wy,grip:0,onUpdate:updateAll},0.09);
+tl.to(RP,{duration:0.04,wx:R_INIT.wx,wy:R_INIT.wy,grip:0,onUpdate:updateAll},0.09);
+
+// ── HERO CARD exits (0→0.08)
+tl.to(heroCard,{duration:0.08,opacity:0,scale:0,x:MOUTH_DX,y:MOUTH_DY},0);
+tl.to(scrollPmt,{duration:0.03,opacity:0},0);
+
+// ══ ARSENAL — hand drops fast after mouth entry at ~0.092
+tl.to(RP,{duration:0.04,wx:R_DOWN.wx,wy:R_DOWN.wy,grip:0,onUpdate:updateAll},0.092);
+tl.to(gearR,{duration:0.04,rot:540,onUpdate:updateAll},0.092);
+
+tl.to(section1,{duration:0.02,opacity:1},AP);
+tl.to(arsenalChs[0],{duration:0.06,opacity:1,y:0,scale:1,ease:'back.out(1.4)'},AP);
+
+tl.to(RP,{duration:0.02,grip:1,onUpdate:updateAll},AP+0.04);
+tl.to(barOp,{duration:0.02,b1:0.2,onUpdate:updateAll},AP+0.04);
+
+tl.to(arsenalChs.slice(1),{duration:0.04,opacity:1,y:0,stagger:0.013},AP+0.03);
+tl.to(arsenalUL,{duration:0.07,opacity:1,width:'100%'},AP+0.06);
+
+tl.to(LP,{duration:0.12,wx:L_DOWN.wx,wy:L_DOWN.wy,grip:0,onUpdate:updateAll},AP+0.07);
+tl.to(gearL,{duration:0.12,rot:-540,onUpdate:updateAll},AP+0.07);
+
+tl.to(RP,{duration:0.15,wx:R_UP.wx,wy:R_UP.wy,onUpdate:updateAll},AP+0.06);
+tl.to(gProxy,{duration:0.15,y:-175,onUpdate:updateAll},AP+0.06);
+tl.to(gearR,{duration:0.15,rot:-180,onUpdate:updateAll},AP+0.06);
+tl.to(section1,{duration:0.15,y:-(VH-119)},AP+0.06);
+
+tl.to(RP,{duration:0.02,grip:0,onUpdate:updateAll},AP+0.21);
+tl.to(barOp,{duration:0.04,b1:1,onUpdate:updateAll},AP+0.21);
+tl.to(RP,{duration:0.07,wx:R_INIT.wx,wy:R_INIT.wy,onUpdate:updateAll},AP+0.23);
+tl.to(gearR,{duration:0.07,rot:0,onUpdate:updateAll},AP+0.23);
+
+tl.to(box1,{duration:0.03,opacity:1,y:0},AP+0.12);
+tl.to(box2,{duration:0.03,opacity:1,y:0},AP+0.14);
+tl.to(box3,{duration:0.03,opacity:1,y:0},AP+0.16);
+
+// FIFO Arsenal exit: underline → letters OUT first → slides stay while arms move → boxes leave last
+tl.to(arsenalUL,{duration:0.04,opacity:0,width:'0%',scaleX:0},AP+0.24);
+const revChs=[...arsenalChs].reverse();
+revChs.forEach((el,i)=>{
+  tl.to(el,{duration:0.025,opacity:0,y:-240,scale:0.04,ease:'power2.in'},AP+0.25+i*0.012);
+});
+// ── GAP FILL: Arsenal exit → Blueprint (AP+0.20 to AP+0.42)
+// Left arm sweeps upward from L_DOWN toward center
+tl.to(LP,{duration:0.10,wx:490,wy:720,onUpdate:updateAll},AP+0.20);
+tl.to(gearL,{duration:0.10,rot:-280,onUpdate:updateAll},AP+0.20);
+tl.to(LP,{duration:0.10,wx:390,wy:630,onUpdate:updateAll},AP+0.30);
+tl.to(gearL,{duration:0.10,rot:-420,onUpdate:updateAll},AP+0.30);
+tl.to(LP,{duration:0.09,wx:310,wy:570,onUpdate:updateAll},AP+0.40);
+tl.to(gearL,{duration:0.09,rot:-540,onUpdate:updateAll},AP+0.40);
+// Right arm sweeps inward from R_INIT toward center
+tl.to(RP,{duration:0.09,wx:950,wy:570,onUpdate:updateAll},AP+0.31);
+tl.to(gearR,{duration:0.09,rot:300,onUpdate:updateAll},AP+0.31);
+tl.to(RP,{duration:0.09,wx:850,wy:550,onUpdate:updateAll},AP+0.40);
+tl.to(gearR,{duration:0.09,rot:440,onUpdate:updateAll},AP+0.40);
+
+// Slides stay visible while arms are still moving — boxes leave AFTER letters are gone
+tl.to(box3,{duration:0.03,opacity:0,y:-130,scale:0.07,x:20},AP+0.35);
+tl.to(box2,{duration:0.03,opacity:0,y:-130,scale:0.07,x:10},AP+0.365);
+tl.to(box1,{duration:0.03,opacity:0,y:-130,scale:0.07,x:0},AP+0.38);
+tl.to(section1,{duration:0.05,opacity:0},AP+0.43);
+
+// ══ BLUEPRINT CYCLE (PP = AP+0.44)
+const PP=AP+0.44;
+
+tl.to(LP,{duration:0.02,grip:1,onUpdate:updateAll},PP);
+tl.to(barOp,{duration:0.02,b2:0.2,onUpdate:updateAll},PP);
+tl.to(section2,{duration:0.02,opacity:1},PP);
+
+tl.to(processChs[0],{duration:0.06,opacity:1,y:0,scale:1,ease:'back.out(1.4)'},PP);
+tl.to(processChs.slice(1),{duration:0.04,opacity:1,y:0,stagger:0.013},PP+0.03);
+tl.to(processUL,{duration:0.06,opacity:1,scaleX:1},PP+0.06);
+tl.to(time1,{duration:0.04,opacity:1,y:0,scale:1},PP+0.09);
+tl.to(time2,{duration:0.04,opacity:1,y:0,scale:1},PP+0.12);
+tl.to(time3,{duration:0.04,opacity:1,y:0,scale:1},PP+0.15);
+
+tl.to(RP,{duration:0.10,wx:R_DOWN.wx,wy:R_DOWN.wy,grip:0,onUpdate:updateAll},PP+0.05);
+tl.to(gearR,{duration:0.10,rot:360,onUpdate:updateAll},PP+0.05);
+
+tl.to(LP,{duration:0.14,wx:L_UP.wx,wy:L_UP.wy,onUpdate:updateAll},PP+0.06);
+tl.to(gProxy,{duration:0.14,y:-350,onUpdate:updateAll},PP+0.06);
+tl.to(gearL,{duration:0.14,rot:180,onUpdate:updateAll},PP+0.06);
+// Blueprint: lowered slightly (VH-100 keeps content further down in viewport)
+tl.to(section2,{duration:0.14,y:-(VH-100)},PP+0.06);
+
+// ── GAP FILL: Blueprint hold (PP+0.16 to PP+0.27) — arms sway then return
+tl.to(RP,{duration:0.06,wx:R_DOWN.wx-50,wy:R_DOWN.wy-40,onUpdate:updateAll},PP+0.16);
+tl.to(gearR,{duration:0.06,rot:480,onUpdate:updateAll},PP+0.16);
+tl.to(RP,{duration:0.06,wx:R_DOWN.wx,wy:R_DOWN.wy,onUpdate:updateAll},PP+0.22);
+tl.to(LP,{duration:0.06,wx:L_UP.wx+50,wy:L_UP.wy+40,onUpdate:updateAll},PP+0.19);
+tl.to(gearL,{duration:0.06,rot:280,onUpdate:updateAll},PP+0.19);
+tl.to(LP,{duration:0.06,wx:L_UP.wx,wy:L_UP.wy,onUpdate:updateAll},PP+0.25);
+
+// Blueprint exit: delayed by +0.10 so it stays on screen for more scroll rolls
+tl.to(LP,{duration:0.02,grip:0,onUpdate:updateAll},PP+0.29);
+tl.to(barOp,{duration:0.04,b2:1,onUpdate:updateAll},PP+0.29);
+tl.to(LP,{duration:0.07,wx:L_INIT.wx,wy:L_INIT.wy,onUpdate:updateAll},PP+0.31);
+tl.to(gearL,{duration:0.07,rot:0,onUpdate:updateAll},PP+0.31);
+
+// FIFO Blueprint exit: underline → letters OUT first → timeline items stay → slides leave last
+tl.to(processUL,{duration:0.04,opacity:0,scaleX:0},PP+0.295);
+const revPChs=[...processChs].reverse();
+revPChs.forEach((el,i)=>{
+  tl.to(el,{duration:0.025,opacity:0,y:-240,scale:0.04,ease:'power2.in'},PP+0.305+i*0.012);
+});
+// Timeline items stay while arms move — leave AFTER letters are gone
+tl.to(time3,{duration:0.03,opacity:0,y:-130,scale:0.07},PP+0.38);
+tl.to(time2,{duration:0.03,opacity:0,y:-130,scale:0.07},PP+0.395);
+tl.to(time1,{duration:0.03,opacity:0,y:-130,scale:0.07},PP+0.41);
+tl.to(section2,{duration:0.04,opacity:0},PP+0.47);
+
+// ══ CTA CYCLE (CP = PP+0.48 — shifted to accommodate longer blueprint)
+const CP=PP+0.48;
+tl.to(RP,{duration:0.02,grip:1,onUpdate:updateAll},CP);
+tl.to(barOp,{duration:0.02,b3:0.2,onUpdate:updateAll},CP);
+tl.to(section3,{duration:0.03,opacity:1},CP);
+tl.to(cta,{duration:0.08,opacity:1,y:0},CP);
+tl.to(RP,{duration:0.09,wx:R_UP.wx,wy:R_UP.wy,onUpdate:updateAll},CP+0.02);
+tl.to(gProxy,{duration:0.09,y:-490,onUpdate:updateAll},CP+0.02);
+tl.to(gearR,{duration:0.09,rot:-360,onUpdate:updateAll},CP+0.02);
+tl.to(section3,{duration:0.09,y:-(VH-119)},CP+0.02);
+tl.to(RP,{duration:0.02,grip:0,onUpdate:updateAll},CP+0.11);
+tl.to(barOp,{duration:0.04,b3:1,onUpdate:updateAll},CP+0.11);
+// ── OFFERING POSE at progress 1.0 — left hand flat palm up, right hand resting on top (hand in hand)
+tl.to(LP,{duration:0.14,wx:560,wy:590,grip:0,onUpdate:updateAll},CP+0.11);
+tl.to(RP,{duration:0.14,wx:560,wy:555,grip:0,onUpdate:updateAll},CP+0.11);
+
+// ─── TYPEWRITER TRIGGERS
+let b1done=false,b2done=false,b3done=false;
+function fireTypewriter(chars,done,setDone){
+  if(done)return;
+  setDone(true);
+  gsap.to(chars,{opacity:1,duration:0.04,stagger:0.055,ease:'none'});
+}
+ScrollTrigger.create({
+  trigger:'body',
+  start:`${Math.round(MAX_S*(AP+0.13))} top`,
+  onEnter:()=>{if(!b1done){b1done=true;gsap.to(b1chars,{opacity:1,duration:0.04,stagger:0.05,ease:'none',delay:0.1});}},
+  onLeaveBack:()=>{b1done=false;b1chars.forEach(c=>{c.style.opacity=0;});}
+});
+ScrollTrigger.create({
+  trigger:'body',
+  start:`${Math.round(MAX_S*(AP+0.15))} top`,
+  onEnter:()=>{if(!b2done){b2done=true;gsap.to(b2chars,{opacity:1,duration:0.04,stagger:0.05,ease:'none',delay:0.1});}},
+  onLeaveBack:()=>{b2done=false;b2chars.forEach(c=>{c.style.opacity=0;});}
+});
+ScrollTrigger.create({
+  trigger:'body',
+  start:`${Math.round(MAX_S*(AP+0.17))} top`,
+  onEnter:()=>{if(!b3done){b3done=true;gsap.to(b3chars,{opacity:1,duration:0.04,stagger:0.05,ease:'none',delay:0.1});}},
+  onLeaveBack:()=>{b3done=false;b3chars.forEach(c=>{c.style.opacity=0;});}
+});
+
+// ─── INITIATE BUTTON MODAL
+const modal=document.getElementById('initiate-modal');
+const initiateBtn=document.getElementById('initiate-btn');
+initiateBtn.addEventListener('click',()=>{
+  modal.classList.add('open');
+  gsap.fromTo(initiateBtn,
+    {boxShadow:'0 0 0px rgba(0,255,204,0)'},
+    {boxShadow:'0 0 50px rgba(0,255,204,.85),0 0 100px rgba(0,255,204,.3)',duration:.12,yoyo:true,repeat:1}
+  );
+});
+document.getElementById('m-close').addEventListener('click',()=>modal.classList.remove('open'));
+modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open');});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remove('open');});
+document.getElementById('m-submit').addEventListener('click',function(){
+  const name=document.getElementById('m-name').value.trim();
+  const email=document.getElementById('m-email').value.trim();
+  const vision=document.getElementById('m-vision').value.trim();
+  const features=document.getElementById('m-features').value.trim();
+  const discord=document.getElementById('m-discord')?document.getElementById('m-discord').value.trim():'';
+  const timeline=document.getElementById('m-timeline').value;
+  if(!name||!email||!vision){
+    gsap.to('.modal-box',{x:[-8,8,-6,6,-3,3,0],duration:.35,ease:'none'});
+    return;
+  }
+  // ── Save to inbox FIRST before any DOM changes
+  saveLocalMsg({name,email,vision,features:features||'',discord,timeline:timeline||'Not specified'});
+  // ── Show success
+  const box=document.querySelector('.modal-box');
+  box.innerHTML=`<div style="text-align:center;padding:20px 0;">
+    <div style="font-size:2.5rem;margin-bottom:18px;">✅</div>
+    <div class="modal-title" style="margin-bottom:10px;">Build Request Sent!</div>
+    <p style="color:#e2e8f0;font-size:.95rem;line-height:1.7;margin-bottom:28px;">
+      Your packet is in my inbox — I'll review and reach out ASAP.<br>
+      <span style="color:rgba(0,255,204,.6);font-size:.8rem;">— Ardy W</span>
+    </p>
+    <button class="modal-close-btn" onclick="document.getElementById('initiate-modal').classList.remove('open')" style="width:100%;justify-content:center;">Close</button>
+  </div>`;
+});
+
+// ─── ADMIN PANEL
+const adminBtn=document.getElementById('admin-btn');
+const adminOverlay=document.getElementById('admin-overlay');
+const adminInbox=document.getElementById('admin-inbox');
+const msgList=document.getElementById('msg-list');
+const msgDetail=document.getElementById('msg-detail');
+
+const ADMIN_USER='Admin';
+const ADMIN_PASS='Admin420';
+
+let currentTab='new';
+let showAll=false;
+
+const STATUS_COLORS={new:'rgba(0,255,204,.8)',accepted:'#ffa040',archived:'#8888cc',completed:'#40ff80',trash:'#ff6060'};
+const STATUS_LABELS={new:'New',accepted:'Accepted',archived:'Archived',completed:'Completed',trash:'Trash'};
+
+// ─── INJECT TRASH CONFIRM OVERLAY
+(function(){
+  const tc=document.createElement('div');
+  tc.id='trash-confirm';
+  tc.innerHTML=`<div class="trash-confirm-box">
+    <div class="trash-confirm-icon">🗑</div>
+    <div class="trash-confirm-title">Empty Trash</div>
+    <div class="trash-confirm-sub" id="trash-confirm-sub-text">Permanently delete all items in trash?</div>
+    <div class="trash-confirm-actions">
+      <button class="trash-btn-delete" id="trash-confirm-yes">🗑 Delete Trash</button>
+      <button class="trash-btn-view" id="trash-confirm-view">👁 View Contents</button>
+    </div>
+  </div>`;
+  document.body.appendChild(tc);
+  tc.addEventListener('click',e=>{if(e.target===tc)tc.classList.remove('open');});
+  document.getElementById('trash-confirm-yes').addEventListener('click',()=>{
+    const msgs=getLocalMsgs().filter(m=>m.status!=='trash');
+    saveAllMsgs(msgs);
+    tc.classList.remove('open');
+    msgDetail.innerHTML='<div class="msg-detail-empty" style="color:rgba(255,96,96,.4);">🗑 Trash emptied</div>';
+    loadMessages();
+  });
+  document.getElementById('trash-confirm-view').addEventListener('click',()=>{
+    tc.classList.remove('open');
+    document.querySelectorAll('.inbox-tab').forEach(b=>b.classList.remove('active'));
+    const tBtn=document.querySelector('[data-tab="trash"]');
+    if(tBtn)tBtn.classList.add('active');
+    currentTab='trash'; showAll=false;
+    updateTrashBtn();
+    loadMessages();
+  });
+}());
+
+function showTrashConfirm(){
+  const count=getLocalMsgs().filter(m=>m.status==='trash').length;
+  if(count===0){msgDetail.innerHTML='<div class="msg-detail-empty" style="color:rgba(255,96,96,.3);">Trash is empty</div>';return;}
+  const sub=document.getElementById('trash-confirm-sub-text');
+  if(sub)sub.textContent=`Permanently delete ${count} item${count!==1?'s':''}? This cannot be undone.`;
+  document.getElementById('trash-confirm').classList.add('open');
+}
+
+function updateTrashBtn(){
+  const existing=document.getElementById('empty-trash-header-btn');
+  if(existing)existing.remove();
+  if(currentTab==='trash'&&!showAll){
+    const btn=document.createElement('button');
+    btn.id='empty-trash-header-btn';
+    btn.className='empty-trash-btn';
+    btn.textContent='🗑 Empty Trash';
+    btn.onclick=showTrashConfirm;
+    document.querySelector('.inbox-tabs').appendChild(btn);
+  }
+}
+
+adminBtn.addEventListener('click',()=>adminOverlay.classList.add('open'));
+document.getElementById('a-cancel').addEventListener('click',()=>adminOverlay.classList.remove('open'));
+document.getElementById('inbox-close-btn').addEventListener('click',()=>{adminInbox.classList.remove('open');});
+
+document.getElementById('a-login').addEventListener('click',()=>{
+  const u=document.getElementById('a-user').value.trim();
+  const p=document.getElementById('a-pass').value;
+  const err=document.getElementById('a-err');
+  if(u===ADMIN_USER&&p===ADMIN_PASS){
+    err.style.display='none';
+    adminOverlay.classList.remove('open');
+    adminInbox.classList.add('open');
+    currentTab='new'; showAll=false;
+    document.querySelectorAll('.inbox-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='new'));
+    document.getElementById('inbox-filter-btn').textContent='Show All';
+    document.getElementById('inbox-filter-btn').classList.remove('active');
+    updateTrashBtn();
+    loadMessages();
+  } else {
+    err.style.display='block';
+    gsap.to('.admin-login-box',{x:[-6,6,-4,4,-2,2,0],duration:.3,ease:'none'});
+  }
+});
+
+document.getElementById('a-pass').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('a-login').click();});
+
+// Tab switching
+document.querySelectorAll('.inbox-tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.inbox-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTab=btn.dataset.tab;
+    showAll=false;
+    const fb=document.getElementById('inbox-filter-btn');
+    fb.textContent='Show All'; fb.classList.remove('active');
+    msgDetail.innerHTML='<div class="msg-detail-empty">Select a message to view details</div>';
+    updateTrashBtn();
+    loadMessages();
+  });
+});
+
+// Show All / Filter toggle
+document.getElementById('inbox-filter-btn').addEventListener('click',function(){
+  showAll=!showAll;
+  this.textContent=showAll?'Filter':'Show All';
+  this.classList.toggle('active',showAll);
+  msgDetail.innerHTML='<div class="msg-detail-empty">Select a message to view details</div>';
+  updateTrashBtn();
+  loadMessages();
+});
+
+function getLocalMsgs(){try{return JSON.parse(localStorage.getItem('ardyw_msgs')||'[]');}catch(e){return[];}}
+function saveAllMsgs(msgs){try{localStorage.setItem('ardyw_msgs',JSON.stringify(msgs));}catch(e){}}
+
+function updateMsgStatus(msgId,newStatus){
+  const msgs=getLocalMsgs();
+  const idx=msgs.findIndex(m=>m.id===msgId);
+  if(idx>-1){msgs[idx].status=newStatus;saveAllMsgs(msgs);}
+  msgDetail.innerHTML='<div class="msg-detail-empty">Status updated — select a message</div>';
+  loadMessages();
+}
+
+function moveToTrash(msgId){updateMsgStatus(msgId,'trash');}
+
+function deletePermanently(msgId){
+  const msgs=getLocalMsgs().filter(m=>m.id!==msgId);
+  saveAllMsgs(msgs);
+  msgDetail.innerHTML='<div class="msg-detail-empty">Message permanently deleted</div>';
+  loadMessages();
+}
+
+function loadMessages(){
+  const all=getLocalMsgs();
+  const filtered=showAll?all:all.filter(m=>(m.status||'new')===currentTab);
+  renderMessages(filtered);
+}
+
+function renderMessages(msgs){
+  if(!msgs||msgs.length===0){
+    msgList.innerHTML=`<div style="color:rgba(0,255,204,.2);text-align:center;padding:40px 0;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;">${showAll?'No messages yet':'No messages in this folder'}</div>`;
+    return;
+  }
+  msgList.innerHTML='';
+  msgs.forEach(m=>{
+    const div=document.createElement('div');
+    div.className='msg-item';
+    const status=m.status||'new';
+    const d=new Date(m.ts||Date.now());
+    const sColor=STATUS_COLORS[status]||'rgba(0,255,204,.8)';
+    const sLabel=STATUS_LABELS[status]||'New';
+    div.innerHTML=`<div class="msg-item-name">${m.name||'Unknown'} <span class="msg-status-badge" style="color:${sColor};border:1px solid ${sColor}44">${sLabel}</span></div>
+      <div class="msg-item-email">${m.email||''}</div>
+      <div class="msg-item-date">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>`;
+    div.addEventListener('click',()=>{
+      document.querySelectorAll('.msg-item').forEach(el=>el.classList.remove('active'));
+      div.classList.add('active');
+      showDetail(m);
+    });
+    msgList.appendChild(div);
+  });
+}
+
+function showDetail(m){
+  const d=new Date(m.ts||Date.now());
+  const status=m.status||'new';
+  const actions=[];
+  if(status==='trash'){
+    actions.push(`<button class="msg-action-btn msg-action-restore" onclick="updateMsgStatus('${m.id}','new')">↩️ Restore</button>`);
+    actions.push(`<button class="msg-action-btn msg-action-perm" onclick="deletePermanently('${m.id}')">💀 Delete Forever</button>`);
+  } else {
+    if(status==='new'){
+      actions.push(`<button class="msg-action-btn msg-action-accept" onclick="updateMsgStatus('${m.id}','accepted')">✅ Accept</button>`);
+      actions.push(`<button class="msg-action-btn msg-action-archive" onclick="updateMsgStatus('${m.id}','archived')">📁 Archive</button>`);
+    } else if(status==='accepted'){
+      actions.push(`<button class="msg-action-btn msg-action-complete" onclick="updateMsgStatus('${m.id}','completed')">🏆 Complete</button>`);
+      actions.push(`<button class="msg-action-btn msg-action-archive" onclick="updateMsgStatus('${m.id}','archived')">📁 Archive</button>`);
+    }
+    if(status!=='new'){
+      actions.push(`<button class="msg-action-btn msg-action-reopen" onclick="updateMsgStatus('${m.id}','new')">↩️ Reopen</button>`);
+    }
+    actions.push(`<button class="msg-action-btn msg-action-delete" onclick="moveToTrash('${m.id}')">🗑 Delete</button>`);
+  }
+  const discordRow=m.discord?`<div class="msg-detail-label">Discord</div><div class="msg-detail-text">${m.discord}</div>`:'';
+  msgDetail.innerHTML=`
+    <div class="msg-detail-name">${m.name||'Unknown'}</div>
+    <div class="msg-detail-email">${m.email||''}</div>
+    <div class="msg-detail-label">Vision / Description</div>
+    <div class="msg-detail-text">${(m.vision||'No description provided').replace(/\n/g,'<br>')}</div>
+    ${m.features?`<div class="msg-detail-label">Core Features</div><div class="msg-detail-text">${m.features.replace(/\n/g,'<br>')}</div>`:''}
+    <div class="msg-detail-label">Timeline</div>
+    <div class="msg-detail-text">${m.timeline||'Not specified'}</div>
+    ${discordRow}
+    <div class="msg-detail-label">Received</div>
+    <div class="msg-detail-text">${d.toLocaleString()}</div>
+    <div class="msg-action-row">${actions.join('')}</div>
+    ${status!=='trash'?`<a class="msg-detail-reply" style="margin-top:16px;" href="mailto:${m.email}?subject=Re: Your Build Request — ${encodeURIComponent(m.name||'')}&body=Hi ${encodeURIComponent(m.name||'')},%0D%0A%0D%0AThank you for reaching out! I've reviewed your vision and I'm excited to get started.%0D%0A%0D%0A— Ardy W">✉️ Reply via Email</a>`:''}
+  `;
+}
+
+function saveLocalMsg(msg){
+  const msgs=getLocalMsgs();
+  const id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  msgs.unshift({...msg,ts:Date.now(),id,status:'new'});
+  saveAllMsgs(msgs.slice(0,50));
+}
+
+// ─── DEBUG OVERLAY
+const dbg=document.createElement('div');
+dbg.style.cssText='position:fixed;bottom:20px;right:20px;background:rgba(0,0,0,.88);border:1px solid rgba(0,255,204,.6);border-radius:8px;padding:12px 16px;font-family:monospace;font-size:11px;color:#00ffcc;z-index:99999;letter-spacing:.5px;line-height:1.9;white-space:pre;backdrop-filter:blur(8px);min-width:240px';
+document.body.appendChild(dbg);
+let dbgOn=false,mx=0,my=0,lc=0;
+dbg.style.display='none';
+document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='d'){dbgOn=!dbgOn;dbg.style.display=dbgOn?'block':'none';}});
+window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+window.addEventListener('wheel',e=>{lc+=e.deltaMode===0?e.deltaY/16:e.deltaMode===1?e.deltaY:e.deltaY*20;},{passive:true});
+(function loop(){
+  if(dbgOn){
+    const prog=Math.min(1,scrollY/MAX_S);
+    dbg.textContent=`MOUSE   x:${String(mx).padStart(4)}  y:${String(my).padStart(4)}\nSCROLL  px:${String(Math.round(scrollY)).padStart(5)} / ${MAX_S}\nPROGRESS  ${prog.toFixed(4)}\nGLOBE Y  ${gProxy.y.toFixed(1)}\nL-GRIP  ${LP.grip.toFixed(2)}  L (${Math.round(LP.wx)},${Math.round(LP.wy)})\nR-GRIP  ${RP.grip.toFixed(2)}  R (${Math.round(RP.wx)},${Math.round(RP.wy)})\n─── Press D to hide ───`;
+  }
+  requestAnimationFrame(loop);
+}());
+</script>
+</body>
+</html>
