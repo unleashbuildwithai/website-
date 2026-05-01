@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ardy W | Genius Unleashed</title>
+<style>
+/* ═══ RESET & VARIABLES ═══ */
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#05080c;--card:#1a2530;--neon:#00ffcc;--text:#ffffff;--muted:#e2e8f0;}
+body{background:var(--bg);font-family:'Inter','Arial',sans-serif;color:var(--text);overflow-x:hidden;}
+h1,h2,h3{text-transform:uppercase;letter-spacing:2px;}
+p{line-height:1.6;color:var(--muted);}
+
+/* GRID BG */
+body::before{content:'';position:fixed;top:0;left:0;width:100vw;height:100vh;
+background-image:linear-gradient(rgba(0,255,204,.05) 1px,transparent 1px),
+linear-gradient(90deg,rgba(0,255,204,.05) 1px,transparent 1px);
+background-size:50px 50px;z-index:-3;pointer-events:none;}
+
+/* VERSION SWITCHER */
+.ver-nav{position:fixed;top:14px;right:14px;z-index:9999;display:flex;gap:8px;}
+.ver-nav a,.ver-nav span{padding:5px 13px;border-radius:20px;font-size:.65rem;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;transition:all .3s;cursor:pointer;}
+.ver-nav a{background:rgba(0,255,204,.07);border:1px solid rgba(0,255,204,.35);color:#00ffcc;}
+.ver-nav a:hover{background:rgba(0,255,204,.18);border-color:var(--neon);}
+.ver-nav span{background:rgba(0,255,204,.18);border:1px solid rgba(0,255,204,.8);
+  color:#00ffcc;box-shadow:0 0 12px rgba(0,255,204,.3);}
+
+/* BG ROBOT CONTAINER */
+.bg-robot-container{position:fixed;top:0;left:0;width:100vw;height:100vh;
+z-index:-2;pointer-events:none;opacity:.40;
+display:flex;justify-content:center;align-items:flex-start;}
+.bg-robot-svg{width:100%;height:120%;max-width:1200px;overflow:visible;}
+
+/* ARM / ROBOT STYLES */
+.arm-seg{fill:none;stroke:#8a9cb5;stroke-width:7;stroke-linecap:round;}
+.arm-neon{fill:none;stroke:#00ffcc;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 0 5px #00ffcc);}
+.claw-line{fill:none;stroke:#b0c4de;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+.claw-neon{fill:none;stroke:#00ffcc;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 0 5px #00ffcc);}
+.neon-dot{fill:#00ffcc;filter:drop-shadow(0 0 10px #00ffcc);}
+.body-heavy{fill:none;stroke:#8a9cb5;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+.body-light{fill:none;stroke:#b0c4de;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.body-neon{fill:none;stroke:#00ffcc;stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 10px #00ffcc);}
+.joint{fill:#05080c;stroke:#b0c4de;stroke-width:3;}
+.joint-dot{fill:#00ffcc;filter:drop-shadow(0 0 8px #00ffcc);}
+.arm-wrist{fill:#05080c;stroke:#b0c4de;stroke-width:2.5;}
+
+/* HERO WRAPPER */
+.hero-wrapper{position:fixed;top:0;left:0;width:100vw;height:100vh;
+display:flex;flex-direction:column;justify-content:center;align-items:center;
+perspective:1200px;z-index:10;pointer-events:none;}
+.hero-section{transform-origin:center;will-change:transform,opacity;pointer-events:auto;}
+.scroll-indicator{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+color:var(--neon);font-size:.8rem;letter-spacing:3px;text-transform:uppercase;
+animation:bounce 2s infinite;opacity:.7;}
+@keyframes bounce{
+  0%,20%,50%,80%,100%{transform:translateY(0) translateX(-50%);}
+  40%{transform:translateY(-10px) translateX(-50%);}
+  60%{transform:translateY(-5px) translateX(-50%);}
+}
+
+/* FLIP CARD */
+.flip-card{background-color:transparent;width:350px;height:480px;perspective:1000px;cursor:pointer;}
+.flip-card-inner{position:relative;width:100%;height:100%;text-align:center;
+transition:transform .8s cubic-bezier(.175,.885,.32,1.275);transform-style:preserve-3d;}
+.flip-card:hover .flip-card-inner{transform:rotateY(180deg);}
+.flip-card-front,.flip-card-back{position:absolute;width:100%;height:100%;
+-webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:20px;overflow:hidden;}
+.flip-card-front{background:rgba(20,30,40,.4);backdrop-filter:blur(25px);-webkit-backdrop-filter:blur(25px);
+border:1px solid rgba(0,255,204,.4);border-top:1px solid rgba(0,255,204,.8);
+border-left:1px solid rgba(0,255,204,.8);
+box-shadow:inset 0 0 40px rgba(0,255,204,.2),0 25px 50px rgba(0,0,0,.9),0 0 20px rgba(0,255,204,.3);
+display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;
+padding:35px 25px;text-align:left;}
+.pitch-section{z-index:2;display:flex;flex-direction:column;gap:12px;}
+.pitch-headline{color:#fff;font-size:1.15rem;font-weight:800;line-height:1.3;
+text-transform:uppercase;letter-spacing:1px;text-shadow:0 0 10px rgba(0,255,204,.4);}
+.pitch-body{color:#e2e8f0;font-size:.85rem;line-height:1.5;opacity:.9;}
+.pitch-highlight{color:#00ffcc;font-size:.9rem;font-weight:700;border-left:3px solid #00ffcc;
+padding-left:12px;margin-top:5px;line-height:1.4;}
+.contact-section{z-index:2;display:flex;flex-direction:column;align-items:flex-start;gap:12px;width:100%;}
+.name{font-size:1.8rem;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:3px;
+text-shadow:0 0 15px rgba(0,255,204,.8),0 0 30px rgba(0,255,204,.4);
+margin-bottom:5px;width:100%;border-bottom:1px solid rgba(0,255,204,.3);padding-bottom:10px;}
+.info-group{display:flex;flex-direction:column;align-items:flex-start;gap:2px;}
+.label{font-size:.7rem;color:#00ffcc;text-transform:uppercase;letter-spacing:2px;font-weight:bold;opacity:.8;}
+.value{font-size:.95rem;color:#e2e8f0;font-weight:500;letter-spacing:1px;}
+.flip-card-back{background-color:var(--card);transform:rotateY(180deg);display:flex;flex-direction:column;
+justify-content:center;align-items:center;
+box-shadow:0 25px 50px rgba(0,0,0,.8),0 0 30px rgba(0,255,204,.15);border-radius:20px;}
+.back-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;}
+.neon-text{font-size:3.5rem;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:4px;
+text-shadow:0 0 5px #fff,0 0 10px #fff,0 0 20px #00ffcc,0 0 40px #00ffcc,0 0 80px #00ffcc;
+margin-bottom:25px;display:flex;align-items:center;justify-content:center;}
+.letter-g{position:relative;display:inline-block;z-index:1;}
+.robot-wrapper{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);
+width:90px;height:90px;pointer-events:none;z-index:-1;}
+.robot-svg{width:100%;height:100%;}
+.sketch-line{fill:none;stroke:#b0c4de;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.sketch-line-thick{fill:none;stroke:#8a9cb5;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+.neon-accent{fill:none;stroke:#00ffcc;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 0 5px #00ffcc);}
+.neon-fill{fill:#00ffcc;filter:drop-shadow(0 0 8px #00ffcc);}
+.welding-spark{fill:#00ffcc;filter:drop-shadow(0 0 8px #00ffcc);animation:weld-pulse .3s ease-in-out infinite alternate;}
+@keyframes weld-pulse{from{r:4;opacity:.7;}to{r:8;opacity:1;}}
+.falling-sparks{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:1px;height:1px;pointer-events:none;}
+.falling-sparks i{display:block;position:absolute;width:2px;height:2px;background:#00ffcc;border-radius:50%;
+box-shadow:0 0 4px #00ffcc;animation:spark-fall .7s ease-in infinite;}
+.falling-sparks i:nth-child(1){left:-12px;animation-delay:0s;}
+.falling-sparks i:nth-child(2){left:-4px;animation-delay:.18s;}
+.falling-sparks i:nth-child(3){left:4px;animation-delay:.07s;}
+.falling-sparks i:nth-child(4){left:12px;animation-delay:.28s;}
+@keyframes spark-fall{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(28px) scale(0);opacity:0;}}
+.sub-text-container{position:relative;display:flex;flex-direction:column;align-items:center;width:82%;}
+.neon-line{width:100%;height:2px;background:#00ffcc;box-shadow:0 0 5px #00ffcc,0 0 15px #00ffcc;
+margin-bottom:18px;position:relative;}
+.sub-text{color:#00ffcc;font-size:.95rem;letter-spacing:6px;text-transform:uppercase;
+font-weight:bold;opacity:.8;width:100%;text-align:center;}
+.small-robot-wrapper{position:absolute;top:-25px;left:50%;transform:translateX(-50%);
+width:38px;height:52px;pointer-events:none;z-index:1;}
+.small-robot-wrapper svg{width:100%;height:100%;}
+
+/* CONTENT LAYER */
+#content-layer{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:5;pointer-events:none;}
+.content-section-wrapper{position:absolute;top:100vh;width:100%;will-change:transform,opacity;opacity:0;pointer-events:none;}
+
+/* GRAB BAR */
+.grab-bar{width:66.66%;max-width:800px;height:6px;
+background:linear-gradient(90deg,transparent,var(--neon),transparent);
+margin:0 auto 50px;border-radius:5px;
+box-shadow:0 0 20px rgba(0,255,204,.8),0 0 40px rgba(0,255,204,.4);
+position:relative;display:flex;justify-content:space-between;}
+.grab-handle{width:60px;height:15px;background:var(--neon);border-radius:2px;
+box-shadow:0 0 15px var(--neon);transform:translateY(-4px);}
+.grab-handle.left{margin-left:-30px;}.grab-handle.right{margin-right:-30px;}
+
+/* SECTIONS */
+.section{padding:20px 20px 80px;max-width:1000px;width:100%;margin:0 auto;}
+.arsenal-header-wrap{margin-bottom:45px;display:inline-flex;flex-direction:column;align-items:flex-start;}
+.arsenal-header{font-size:2.5rem;color:var(--text);text-shadow:0 0 10px rgba(0,255,204,.3);
+text-transform:uppercase;letter-spacing:8px;display:flex;align-items:baseline;}
+.a-char{display:inline-block;opacity:0;transform:translateY(-18px);will-change:opacity,transform;}
+.a-char.spacer{opacity:1;transform:none;width:.35em;}
+.arsenal-underline{height:3px;width:0%;background:var(--neon);box-shadow:0 0 8px var(--neon);margin-top:8px;opacity:0;}
+.process-header-wrap{margin-bottom:45px;display:flex;flex-direction:column;align-items:center;width:100%;}
+.process-header{font-size:2.5rem;color:var(--text);text-shadow:0 0 10px rgba(0,255,204,.3);
+text-transform:uppercase;letter-spacing:8px;display:flex;align-items:baseline;justify-content:center;}
+.p-char{display:inline-block;opacity:0;transform:translateY(-18px);will-change:opacity,transform;}
+.p-char.spacer{opacity:1;transform:none;width:.35em;}
+.process-underline{height:3px;width:60%;background:var(--neon);box-shadow:0 0 8px var(--neon);
+margin:8px auto 0;opacity:0;transform:scaleX(0);transform-origin:center center;}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:30px;}
+.feature-box{padding:30px;border-radius:15px;border:1px solid rgba(0,255,204,.2);
+background:rgba(26,37,48,.8);box-shadow:0 10px 30px rgba(0,0,0,.5);
+will-change:opacity,transform;opacity:0;transition:border-color .3s,box-shadow .3s;}
+.feature-box:hover{border-color:rgba(0,255,204,.5);box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 20px rgba(0,255,204,.1);}
+.feature-icon{font-size:2.5rem;color:var(--neon);margin-bottom:20px;}
+.feature-title{font-size:1.2rem;margin-bottom:15px;color:#fff;text-transform:uppercase;letter-spacing:1px;}
+.timeline{position:relative;max-width:800px;margin:0 auto;}
+.timeline::after{content:'';position:absolute;width:2px;background:rgba(0,255,204,.3);
+top:0;bottom:0;left:50%;margin-left:-1px;}
+.timeline-item{padding:20px 40px;position:relative;background:inherit;width:50%;
+will-change:opacity,transform;opacity:0;}
+.timeline-item.left{left:0;}.timeline-item.right{left:50%;}
+.timeline-item::after{content:'';position:absolute;width:20px;height:20px;right:-10px;
+background:var(--bg);border:3px solid var(--neon);top:25px;border-radius:50%;
+z-index:1;box-shadow:0 0 10px var(--neon);}
+.timeline-item.right::after{left:-10px;}
+.timeline-content{padding:20px 30px;background:rgba(26,37,48,.8);border-radius:10px;border:1px solid rgba(0,255,204,.2);}
+.timeline-content h3{margin-bottom:10px;color:var(--neon);}
+.cta-section{text-align:center;padding:50px 20px 150px;
+background:linear-gradient(to top,rgba(0,255,204,.05),transparent);will-change:opacity,transform;}
+.cta-btn{display:inline-block;margin-top:30px;padding:15px 40px;background:transparent;
+color:var(--neon);border:2px solid var(--neon);border-radius:30px;font-size:1.1rem;font-weight:bold;
+text-transform:uppercase;letter-spacing:2px;cursor:pointer;text-decoration:none;
+box-shadow:0 0 15px rgba(0,255,204,.2);transition:all .3s;}
+.cta-btn:hover{background:rgba(0,255,204,.1);box-shadow:0 0 30px rgba(0,255,204,.4);transform:scale(1.05);}
+</style>
+</head>
+<body>
+
+<!-- VERSION SWITCHER -->
+<nav class="ver-nav">
+  <a href="index.html">⚙ V1 RAIL</a>
+  <span>🤖 V2 IK ARMS</span>
+  <a href="index3.html">🌍 V3 COSMIC</a>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════
+     BACKGROUND ROBOT SVG — IK articulated arms
+══════════════════════════════════════════════════════ -->
+<div class="bg-robot-container">
+<svg class="bg-robot-svg" viewBox="0 0 1200 950" preserveAspectRatio="xMidYMin meet" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <filter id="ng" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</defs>
+
+<!-- ─── CENTRAL ROBOT BODY (filtered group) ─── -->
+<g filter="url(#ng)">
+
+  <!-- Ceiling mount + chain -->
+  <line x1="600" y1="0" x2="600" y2="46" stroke="#8a9cb5" stroke-width="5" stroke-dasharray="10 6"/>
+  <circle cx="600" cy="24" r="24" fill="#05080c" stroke="#8a9cb5" stroke-width="4" stroke-dasharray="9 7"/>
+  <circle cx="600" cy="24" r="13" fill="#05080c" stroke="#b0c4de" stroke-width="2"/>
+  <circle cx="600" cy="24" r="5" class="neon-dot"/>
+
+  <!-- HEAD -->
+  <path d="M 553 48 L 647 48 L 658 57 L 659 96 L 647 104 L 553 104 L 542 96 L 542 57 Z"
+        fill="#05080c" stroke="#8a9cb5" stroke-width="3"/>
+  <path d="M 558 54 L 642 54 L 651 62 L 652 90 L 642 98 L 558 98 L 549 90 L 549 62 Z"
+        fill="#05080c" stroke="#b0c4de" stroke-width="1.5"/>
+  <!-- Visor -->
+  <rect x="557" y="60" width="86" height="26" rx="5" fill="#05080c" stroke="#00ffcc" stroke-width="1.5" opacity="0.45"/>
+  <rect x="596" y="60" width="4" height="26" rx="1" fill="none" stroke="#8a9cb5" stroke-width="1" opacity="0.4"/>
+  <!-- Eyes -->
+  <circle cx="581" cy="73" r="9" fill="#05080c" stroke="#b0c4de" stroke-width="1.5"/>
+  <circle cx="581" cy="73" r="6" class="neon-dot"/>
+  <circle cx="579" cy="71" r="2" fill="#fff" opacity=".85"/>
+  <circle cx="619" cy="73" r="9" fill="#05080c" stroke="#b0c4de" stroke-width="1.5"/>
+  <circle cx="619" cy="73" r="6" class="neon-dot"/>
+  <circle cx="617" cy="71" r="2" fill="#fff" opacity=".85"/>
+  <!-- Ear vents -->
+  <rect x="534" y="60" width="9" height="28" rx="3" fill="#05080c" stroke="#8a9cb5" stroke-width="1.5"/>
+  <line x1="535" y1="67" x2="542" y2="67" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="535" y1="72" x2="542" y2="72" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="535" y1="77" x2="542" y2="77" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="535" y1="82" x2="542" y2="82" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <rect x="657" y="60" width="9" height="28" rx="3" fill="#05080c" stroke="#8a9cb5" stroke-width="1.5"/>
+  <line x1="658" y1="67" x2="665" y2="67" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="658" y1="72" x2="665" y2="72" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="658" y1="77" x2="665" y2="77" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="658" y1="82" x2="665" y2="82" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <!-- Antenna -->
+  <line x1="600" y1="48" x2="600" y2="38" stroke="#8a9cb5" stroke-width="3"/>
+  <circle cx="600" cy="35" r="6" fill="#05080c" stroke="#b0c4de" stroke-width="1.5"/>
+  <circle cx="600" cy="35" r="3" class="neon-dot"/>
+  <line x1="580" y1="43" x2="574" y2="37" stroke="#b0c4de" stroke-width="1.5"/>
+  <circle cx="572" cy="35" r="3" fill="#05080c" stroke="#b0c4de" stroke-width="1"/>
+  <circle cx="572" cy="35" r="1.5" class="neon-dot"/>
+  <line x1="620" y1="43" x2="626" y2="37" stroke="#b0c4de" stroke-width="1.5"/>
+  <circle cx="628" cy="35" r="3" fill="#05080c" stroke="#b0c4de" stroke-width="1"/>
+  <circle cx="628" cy="35" r="1.5" class="neon-dot"/>
+
+  <!-- NECK -->
+  <rect x="579" y="104" width="42" height="20" rx="4" fill="#05080c" stroke="#8a9cb5" stroke-width="2"/>
+  <line x1="587" y1="104" x2="587" y2="124" stroke="#b0c4de" stroke-width="1" opacity=".6"/>
+  <line x1="600" y1="104" x2="600" y2="124" stroke="#b0c4de" stroke-width="1" opacity=".6"/>
+  <line x1="613" y1="104" x2="613" y2="124" stroke="#b0c4de" stroke-width="1" opacity=".6"/>
+
+  <!-- TORSO -->
+  <polygon points="526,124 674,124 720,315 480,315" fill="#05080c" stroke="#8a9cb5" stroke-width="3.5"/>
+  <polygon points="541,136 659,136 702,308 498,308" fill="#05080c" stroke="#b0c4de" stroke-width="1.5"/>
+  <line x1="541" y1="172" x2="659" y2="172" stroke="#b0c4de" stroke-width="1.5"/>
+  <line x1="526" y1="256" x2="674" y2="256" stroke="#b0c4de" stroke-width="1.5" stroke-dasharray="6 4" opacity=".7"/>
+  <!-- Energy core -->
+  <circle cx="600" cy="210" r="36" fill="#05080c" stroke="#b0c4de" stroke-width="1.5"/>
+  <circle cx="600" cy="210" r="22" fill="#05080c" stroke="#b0c4de" stroke-width="1" stroke-dasharray="5 3"/>
+  <circle cx="600" cy="210" r="13" fill="#00ffcc" style="filter:drop-shadow(0 0 18px #00ffcc)"/>
+  <circle cx="600" cy="210" r="5" fill="#fff"/>
+  <!-- Chest badge -->
+  <path d="M 590 190 L 600 180 L 596 185 L 610 180 L 600 190 L 604 186 Z"
+        stroke="#00ffcc" stroke-width="1.5" fill="none" style="filter:drop-shadow(0 0 5px #00ffcc)"/>
+  <!-- Hip belt -->
+  <rect x="498" y="295" width="204" height="16" rx="5" fill="#05080c" stroke="#b0c4de" stroke-width="1.5"/>
+  <rect x="572" y="295" width="56" height="16" rx="4" fill="none" stroke="#00ffcc" stroke-width="1.5" opacity=".5"/>
+
+  <!-- LEFT SHOULDER PLATE -->
+  <path d="M 526 124 L 400 124 L 377 166 L 383 215 L 432 230 L 526 220 L 532 168 Z"
+        fill="#05080c" stroke="#8a9cb5" stroke-width="2.5"/>
+  <line x1="400" y1="136" x2="400" y2="210" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="415" y1="126" x2="415" y2="218" stroke="#b0c4de" stroke-width="1" opacity=".5"/>
+  <circle cx="430" cy="210" r="22" fill="#05080c" stroke="#b0c4de" stroke-width="3"/>
+  <circle cx="430" cy="210" r="11" class="neon-dot"/>
+
+  <!-- RIGHT SHOULDER PLATE -->
+  <path d="M 674 124 L 800 124 L 823 166 L 817 215 L 768 230 L 674 220 L 668 168 Z"
+        fill="#05080c" stroke="#8a9cb5" stroke-width="2.5"/>
+  <line x1="800" y1="136" x2="800" y2="210" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
+  <line x1="785" y1="126" x2="785" y2="218" stroke="#b0c4de" stroke-width="1" opacity=".5"/>
+  <circle cx="770" cy="210" r="22" fill="#05080c" stroke="#b0c4de" stroke-width="3"/>
+  <circle cx="770" cy="210" r="11" class="neon-dot"/>
+
+</g><!-- end body filter group -->
+
+<!-- ════════════════════════════════════════════════
+     ARMS — dynamically updated by updateArms()
+════════════════════════════════════════════════ -->
+
+<!-- LEFT ARM -->
+<line id="l-upper"   x1="430" y1="210" x2="248" y2="334" class="arm-seg"/>
+<line id="l-upper-n" x1="430" y1="210" x2="248" y2="334" class="arm-neon"/>
+<circle id="l-elbow"     cx="248" cy="334" r="16" class="joint"/>
+<circle id="l-elbow-dot" cx="248" cy="334" r="7"  class="joint-dot"/>
+<line id="l-lower"   x1="248" y1="334" x2="80" y2="476" class="arm-seg"/>
+<line id="l-lower-n" x1="248" y1="334" x2="80" y2="476" class="arm-neon"/>
+<rect id="l-wrist" x="58" y="465" width="44" height="22" rx="6" class="arm-wrist"/>
+<circle id="l-wrist-dot" cx="80" cy="476" r="5" class="neon-dot"/>
+<g id="l-claw-L" transform="translate(68,487)">
+  <path d="M 0 0 L -2 38 L -8 60 L -5 70" class="claw-line"/>
+  <path d="M 0 0 L -2 22" class="claw-neon"/>
+  <circle cx="-6" cy="62" r="4" class="neon-dot"/>
+</g>
+<g id="l-claw-R" transform="translate(92,487)">
+  <path d="M 0 0 L 2 38 L 8 60 L 5 70" class="claw-line"/>
+  <path d="M 0 0 L 2 22" class="claw-neon"/>
+  <circle cx="6" cy="62" r="4" class="neon-dot"/>
+</g>
+
+<!-- RIGHT ARM -->
+<line id="r-upper"   x1="770" y1="210" x2="952" y2="334" class="arm-seg"/>
+<line id="r-upper-n" x1="770" y1="210" x2="952" y2="334" class="arm-neon"/>
+<circle id="r-elbow"     cx="952" cy="334" r="16" class="joint"/>
+<circle id="r-elbow-dot" cx="952" cy="334" r="7"  class="joint-dot"/>
+<line id="r-lower"   x1="952" y1="334" x2="1120" y2="476" class="arm-seg"/>
+<line id="r-lower-n" x1="952" y1="334" x2="1120" y2="476" class="arm-neon"/>
+<rect id="r-wrist" x="1098" y="465" width="44" height="22" rx="6" class="arm-wrist"/>
+<circle id="r-wrist-dot" cx="1120" cy="476" r="5" class="neon-dot"/>
+<g id="r-claw-L" transform="translate(1108,487)">
+  <path d="M 0 0 L -2 38 L -8 60 L -5 70" class="claw-line"/>
+  <path d="M 0 0 L -2 22" class="claw-neon"/>
+  <circle cx="-6" cy="62" r="4" class="neon-dot"/>
+</g>
+<g id="r-claw-R" transform="translate(1132,487)">
+  <path d="M 0 0 L 2 38 L 8 60 L 5 70" class="claw-line"/>
+  <path d="M 0 0 L 2 22" class="claw-neon"/>
+  <circle cx="6" cy="62" r="4" class="neon-dot"/>
+</g>
+
+<!-- ─── SCROLL LINE — single clean line connecting wrists (ghost line fixed) ─── -->
+<!-- Group y-translated to wrist level; x1/x2 updated dynamically by updateArms() -->
+<g id="scroll-line-grp" transform="translate(0,476)">
+  <line id="sl-main"  x1="80"  y1="0" x2="1120" y2="0"
+        stroke="#00ffcc" stroke-width="2.5" stroke-linecap="round"
+        style="filter:drop-shadow(0 0 10px #00ffcc) drop-shadow(0 0 24px rgba(0,255,204,0.35))"/>
+  <rect id="sl-left"  x="50"  y="-7" width="60" height="14" rx="3"
+        fill="#00ffcc" style="filter:drop-shadow(0 0 10px #00ffcc)" opacity=".9"/>
+  <rect id="sl-right" x="1090" y="-7" width="60" height="14" rx="3"
+        fill="#00ffcc" style="filter:drop-shadow(0 0 10px #00ffcc)" opacity=".9"/>
+</g>
+
+</svg>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     HERO CARD
+══════════════════════════════════════════════════ -->
+<div class="hero-wrapper">
+  <section class="hero-section" id="hero-card">
+    <div class="flip-card" id="flip-card">
+      <div class="flip-card-inner">
+
+        <!-- FRONT -->
+        <div class="flip-card-front">
+          <div class="pitch-section">
+            <div class="pitch-headline">Got a vision, but blocked by development costs?</div>
+            <div class="pitch-body">Skip the $150/hr agency fees and heavy retainers. I leverage cutting-edge AI to build smarter, faster, and leaner.</div>
+            <div class="pitch-highlight">Zero risk. Pay a flat $1,000 only when I deliver your working MVP.</div>
+          </div>
+          <div class="contact-section">
+            <div class="name">ardy W</div>
+            <div class="info-group"><div class="label">Email</div><div class="value">unleashbuildwithai@gmail.com</div></div>
+            <div class="info-group"><div class="label">Phone</div><div class="value">832-387-7878</div></div>
+          </div>
+        </div>
+
+        <!-- BACK -->
+        <div class="flip-card-back">
+          <div class="back-content">
+            <div class="neon-text">
+              <span class="letter-g">G
+                <div class="robot-wrapper">
+                  <svg class="robot-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <filter id="pt2" x="-10%" y="-10%" width="120%" height="120%">
+                        <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="4" result="n"/>
+                        <feDisplacementMap in="SourceGraphic" in2="n" scale="1.5" xChannelSelector="R" yChannelSelector="G"/>
+                      </filter>
+                    </defs>
+                    <line x1="22" y1="133" x2="118" y2="133" class="sketch-line"/>
+                    <rect x="36" y="127" width="20" height="7" rx="2" class="sketch-line-thick"/>
+                    <rect x="84" y="127" width="20" height="7" rx="2" class="sketch-line-thick"/>
+                    <line x1="52" y1="97" x2="46" y2="114" class="sketch-line-thick" stroke-width="5"/>
+                    <circle cx="46" cy="114" r="6" class="sketch-line"/>
+                    <circle cx="46" cy="114" r="3" class="sketch-line-thick"/>
+                    <circle cx="46" cy="114" r="1.5" class="neon-fill" opacity="0.6"/>
+                    <line x1="46" y1="114" x2="45" y2="127" class="sketch-line-thick" stroke-width="4"/>
+                    <line x1="88" y1="97" x2="94" y2="114" class="sketch-line-thick" stroke-width="5"/>
+                    <circle cx="94" cy="114" r="6" class="sketch-line"/>
+                    <circle cx="94" cy="114" r="3" class="sketch-line-thick"/>
+                    <circle cx="94" cy="114" r="1.5" class="neon-fill" opacity="0.6"/>
+                    <line x1="94" y1="114" x2="95" y2="127" class="sketch-line-thick" stroke-width="4"/>
+                    <polygon points="42,50 100,50 106,97 36,97" class="sketch-line-thick"/>
+                    <polygon points="49,56 93,56 98,91 44,91" class="sketch-line"/>
+                    <circle cx="70" cy="61" r="9" class="sketch-line"/>
+                    <circle cx="70" cy="61" r="6" class="sketch-line" stroke-dasharray="3,2"/>
+                    <circle cx="70" cy="61" r="3.5" class="neon-fill" opacity="0.85"/>
+                    <circle cx="70" cy="61" r="1.5" fill="#ffffff"/>
+                    <rect x="48" y="87" width="44" height="6" rx="2" class="sketch-line"/>
+                    <path d="M 42 52 L 24 52 L 20 65 L 24 76 L 42 76 L 44 68 Z" class="sketch-line-thick"/>
+                    <circle cx="22" cy="74" r="5" class="sketch-line"/>
+                    <circle cx="22" cy="74" r="2.5" class="neon-fill" opacity="0.5"/>
+                    <path d="M 98 52 L 116 52 L 120 65 L 116 76 L 98 76 L 96 68 Z" class="sketch-line-thick"/>
+                    <circle cx="118" cy="74" r="5" class="sketch-line"/>
+                    <circle cx="118" cy="74" r="2.5" class="neon-fill" opacity="0.5"/>
+                    <line x1="22" y1="74" x2="14" y2="56" class="sketch-line-thick" stroke-width="5"/>
+                    <circle cx="14" cy="56" r="6" class="sketch-line"/>
+                    <circle cx="14" cy="56" r="3" class="sketch-line-thick"/>
+                    <line x1="14" y1="56" x2="8" y2="36" class="sketch-line-thick" stroke-width="4"/>
+                    <circle cx="8" cy="36" r="4" class="sketch-line"/>
+                    <circle cx="8" cy="36" r="2" class="neon-fill" opacity="0.65"/>
+                    <rect x="4" y="28" width="7" height="11" rx="2" class="sketch-line" transform="rotate(10,7,33)"/>
+                    <line x1="7" y1="26" x2="8" y2="18" class="neon-accent" stroke-width="2.5"/>
+                    <circle cx="8" cy="16" r="5" class="welding-spark"/>
+                    <line x1="118" y1="74" x2="128" y2="88" class="sketch-line-thick" stroke-width="5"/>
+                    <circle cx="128" cy="88" r="6" class="sketch-line"/>
+                    <line x1="128" y1="88" x2="134" y2="76" class="sketch-line-thick" stroke-width="4"/>
+                    <rect x="128" y="66" width="14" height="11" rx="2" class="sketch-line"/>
+                    <rect x="60" y="42" width="20" height="10" rx="3" class="sketch-line-thick"/>
+                    <path d="M 44 14 L 92 14 L 101 22 L 102 40 L 94 46 L 42 46 L 34 40 L 34 22 Z" class="sketch-line-thick"/>
+                    <path d="M 49 17 L 87 17 L 95 24 L 96 38 L 89 43 L 47 43 L 41 38 L 40 24 Z" class="sketch-line"/>
+                    <line x1="44" y1="14" x2="92" y2="14" class="neon-accent" stroke-width="2" opacity="0.55"/>
+                    <rect x="42" y="20" width="52" height="17" rx="4" class="sketch-line-thick"/>
+                    <rect x="44" y="22" width="48" height="13" rx="3" class="neon-accent" opacity="0.35"/>
+                    <circle cx="57" cy="29" r="5" class="sketch-line"/>
+                    <circle cx="57" cy="29" r="3.5" class="neon-fill"/>
+                    <circle cx="77" cy="29" r="5" class="sketch-line"/>
+                    <circle cx="77" cy="29" r="3.5" class="neon-fill"/>
+                    <line x1="68" y1="6" x2="68" y2="4" class="sketch-line-thick" stroke-width="3"/>
+                    <circle cx="68" cy="4" r="4" class="sketch-line"/>
+                    <circle cx="68" cy="4" r="2.5" class="neon-fill"/>
+                  </svg>
+                  <div class="falling-sparks"><i></i><i></i><i></i><i></i></div>
+                </div>
+              </span>enius
+            </div>
+            <div class="sub-text-container">
+              <div class="neon-line"></div>
+              <div class="small-robot-wrapper">
+                <svg viewBox="0 0 50 60" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <filter id="pts2" x="-20%" y="-20%" width="140%" height="140%">
+                      <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="3" result="n"/>
+                      <feDisplacementMap in="SourceGraphic" in2="n" scale="1" xChannelSelector="R" yChannelSelector="G"/>
+                    </filter>
+                  </defs>
+                  <style>
+                    .sl3{fill:none;stroke:#b0c4de;stroke-width:1;stroke-linecap:round;filter:url(#pts2)}
+                    .slt3{fill:none;stroke:#8a9cb5;stroke-width:1.5;filter:url(#pts2)}
+                    .nc3{fill:#00ffcc;filter:drop-shadow(0 0 3px #00ffcc)}
+                  </style>
+                  <line x1="25" y1="4" x2="25" y2="1" class="slt3"/>
+                  <circle cx="25" cy="1" r="1.5" class="nc3"/>
+                  <rect x="14" y="4" width="22" height="15" rx="4" class="slt3"/>
+                  <rect x="17" y="7" width="16" height="9" rx="2" class="sl3"/>
+                  <path d="M 18 12 Q 21 9 23 12" fill="none" stroke="#00ffcc" stroke-width="1.5"/>
+                  <path d="M 27 12 Q 30 9 32 12" fill="none" stroke="#00ffcc" stroke-width="1.5"/>
+                  <rect x="13" y="19" width="24" height="9" rx="3" class="slt3"/>
+                  <rect x="17" y="21" width="16" height="5" rx="2" class="sl3"/>
+                  <circle cx="25" cy="24" r="1.5" class="nc3"/>
+                  <path d="M 13 22 Q 8 24 7 27" class="slt3"/>
+                  <circle cx="7" cy="27" r="1.5" class="nc3"/>
+                  <path d="M 37 22 Q 42 24 43 27" class="slt3"/>
+                  <circle cx="43" cy="27" r="1.5" class="nc3"/>
+                  <line x1="17" y1="28" x2="33" y2="28" class="sl3" opacity="0.5"/>
+                  <g>
+                    <line x1="19" y1="28" x2="17" y2="40" class="slt3">
+                      <animateTransform attributeName="transform" type="rotate" values="-20 19 28; 24 19 28; -20 19 28" dur="1.4s" repeatCount="indefinite"/>
+                    </line>
+                    <circle cx="17" cy="40" r="1.8" class="sl3">
+                      <animateTransform attributeName="transform" type="rotate" values="-20 19 28; 24 19 28; -20 19 28" dur="1.4s" repeatCount="indefinite"/>
+                    </circle>
+                    <line x1="17" y1="40" x2="13" y2="50" class="slt3">
+                      <animateTransform attributeName="transform" type="rotate" values="-20 19 28; 24 19 28; -20 19 28" dur="1.4s" repeatCount="indefinite"/>
+                    </line>
+                    <line x1="10" y1="50" x2="16" y2="50" class="slt3">
+                      <animateTransform attributeName="transform" type="rotate" values="-20 19 28; 24 19 28; -20 19 28" dur="1.4s" repeatCount="indefinite"/>
+                    </line>
+                  </g>
+                  <g>
+                    <line x1="31" y1="28" x2="33" y2="40" class="slt3">
+                      <animateTransform attributeName="transform" type="rotate" values="24 31 28; -20 31 28; 24 31 28" dur="1.4s" repeatCount="indefinite"/>
+                    </line>
+                    <circle cx="33" cy="40" r="1.8" class="sl3">
+                      <animateTransform attributeName="transform" type="rotate" values="24 31 28; -20 31 28; 24 31 28" dur="1.4s" repeatCount="indefinite"/>
+                    </circle>
+                    <line x1="33" y1="40" x2="37" y2="50" class="slt3">
+                      <animateTransform attributeName="transform" type="rotate" values="24 31 28; -20 31 28; 24 31 28" dur="1.4s" repeatCount="indefinite"/>
+                    </line>
+                    <line x1="34" y1="50" x2="40" y2="50" class="slt3">
+                      <animateTransform attributeName="transform" type="rotate" values="24 31 28; -20 31 28; 24 31 28" dur="1.4s" repeatCount="indefinite"/>
+                    </line>
+                  </g>
+                </svg>
+              </div>
+              <div class="sub-text">Unleashed</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="scroll-indicator" id="scroll-prompt">Scroll to Initiate Build Sequence</div>
+  </section>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     CONTENT LAYER
+══════════════════════════════════════════════════ -->
+<div id="content-layer">
+
+  <!-- SECTION 1: THE ARSENAL -->
+  <div class="content-section-wrapper" id="section-1">
+    <div class="grab-bar"><div class="grab-handle left"></div><div class="grab-handle right"></div></div>
+    <section class="section">
+      <div class="arsenal-header-wrap">
+        <h2 class="arsenal-header" id="arsenal-header">
+          <span class="a-char" data-i="0">T</span><span class="a-char" data-i="1">H</span><span class="a-char" data-i="2">E</span><span class="a-char spacer">&nbsp;</span><span class="a-char" data-i="3">A</span><span class="a-char" data-i="4">R</span><span class="a-char" data-i="5">S</span><span class="a-char" data-i="6">E</span><span class="a-char" data-i="7">N</span><span class="a-char" data-i="8">A</span><span class="a-char" data-i="9">L</span>
+        </h2>
+        <div class="arsenal-underline" id="arsenal-underline"></div>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-box" id="box1">
+          <div class="feature-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <h3 class="feature-title">AI-Powered Velocity</h3>
+          <p>While traditional devs spend weeks writing boilerplate, I use AI to lay the foundation in hours — straight to the custom logic that makes your idea unique.</p>
+        </div>
+        <div class="feature-box" id="box2">
+          <div class="feature-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
+          <h3 class="feature-title">Full-Stack Architecture</h3>
+          <p>From database to sleek frontend. I build scalable, modern applications designed to handle real users from day one.</p>
+        </div>
+        <div class="feature-box" id="box3">
+          <div class="feature-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <h3 class="feature-title">Zero Risk Model</h3>
+          <p>You shouldn't pay for promises. I deliver a functional MVP before you pay the flat $1,000 fee. If I don't build it, you don't pay.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- SECTION 2: THE PROCESS -->
+  <div class="content-section-wrapper" id="section-2">
+    <div class="grab-bar"><div class="grab-handle left"></div><div class="grab-handle right"></div></div>
+    <section class="section">
+      <div class="process-header-wrap">
+        <h2 class="process-header" id="process-header">
+          <span class="p-char" data-i="0">T</span><span class="p-char" data-i="1">H</span><span class="p-char" data-i="2">E</span><span class="p-char spacer">&nbsp;</span><span class="p-char" data-i="3">P</span><span class="p-char" data-i="4">R</span><span class="p-char" data-i="5">O</span><span class="p-char" data-i="6">C</span><span class="p-char" data-i="7">E</span><span class="p-char" data-i="8">S</span><span class="p-char" data-i="9">S</span>
+        </h2>
+        <div class="process-underline" id="process-underline"></div>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item left"  id="time1"><div class="timeline-content"><h3>01. The Blueprint</h3><p>We jump on a quick call. You tell me your vision, the core features, and the problem it solves. No tech jargon required.</p></div></div>
+        <div class="timeline-item right" id="time2"><div class="timeline-content"><h3>02. The Forge</h3><p>I go dark and get to work. Using AI coding agents and modern frameworks, I build the core architecture at record speed.</p></div></div>
+        <div class="timeline-item left"  id="time3"><div class="timeline-content"><h3>03. The Reveal</h3><p>I present the working MVP. Click it, test it, break it. Only when you see the vision realized do you pay the flat fee.</p></div></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- SECTION 3: CTA -->
+  <div class="content-section-wrapper" id="section-3">
+    <div class="grab-bar"><div class="grab-handle left"></div><div class="grab-handle right"></div></div>
+    <section class="cta-section" id="cta">
+      <h2 style="font-size:2rem;margin-bottom:20px;text-shadow:0 0 10px rgba(0,255,204,.5);text-transform:uppercase;letter-spacing:2px;">Ready to Unleash Your Idea?</h2>
+      <p>Stop waiting for the perfect developer. Build it now.</p>
+      <a href="mailto:unleashbuildwithai@gmail.com" class="cta-btn">Initiate Project</a>
+    </section>
+  </div>
+
+</div><!-- end #content-layer -->
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// ══════════════════════════════════════════════════════════════════
+// PAGE SETUP
+// ══════════════════════════════════════════════════════════════════
+const VH      = window.innerHeight;
+const TOTAL_H = VH * 7;
+document.body.style.height = TOTAL_H + 'px';
+const MAX_S     = TOTAL_H - VH;
+const PULL_DIST = VH - 130;
+
+// ══════════════════════════════════════════════════════════════════
+// ARM GEOMETRY
+// Left shoulder  (430, 210)  — arm extends LEFT  (dir = -1)
+// Right shoulder (770, 210)  — arm extends RIGHT (dir = +1)
+// Each segment = ARM_L = 220 SVG units
+// sa = shoulder angle from horizontal (radians)
+// eb = additional bend at elbow (radians)
+// ══════════════════════════════════════════════════════════════════
+const LS_X = 430, LS_Y = 210;
+const RS_X = 770, RS_Y = 210;
+const ARM_L = 220;
+
+// ─── ANGLE STATES ───────────────────────────────────────────────
+const SA_HOLD = 0.60;   // initial "cradling card" position — wrists ~y476
+const EB_HOLD = 0.10;
+const SA_IDLE = 0.72;   // relaxed idle
+const EB_IDLE = 0.28;
+const SA_DOWN = 1.06;   // fully extended downward to grab bar
+const EB_DOWN = 0.06;
+const SA_UP   = 0.40;   // raised after pull
+const EB_UP   = 0.82;   // deep elbow sag on raise (flag-tuck)
+
+// card-slap gesture for right arm (reaches inward toward card)
+const SA_SLAP = 0.90;
+const EB_SLAP = 0.04;
+
+// ─── CLAW ANGLES ────────────────────────────────────────────────
+const CL_OPEN =  12;
+const CR_OPEN = -12;
+const CL_GRIP = -16;
+const CR_GRIP = -41;
+
+// ══════════════════════════════════════════════════════════════════
+// INDEPENDENT ARM PROXIES — LP = left, RP = right
+// ══════════════════════════════════════════════════════════════════
+const LP = { sa: SA_HOLD, eb: EB_HOLD, clL: 0, clR: 0 };
+const RP = { sa: SA_HOLD, eb: EB_HOLD, clL: 0, clR: 0 };
+
+// ─── Compute elbow + wrist positions from shoulder ───────────────
+function armPts(sx, sy, dir, sa, eb) {
+  const ex = sx + dir * ARM_L * Math.cos(sa);
+  const ey = sy +       ARM_L * Math.sin(sa);
+  const wx = ex + dir * ARM_L * Math.cos(sa + eb);
+  const wy = ey +       ARM_L * Math.sin(sa + eb);
+  return { ex, ey, wx, wy };
+}
+
+// ─── SVG element refs ────────────────────────────────────────────
+const q   = id => document.getElementById(id);
+const lU  = q('l-upper'),   lUN = q('l-upper-n');
+const lE  = q('l-elbow'),   lED = q('l-elbow-dot');
+const lLo = q('l-lower'),   lLN = q('l-lower-n');
+const lW  = q('l-wrist'),   lWD = q('l-wrist-dot');
+const lCL = q('l-claw-L'),  lCR = q('l-claw-R');
+const rU  = q('r-upper'),   rUN = q('r-upper-n');
+const rE  = q('r-elbow'),   rED = q('r-elbow-dot');
+const rLo = q('r-lower'),   rLN = q('r-lower-n');
+const rW  = q('r-wrist'),   rWD = q('r-wrist-dot');
+const rCL = q('r-claw-L'),  rCR = q('r-claw-R');
+
+const scrollLineGrp = q('scroll-line-grp');
+const slMain        = q('sl-main');
+const slLeft        = q('sl-left');
+const slRight       = q('sl-right');
+
+const heroCard   = q('hero-card');
+const scrollPmt  = q('scroll-prompt');
+const section1   = q('section-1');
+const section2   = q('section-2');
+const section3   = q('section-3');
+const arsenalChs = Array.from(document.querySelectorAll('.a-char:not(.spacer)'));
+const arsenalUL  = q('arsenal-underline');
+const processChs = Array.from(document.querySelectorAll('.p-char:not(.spacer)'));
+const processUL  = q('process-underline');
+const box1 = q('box1'), box2 = q('box2'), box3 = q('box3');
+const time1 = q('time1'), time2 = q('time2'), time3 = q('time3');
+const cta   = q('cta');
+
+// ─── SVG attribute helpers ────────────────────────────────────────
+function ln(el, x1, y1, x2, y2) {
+  el.setAttribute('x1', x1); el.setAttribute('y1', y1);
+  el.setAttribute('x2', x2); el.setAttribute('y2', y2);
+}
+function cx(el, x, y) {
+  el.setAttribute('cx', x); el.setAttribute('cy', y);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// MAIN UPDATE — called every frame via GSAP onUpdate
+// ══════════════════════════════════════════════════════════════════
+function updateArms() {
+  const L = armPts(LS_X, LS_Y, -1, LP.sa, LP.eb);
+  const R = armPts(RS_X, RS_Y, +1, RP.sa, RP.eb);
+
+  // ── Left arm ──
+  ln(lU,  LS_X, LS_Y, L.ex, L.ey);
+  ln(lUN, LS_X, LS_Y, L.ex, L.ey);
+  cx(lE,  L.ex, L.ey);
+  cx(lED, L.ex, L.ey);
+  ln(lLo, L.ex, L.ey, L.wx, L.wy);
+  ln(lLN, L.ex, L.ey, L.wx, L.wy);
+  lW.setAttribute('x', L.wx - 22);
+  lW.setAttribute('y', L.wy - 11);
+  cx(lWD, L.wx, L.wy);
+  lCL.setAttribute('transform', `translate(${L.wx - 12},${L.wy + 11}) rotate(${LP.clL})`);
+  lCR.setAttribute('transform', `translate(${L.wx + 12},${L.wy + 11}) rotate(${LP.clR})`);
+
+  // ── Right arm ──
+  ln(rU,  RS_X, RS_Y, R.ex, R.ey);
+  ln(rUN, RS_X, RS_Y, R.ex, R.ey);
+  cx(rE,  R.ex, R.ey);
+  cx(rED, R.ex, R.ey);
+  ln(rLo, R.ex, R.ey, R.wx, R.wy);
+  ln(rLN, R.ex, R.ey, R.wx, R.wy);
+  rW.setAttribute('x', R.wx - 22);
+  rW.setAttribute('y', R.wy - 11);
+  cx(rWD, R.wx, R.wy);
+  rCL.setAttribute('transform', `translate(${R.wx - 12},${R.wy + 11}) rotate(${RP.clL})`);
+  rCR.setAttribute('transform', `translate(${R.wx + 12},${R.wy + 11}) rotate(${RP.clR})`);
+
+  // ── Scroll line — connects both wrists, tracks average Y ──
+  const avgWY = (L.wy + R.wy) / 2;
+  scrollLineGrp.setAttribute('transform', `translate(0,${avgWY})`);
+  slMain.setAttribute('x1', L.wx);
+  slMain.setAttribute('x2', R.wx);
+  slLeft.setAttribute('x',  L.wx - 30);
+  slRight.setAttribute('x', R.wx - 30);
+}
+
+// Initial draw
+updateArms();
+
+// ══════════════════════════════════════════════════════════════════
+// CARD HOVER — right wrist slaps toward card to spin it
+// ══════════════════════════════════════════════════════════════════
+const flipCard  = q('flip-card');
+let hoverTween  = null;
+let hoverActive = false;
+
+flipCard.addEventListener('mouseenter', () => {
+  if (scrollY > 80) return;  // only when card is on screen
+  hoverActive = true;
+  if (hoverTween) hoverTween.kill();
+  // Wrist slaps forward (sa increases = arm more vertical, wrist comes inward/down)
+  hoverTween = gsap.timeline()
+    .to(RP, { duration: 0.12, sa: SA_SLAP, eb: EB_SLAP,
+              clL: CL_OPEN, clR: CR_OPEN, onUpdate: updateArms, ease: 'power2.out' })
+    .to(RP, { duration: 0.10, sa: SA_HOLD, eb: EB_HOLD,
+              clL: 0, clR: 0, onUpdate: updateArms, ease: 'power1.in' });
+});
+
+flipCard.addEventListener('mouseleave', () => {
+  if (!hoverActive) return;
+  hoverActive = false;
+  if (hoverTween) hoverTween.kill();
+  hoverTween = gsap.to(RP, {
+    duration: 0.3, sa: SA_HOLD, eb: EB_HOLD,
+    clL: 0, clR: 0, onUpdate: updateArms, ease: 'power2.out'
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════
+// INITIAL GSAP STATES
+// ══════════════════════════════════════════════════════════════════
+gsap.set(heroCard,  { opacity: 1, scale: 1, y: 0, transformOrigin: 'center center' });
+gsap.set(scrollPmt, { opacity: 1 });
+gsap.set([section1, section2, section3], { opacity: 0, y: 0 });
+gsap.set(arsenalChs,  { opacity: 0, y: -18 });
+gsap.set(arsenalUL,   { opacity: 0, width: '0%' });
+gsap.set(processChs,  { opacity: 0, y: -18 });
+gsap.set(processUL,   { opacity: 0, scaleX: 0 });
+gsap.set([box1, box2, box3], { opacity: 0, y: 28 });
+gsap.set(time1, { opacity: 0, x: -65, scale: 0.85 });
+gsap.set(time2, { opacity: 0, x:  65, scale: 0.85 });
+gsap.set(time3, { opacity: 0, x: -65, scale: 0.85 });
+gsap.set(cta,   { opacity: 0, y: 45 });
+
+// ══════════════════════════════════════════════════════════════════
+// MASTER SCROLL TIMELINE
+// ══════════════════════════════════════════════════════════════════
+const tl = gsap.timeline({
+  scrollTrigger: {
+    trigger: 'body',
+    start:   'top top',
+    end:     `+=${MAX_S}`,
+    scrub:   true,
+    onUpdate: () => { if (scrollY > 80) { hoverActive = false; } }
+  },
+  defaults: { ease: 'none' },
+});
+
+// ──────────────────────────────────────────────────────────────────
+// HERO FADE (0.00 – 0.09)
+// ──────────────────────────────────────────────────────────────────
+tl.to(heroCard,  { duration: 0.09, opacity: 0, scale: 0.75, y: MAX_S * 0.09 * 0.35 }, 0);
+tl.to(scrollPmt, { duration: 0.05, opacity: 0 }, 0);
+
+// ══════════════════════════════════════════════════════════════════
+// ═══ ARM CYCLE 1 — ARSENAL  (ASYMMETRIC)  ════════════════════════
+//
+//  Phase A (0.00–0.06):  RIGHT arm reaches toward card (slap/grab gesture)
+//                        LEFT arm begins descending toward bar
+//
+//  Phase B (0.06–0.11):  RIGHT arm releases card, pulls back to idle
+//                        LEFT arm finishes descent (sa→SA_DOWN, eb→EB_DOWN)
+//
+//  Phase C (0.11–0.15):  LEFT arm grips bar  (claws close)
+//                        Section 1 fades in
+//                        RIGHT arm starts descending to bar
+//
+//  Phase D (0.15–0.22):  LEFT arm PULLS UP — wrist leads, elbow folds, shoulder rises
+//                        Section 1 rises simultaneously
+//                        RIGHT arm reaches grab position mid-pull
+//
+//  Phase E (0.20–0.22):  RIGHT arm grips bar, joins the pull
+//
+//  Phase F (0.23–0.27):  BOTH release, return to idle
+// ══════════════════════════════════════════════════════════════════
+
+// Phase A — right reaches toward card, left begins descent
+tl.to(RP, { duration: 0.06, sa: SA_SLAP, eb: EB_SLAP,
+            clL: CL_OPEN, clR: CR_OPEN, onUpdate: updateArms }, 0.00);
+tl.to(LP, { duration: 0.08, sa: SA_DOWN, eb: EB_DOWN, onUpdate: updateArms }, 0.03);
+
+// Phase B — right pulls back as card fades
+tl.to(RP, { duration: 0.06, sa: SA_IDLE, eb: EB_IDLE,
+            clL: 0, clR: 0, onUpdate: updateArms }, 0.06);
+
+// Phase C — left grips, section appears, right starts descent
+tl.to(LP, { duration: 0.04, clL: CL_GRIP, clR: CR_GRIP, onUpdate: updateArms }, 0.11);
+tl.to(section1,   { duration: 0.06, opacity: 1 }, 0.11);
+tl.to(arsenalChs, { duration: 0.008, opacity: 1, y: 0, stagger: 0.01 }, 0.11);
+tl.to(arsenalUL,  { duration: 0.04, opacity: 1, width: '100%' }, 0.12);
+// Right arm begins descending toward bar
+tl.to(RP, { duration: 0.09, sa: SA_DOWN, eb: EB_DOWN, onUpdate: updateArms }, 0.11);
+
+// Phase D — left arm PULLS UP (wrist/forearm first, then shoulder, elbow sags last)
+// Wrist leads: elbow begins bending immediately, shoulder follows slightly after
+tl.to(LP, { duration: 0.04, sa: SA_UP,  onUpdate: updateArms }, 0.15);   // shoulder rises
+tl.to(LP, { duration: 0.05, eb: EB_UP,  onUpdate: updateArms }, 0.16);   // elbow folds behind
+tl.to(section1, { duration: 0.08, y: -PULL_DIST }, 0.15);
+
+// Phase E — right arm grips mid-pull and joins
+tl.to(RP, { duration: 0.02, clL: CL_GRIP, clR: CR_GRIP, onUpdate: updateArms }, 0.20);
+tl.to(RP, { duration: 0.03, sa: SA_UP,  onUpdate: updateArms }, 0.20);
+tl.to(RP, { duration: 0.04, eb: EB_UP,  onUpdate: updateArms }, 0.21);
+
+// Phase F — both release
+tl.to(LP, { duration: 0.02, clL: 0, clR: 0, onUpdate: updateArms }, 0.23);
+tl.to(RP, { duration: 0.02, clL: 0, clR: 0, onUpdate: updateArms }, 0.23);
+tl.to(LP, { duration: 0.04, sa: SA_IDLE, eb: EB_IDLE, onUpdate: updateArms }, 0.23);
+tl.to(RP, { duration: 0.04, sa: SA_IDLE, eb: EB_IDLE, onUpdate: updateArms }, 0.23);
+
+// Feature boxes stagger in after release
+tl.to([box1, box2, box3], { duration: 0.027, opacity: 1, y: 0, stagger: 0.027 }, 0.27);
+
+// ──────────────────────────────────────────────────────────────────
+// Arsenal fades as arm cycle 2 begins
+// ──────────────────────────────────────────────────────────────────
+tl.to([box1, box2, box3],          { duration: 0.07, opacity: 0 }, 0.51);
+tl.to([...arsenalChs].reverse(),   { duration: 0.005, opacity: 0, stagger: 0.007 }, 0.53);
+tl.to(arsenalUL,                   { duration: 0.05, opacity: 0, width: '0%' }, 0.53);
+tl.to(section1,                    { duration: 0.06, opacity: 0 }, 0.55);
+
+// ══════════════════════════════════════════════════════════════════
+// ═══ ARM CYCLE 2 — PROCESS  (SYMMETRIC)  ════════════════════════
+//
+//  Both arms descend together, grip together, pull together
+// ══════════════════════════════════════════════════════════════════
+
+// Both descend (0.51 – 0.61)
+tl.to(LP, { duration: 0.10, sa: SA_DOWN, eb: EB_DOWN, onUpdate: updateArms }, 0.51);
+tl.to(RP, { duration: 0.10, sa: SA_DOWN, eb: EB_DOWN, onUpdate: updateArms }, 0.51);
+
+// Both grip (0.61 – 0.65)
+tl.to(LP, { duration: 0.04, clL: CL_GRIP, clR: CR_GRIP, onUpdate: updateArms }, 0.61);
+tl.to(RP, { duration: 0.04, clL: CL_GRIP, clR: CR_GRIP, onUpdate: updateArms }, 0.61);
+
+tl.to(section2,   { duration: 0.06, opacity: 1 }, 0.61);
+tl.to(processChs, { duration: 0.008, opacity: 1, y: 0, stagger: 0.01 }, 0.61);
+tl.to(processUL,  { duration: 0.04, opacity: 1, scaleX: 1 }, 0.62);
+tl.to(time1,      { duration: 0.025, opacity: 1, x: 0, scale: 1 }, 0.64);
+tl.to(time2,      { duration: 0.025, opacity: 1, x: 0, scale: 1 }, 0.67);
+tl.to(time3,      { duration: 0.025, opacity: 1, x: 0, scale: 1 }, 0.70);
+
+// Both pull (0.65 – 0.73) — shoulder first, elbow sags after
+tl.to(LP, { duration: 0.05, sa: SA_UP, onUpdate: updateArms }, 0.65);
+tl.to(RP, { duration: 0.05, sa: SA_UP, onUpdate: updateArms }, 0.65);
+tl.to(LP, { duration: 0.06, eb: EB_UP, onUpdate: updateArms }, 0.67);
+tl.to(RP, { duration: 0.06, eb: EB_UP, onUpdate: updateArms }, 0.67);
+tl.to(section2, { duration: 0.08, y: -PULL_DIST }, 0.65);
+
+// Both release (0.73 – 0.77)
+tl.to(LP, { duration: 0.02, clL: 0, clR: 0, onUpdate: updateArms }, 0.73);
+tl.to(RP, { duration: 0.02, clL: 0, clR: 0, onUpdate: updateArms }, 0.73);
+tl.to(LP, { duration: 0.04, sa: SA_IDLE, eb: EB_IDLE, onUpdate: updateArms }, 0.73);
+tl.to(RP, { duration: 0.04, sa: SA_IDLE, eb: EB_IDLE, onUpdate: updateArms }, 0.73);
+
+// Process fades during arm 3 descent
+tl.to([...processChs].reverse(), { duration: 0.005, opacity: 0, stagger: 0.007 }, 0.83);
+tl.to(processUL,                 { duration: 0.04,  opacity: 0, scaleX: 0 }, 0.83);
+tl.to(section2,                  { duration: 0.06,  opacity: 0 }, 0.85);
+
+// ══════════════════════════════════════════════════════════════════
+// ═══ ARM CYCLE 3 — CTA  (SYMMETRIC)  ════════════════════════════
+// ══════════════════════════════════════════════════════════════════
+
+// Both descend (0.87 – 0.91)
+tl.to(LP, { duration: 0.04, sa: SA_DOWN, eb: EB_DOWN, onUpdate: updateArms }, 0.87);
+tl.to(RP, { duration: 0.04, sa: SA_DOWN, eb: EB_DOWN, onUpdate: updateArms }, 0.87);
+
+// Both grip (0.91 – 0.93)
+tl.to(LP, { duration: 0.02, clL: CL_GRIP, clR: CR_GRIP, onUpdate: updateArms }, 0.91);
+tl.to(RP, { duration: 0.02, clL: CL_GRIP, clR: CR_GRIP, onUpdate: updateArms }, 0.91);
+
+tl.to(section3, { duration: 0.04, opacity: 1 }, 0.91);
+
+// Both pull (0.93 – 0.99)
+tl.to(LP, { duration: 0.03, sa: SA_UP, onUpdate: updateArms }, 0.93);
+tl.to(RP, { duration: 0.03, sa: SA_UP, onUpdate: updateArms }, 0.93);
+tl.to(LP, { duration: 0.04, eb: EB_UP, onUpdate: updateArms }, 0.94);
+tl.to(RP, { duration: 0.04, eb: EB_UP, onUpdate: updateArms }, 0.94);
+tl.to(section3, { duration: 0.06, y: -PULL_DIST }, 0.93);
+
+// Both release (0.99 – 1.00)
+tl.to(LP, { duration: 0.01, clL: 0, clR: 0, onUpdate: updateArms }, 0.99);
+tl.to(RP, { duration: 0.01, clL: 0, clR: 0, onUpdate: updateArms }, 0.99);
+
+tl.to(cta, { duration: 0.04, opacity: 1, y: 0 }, 0.96);
+
+// ══════════════════════════════════════════════════════════════════
+// DEBUG OVERLAY — press D to toggle
+// ══════════════════════════════════════════════════════════════════
+const dbg = document.createElement('div');
+dbg.style.cssText = [
+  'position:fixed','bottom:20px','right:20px',
+  'background:rgba(0,0,0,.85)',
+  'border:1px solid rgba(0,255,204,.6)',
+  'border-radius:8px','padding:12px 16px',
+  'font-family:monospace','font-size:11px',
+  'color:#00ffcc','z-index:99999',
+  'letter-spacing:.5px','line-height:1.9',
+  'white-space:pre','backdrop-filter:blur(8px)',
+  'min-width:260px'
+].join(';');
+document.body.appendChild(dbg);
+
+let dbgOn = true, mx = 0, my = 0, lc = 0;
+document.addEventListener('keydown', e => {
+  if (e.key.toLowerCase() === 'd') { dbgOn = !dbgOn; dbg.style.display = dbgOn ? 'block' : 'none'; }
+});
+window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+window.addEventListener('wheel', e => {
+  lc += e.deltaMode === 0 ? e.deltaY / 16 : e.deltaMode === 1 ? e.deltaY : e.deltaY * 20;
+}, { passive: true });
+
+(function loop() {
+  if (dbgOn) {
+    const prog = Math.min(1, scrollY / MAX_S);
+    const L    = armPts(LS_X, LS_Y, -1, LP.sa, LP.eb);
+    const R    = armPts(RS_X, RS_Y, +1, RP.sa, RP.eb);
+    dbg.textContent =
+      `MOUSE    x:${String(mx).padStart(4)}  y:${String(my).padStart(4)}\n` +
+      `SCROLL   px:${String(Math.round(scrollY)).padStart(5)} / ${MAX_S}\n` +
+      `LINES    ≈ ${String(Math.round(lc)).padStart(6)}\n` +
+      `PROGRESS   ${prog.toFixed(4)}\n` +
+      `LP  sa:${LP.sa.toFixed(3)}  eb:${LP.eb.toFixed(3)}\n` +
+      `RP  sa:${RP.sa.toFixed(3)}  eb:${RP.eb.toFixed(3)}\n` +
+      `L-WRIST  (${Math.round(L.wx)}, ${Math.round(L.wy)})\n` +
+      `R-WRIST  (${Math.round(R.wx)}, ${Math.round(R.wy)})\n` +
+      `─── Press D to hide ───`;
+  }
+  requestAnimationFrame(loop);
+}());
+</script>
+</body>
+</html>

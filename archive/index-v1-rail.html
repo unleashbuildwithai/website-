@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ardy W | Genius Unleashed</title>
+<style>
+/* RESET & VARIABLES */
+*{margin:0;padding:0;box-sizing:border-box;}
+
+/* VERSION NAV */
+.ver-nav{position:fixed;top:14px;right:14px;z-index:9999;display:flex;gap:8px;}
+.ver-nav a,.ver-nav span{
+  padding:5px 13px;border-radius:20px;font-size:.65rem;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;transition:all .3s;}
+.ver-nav span{background:rgba(0,255,204,.18);border:1px solid rgba(0,255,204,.8);
+  color:#00ffcc;box-shadow:0 0 12px rgba(0,255,204,.3);}
+.ver-nav a{background:rgba(0,255,204,.07);border:1px solid rgba(0,255,204,.35);color:#00ffcc;}
+.ver-nav a:hover{background:rgba(0,255,204,.18);border-color:var(--neon);}
+:root{--bg:#05080c;--card:#1a2530;--neon:#00ffcc;--text:#ffffff;--muted:#e2e8f0;}
+body{background:var(--bg);font-family:'Inter','Arial',sans-serif;color:var(--text);overflow-x:hidden;}
+h1,h2,h3{text-transform:uppercase;letter-spacing:2px;}
+p{line-height:1.6;color:var(--muted);}
+
+/* GRID BG */
+body::before{content:'';position:fixed;top:0;left:0;width:100vw;height:100vh;
+background-image:linear-gradient(rgba(0,255,204,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,204,.05) 1px,transparent 1px);
+background-size:50px 50px;z-index:-3;pointer-events:none;}
+
+/* BG ROBOT CONTAINER */
+.bg-robot-container{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-2;pointer-events:none;opacity:.38;display:flex;justify-content:center;align-items:flex-start;}
+.bg-robot-svg{width:100%;height:120%;max-width:1200px;overflow:visible;}
+
+/* ARM SVG STYLES */
+.arm-rail{fill:none;stroke:#b0c4de;stroke-width:8;stroke-dasharray:20 12;stroke-linecap:round;}
+.arm-edge{fill:none;stroke:#8a9cb5;stroke-width:1.5;stroke-linecap:round;}
+.arm-wrist{fill:#05080c;stroke:#b0c4de;stroke-width:2.5;}
+.claw-line{fill:none;stroke:#b0c4de;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+.claw-neon{fill:none;stroke:#00ffcc;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 0 5px #00ffcc);}
+.neon-dot{fill:#00ffcc;filter:drop-shadow(0 0 10px #00ffcc);}
+.body-heavy{fill:none;stroke:#8a9cb5;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+.body-light{fill:none;stroke:#b0c4de;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.body-neon{fill:none;stroke:#00ffcc;stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 10px #00ffcc);}
+
+/* HERO WRAPPER */
+.hero-wrapper{position:fixed;top:0;left:0;width:100vw;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;perspective:1200px;z-index:10;pointer-events:none;}
+.hero-section{transform-origin:center;will-change:transform,opacity;pointer-events:auto;}
+.scroll-indicator{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);color:var(--neon);font-size:.8rem;letter-spacing:3px;text-transform:uppercase;animation:bounce 2s infinite;opacity:.7;}
+@keyframes bounce{0%,20%,50%,80%,100%{transform:translateY(0) translateX(-50%);}40%{transform:translateY(-10px) translateX(-50%);}60%{transform:translateY(-5px) translateX(-50%);}}
+
+/* FLIP CARD */
+.flip-card{background-color:transparent;width:350px;height:480px;perspective:1000px;cursor:pointer;}
+.flip-card-inner{position:relative;width:100%;height:100%;text-align:center;transition:transform .8s cubic-bezier(.175,.885,.32,1.275);transform-style:preserve-3d;}
+.flip-card:hover .flip-card-inner{transform:rotateY(180deg);}
+.flip-card-front,.flip-card-back{position:absolute;width:100%;height:100%;-webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:20px;overflow:hidden;}
+.flip-card-front{background:rgba(20,30,40,.4);backdrop-filter:blur(25px);-webkit-backdrop-filter:blur(25px);
+border:1px solid rgba(0,255,204,.4);border-top:1px solid rgba(0,255,204,.8);border-left:1px solid rgba(0,255,204,.8);
+box-shadow:inset 0 0 40px rgba(0,255,204,.2),0 25px 50px rgba(0,0,0,.9),0 0 20px rgba(0,255,204,.3);
+display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;padding:35px 25px;text-align:left;}
+.pitch-section{z-index:2;display:flex;flex-direction:column;gap:12px;}
+.pitch-headline{color:#fff;font-size:1.15rem;font-weight:800;line-height:1.3;text-transform:uppercase;letter-spacing:1px;text-shadow:0 0 10px rgba(0,255,204,.4);}
+.pitch-body{color:#e2e8f0;font-size:.85rem;line-height:1.5;opacity:.9;}
+.pitch-highlight{color:#00ffcc;font-size:.9rem;font-weight:700;border-left:3px solid #00ffcc;padding-left:12px;margin-top:5px;line-height:1.4;}
+.contact-section{z-index:2;display:flex;flex-direction:column;align-items:flex-start;gap:12px;width:100%;}
+.name{font-size:1.8rem;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:3px;text-shadow:0 0 15px rgba(0,255,204,.8),0 0 30px rgba(0,255,204,.4);margin-bottom:5px;width:100%;border-bottom:1px solid rgba(0,255,204,.3);padding-bottom:10px;}
+.info-group{display:flex;flex-direction:column;align-items:flex-start;gap:2px;}
+.label{font-size:.7rem;color:#00ffcc;text-transform:uppercase;letter-spacing:2px;font-weight:bold;opacity:.8;}
+.value{font-size:.95rem;color:#e2e8f0;font-weight:500;letter-spacing:1px;}
+.flip-card-back{background-color:var(--card);transform:rotateY(180deg);display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 25px 50px rgba(0,0,0,.8),0 0 30px rgba(0,255,204,.15);border-radius:20px;}
+.back-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;}
+
+/* NEON TEXT on back of card */
+.neon-text{font-size:3.5rem;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:4px;
+text-shadow:0 0 5px #fff,0 0 10px #fff,0 0 20px #00ffcc,0 0 40px #00ffcc,0 0 80px #00ffcc;
+margin-bottom:25px;display:flex;align-items:center;justify-content:center;}
+
+/* LETTER G — z-index:1 on letter-g creates stacking context so robot (z:-1) paints BEHIND the G text */
+.letter-g{position:relative;display:inline-block;z-index:1;}
+.robot-wrapper{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:90px;height:90px;pointer-events:none;z-index:-1;}
+.robot-svg{width:100%;height:100%;}
+.sketch-line{fill:none;stroke:#b0c4de;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.sketch-line-thick{fill:none;stroke:#8a9cb5;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+.neon-accent{fill:none;stroke:#00ffcc;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 0 5px #00ffcc);}
+.neon-fill{fill:#00ffcc;filter:drop-shadow(0 0 8px #00ffcc);}
+.welding-spark{fill:#00ffcc;filter:drop-shadow(0 0 8px #00ffcc);animation:weld-pulse .3s ease-in-out infinite alternate;}
+@keyframes weld-pulse{from{r:4;opacity:.7;}to{r:8;opacity:1;}}
+/* Sparks fall from TOP (drip off the G letter) */
+.falling-sparks{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:1px;height:1px;pointer-events:none;}
+.falling-sparks i{display:block;position:absolute;width:2px;height:2px;background:#00ffcc;border-radius:50%;box-shadow:0 0 4px #00ffcc;animation:spark-fall .7s ease-in infinite;}
+.falling-sparks i:nth-child(1){left:-12px;animation-delay:0s;}
+.falling-sparks i:nth-child(2){left:-4px;animation-delay:.18s;}
+.falling-sparks i:nth-child(3){left:4px;animation-delay:.07s;}
+.falling-sparks i:nth-child(4){left:12px;animation-delay:.28s;}
+@keyframes spark-fall{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(28px) scale(0);opacity:0;}}
+
+/* SUB TEXT CONTAINER */
+.sub-text-container{position:relative;display:flex;flex-direction:column;align-items:center;width:82%;}
+.neon-line{width:100%;height:2px;background:#00ffcc;box-shadow:0 0 5px #00ffcc,0 0 15px #00ffcc;margin-bottom:18px;position:relative;}
+.sub-text{color:#00ffcc;font-size:.95rem;letter-spacing:6px;text-transform:uppercase;font-weight:bold;opacity:.8;width:100%;text-align:center;}
+
+/* SITTING ROBOT — top:-25px places torso-bottom on the neon line, legs dangle above "A" */
+.small-robot-wrapper{position:absolute;top:-25px;left:50%;transform:translateX(-50%);width:38px;height:52px;pointer-events:none;z-index:1;}
+.small-robot-wrapper svg{width:100%;height:100%;}
+
+/* CONTENT LAYER */
+#content-layer{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:5;pointer-events:none;}
+.content-section-wrapper{position:absolute;top:100vh;width:100%;will-change:transform,opacity;opacity:0;pointer-events:none;}
+
+/* GRAB BAR */
+.grab-bar{width:66.66%;max-width:800px;height:6px;background:linear-gradient(90deg,transparent,var(--neon),transparent);margin:0 auto 50px;border-radius:5px;box-shadow:0 0 20px rgba(0,255,204,.8),0 0 40px rgba(0,255,204,.4);position:relative;display:flex;justify-content:space-between;}
+.grab-handle{width:60px;height:15px;background:var(--neon);border-radius:2px;box-shadow:0 0 15px var(--neon);transform:translateY(-4px);}
+.grab-handle.left{margin-left:-30px;}.grab-handle.right{margin-right:-30px;}
+
+/* SECTIONS */
+.section{padding:20px 20px 80px;max-width:1000px;width:100%;margin:0 auto;}
+
+/* ARSENAL HEADER */
+.arsenal-header-wrap{margin-bottom:45px;display:inline-flex;flex-direction:column;align-items:flex-start;}
+.arsenal-header{font-size:2.5rem;color:var(--text);text-shadow:0 0 10px rgba(0,255,204,.3);text-transform:uppercase;letter-spacing:8px;display:flex;align-items:baseline;}
+.a-char{display:inline-block;opacity:0;transform:translateY(-18px);will-change:opacity,transform;}
+.a-char.spacer{opacity:1;transform:none;width:.35em;}
+.arsenal-underline{height:3px;width:0%;background:var(--neon);box-shadow:0 0 8px var(--neon);margin-top:8px;opacity:0;}
+
+/* PROCESS HEADER */
+.process-header-wrap{margin-bottom:45px;display:flex;flex-direction:column;align-items:center;width:100%;}
+.process-header{font-size:2.5rem;color:var(--text);text-shadow:0 0 10px rgba(0,255,204,.3);text-transform:uppercase;letter-spacing:8px;display:flex;align-items:baseline;justify-content:center;}
+.p-char{display:inline-block;opacity:0;transform:translateY(-18px);will-change:opacity,transform;}
+.p-char.spacer{opacity:1;transform:none;width:.35em;}
+.process-underline{height:3px;width:60%;background:var(--neon);box-shadow:0 0 8px var(--neon);margin:8px auto 0;opacity:0;transform:scaleX(0);transform-origin:center center;}
+
+/* FEATURE GRID */
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:30px;}
+.feature-box{padding:30px;border-radius:15px;border:1px solid rgba(0,255,204,.2);background:rgba(26,37,48,.8);box-shadow:0 10px 30px rgba(0,0,0,.5);will-change:opacity,transform;opacity:0;transition:border-color .3s,box-shadow .3s;}
+.feature-box:hover{border-color:rgba(0,255,204,.5);box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 20px rgba(0,255,204,.1);}
+.feature-icon{font-size:2.5rem;color:var(--neon);margin-bottom:20px;}
+.feature-title{font-size:1.2rem;margin-bottom:15px;color:#fff;text-transform:uppercase;letter-spacing:1px;}
+
+/* TIMELINE */
+.timeline{position:relative;max-width:800px;margin:0 auto;}
+.timeline::after{content:'';position:absolute;width:2px;background:rgba(0,255,204,.3);top:0;bottom:0;left:50%;margin-left:-1px;}
+.timeline-item{padding:20px 40px;position:relative;background:inherit;width:50%;will-change:opacity,transform;opacity:0;}
+.timeline-item.left{left:0;}.timeline-item.right{left:50%;}
+.timeline-item::after{content:'';position:absolute;width:20px;height:20px;right:-10px;background:var(--bg);border:3px solid var(--neon);top:25px;border-radius:50%;z-index:1;box-shadow:0 0 10px var(--neon);}
+.timeline-item.right::after{left:-10px;}
+.timeline-content{padding:20px 30px;background:rgba(26,37,48,.8);border-radius:10px;border:1px solid rgba(0,255,204,.2);}
+.timeline-content h3{margin-bottom:10px;color:var(--neon);}
+
+/* CTA */
+.cta-section{text-align:center;padding:50px 20px 150px;background:linear-gradient(to top,rgba(0,255,204,.05),transparent);will-change:opacity,transform;}
+.cta-btn{display:inline-block;margin-top:30px;padding:15px 40px;background:transparent;color:var(--neon);border:2px solid var(--neon);border-radius:30px;font-size:1.1rem;font-weight:bold;text-transform:uppercase;letter-spacing:2px;cursor:pointer;text-decoration:none;box-shadow:0 0 15px rgba(0,255,204,.2);transition:all .3s;}
+.cta-btn:hover{background:rgba(0,255,204,.1);box-shadow:0 0 30px rgba(0,255,204,.4);transform:scale(1.05);}
+</style>
+</head>
+<body>
+
+<!-- VERSION SWITCHER -->
+<nav class="ver-nav">
+  <span>⚙ V1 RAIL</span>
+  <a href="index2.html">🤖 V2 IK ARMS</a>
+  <a href="index3.html">🌍 V3 COSMIC</a>
+</nav>
+
+<!-- ====== BACKGROUND ROBOT SVG ====== -->
+<div class="bg-robot-container">
+<svg class="bg-robot-svg" viewBox="0 0 1200 1000" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <filter id="pfx" x="-10%" y="-10%" width="120%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2.5" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</defs>
+
+<!-- LEFT FIXED RAIL -->
+<line x1="200" y1="25" x2="200" y2="1100" class="arm-rail"/>
+<line x1="184" y1="25" x2="184" y2="1100" class="arm-edge"/>
+<line x1="216" y1="25" x2="216" y2="1100" class="arm-edge"/>
+
+<!-- RIGHT FIXED RAIL -->
+<line x1="1000" y1="25" x2="1000" y2="1100" class="arm-rail"/>
+<line x1="984" y1="25" x2="984" y2="1100" class="arm-edge"/>
+<line x1="1016" y1="25" x2="1016" y2="1100" class="arm-edge"/>
+
+<!-- ROBOT BODY -->
+<g transform="translate(0,-145)" filter="url(#pfx)">
+  <polygon points="480,-50 720,-50 780,100 420,100" class="body-heavy" style="fill:#05080c"/>
+  <polygon points="510,-20 690,-20 740,70 460,70" class="body-light" style="fill:#05080c"/>
+  <path d="M 520 20 L 580 42 L 600 32" class="body-neon" stroke-width="8"/>
+  <path d="M 680 20 L 620 42 L 600 32" class="body-neon" stroke-width="8"/>
+  <line x1="478" y1="-22" x2="395" y2="-62" class="body-heavy" stroke-width="6"/>
+  <circle cx="395" cy="-62" r="11" fill="#00ffcc" style="filter:drop-shadow(0 0 14px #00ffcc)"/>
+  <line x1="722" y1="-22" x2="805" y2="-62" class="body-heavy" stroke-width="6"/>
+  <circle cx="805" cy="-62" r="11" fill="#00ffcc" style="filter:drop-shadow(0 0 14px #00ffcc)"/>
+  <rect x="552" y="100" width="96" height="50" class="body-light" style="fill:#05080c"/>
+  <polygon points="352,150 848,150 948,252 748,552 452,552 252,252" class="body-heavy" style="fill:#05080c"/>
+  <polygon points="402,202 798,202 878,272 698,502 502,502 322,272" class="body-light" style="fill:#05080c"/>
+  <circle cx="600" cy="302" r="70" class="body-light" style="fill:#05080c"/>
+  <circle cx="600" cy="302" r="40" class="body-light" style="fill:#05080c"/>
+  <circle cx="600" cy="302" r="20" fill="#00ffcc" style="filter:drop-shadow(0 0 20px #00ffcc)"/>
+  <line x1="452" y1="402" x2="748" y2="402" class="body-light" stroke-width="6"/>
+  <line x1="480" y1="452" x2="720" y2="452" class="body-light" stroke-width="6"/>
+  <path d="M 352 150 L 175 150 L 175 205 L 352 205 Z" class="body-heavy" style="fill:#05080c"/>
+  <path d="M 848 150 L 1025 150 L 1025 205 L 848 205 Z" class="body-heavy" style="fill:#05080c"/>
+</g>
+
+<!-- LEFT MOVING CARRIAGE — gear id added, animateTransform REMOVED (GSAP controls rotation) -->
+<g id="left-carriage" transform="translate(0,0)">
+  <!-- Gear: id for GSAP scroll-direction control (no animateTransform) -->
+  <circle id="left-gear" cx="200" cy="28" r="28" fill="#05080c" stroke="#8a9cb5" stroke-width="5" stroke-dasharray="10 7"/>
+  <circle cx="200" cy="28" r="16" fill="#05080c" stroke="#b0c4de" stroke-width="2"/>
+  <circle cx="200" cy="28" r="6" class="neon-dot"/>
+  <rect x="153" y="50" width="18" height="18" rx="3" fill="#05080c" stroke="#8a9cb5" stroke-width="1.5"/>
+  <rect x="140" y="63" width="44" height="22" rx="6" class="arm-wrist"/>
+  <circle cx="162" cy="74" r="5" class="neon-dot"/>
+  <g id="l-claw-L" transform="translate(150,85)">
+    <path d="M 0 0 L -2 38 L -8 60 L -5 70" class="claw-line"/>
+    <path d="M 0 0 L -2 22" class="claw-neon"/>
+    <circle cx="-6" cy="62" r="4" class="neon-dot"/>
+  </g>
+  <g id="l-claw-R" transform="translate(174,85)">
+    <path d="M 0 0 L 2 38 L 8 60 L 5 70" class="claw-line"/>
+    <path d="M 0 0 L 2 22" class="claw-neon"/>
+    <circle cx="6" cy="62" r="4" class="neon-dot"/>
+  </g>
+</g>
+
+<!-- SCROLL LINE — neon beam between carriages, moves with them -->
+<g id="scroll-line-group" transform="translate(0,0)">
+  <!-- Outer span: 286 → 1146 -->
+  <line x1="286" y1="74" x2="1146" y2="74" stroke="#00ffcc" stroke-width="1.5" stroke-linecap="round" opacity="0.35" style="filter:drop-shadow(0 0 6px #00ffcc)"/>
+  <!-- Inner core: 346 → 1086 -->
+  <line x1="346" y1="74" x2="1086" y2="74" stroke="#00ffcc" stroke-width="3" stroke-linecap="round" style="filter:drop-shadow(0 0 12px #00ffcc)"/>
+  <!-- Left grip block (right arm inner) -->
+  <rect x="286" y="67" width="60" height="14" rx="3" fill="#00ffcc" style="filter:drop-shadow(0 0 10px #00ffcc)" opacity="0.9"/>
+  <!-- Right grip block (left arm inner) -->
+  <rect x="1086" y="67" width="60" height="14" rx="3" fill="#00ffcc" style="filter:drop-shadow(0 0 10px #00ffcc)" opacity="0.9"/>
+</g>
+
+<!-- RIGHT MOVING CARRIAGE — gear id added, animateTransform REMOVED -->
+<g id="right-carriage" transform="translate(0,0)">
+  <!-- Gear: rotates opposite direction to left gear -->
+  <circle id="right-gear" cx="1000" cy="28" r="28" fill="#05080c" stroke="#8a9cb5" stroke-width="5" stroke-dasharray="10 7"/>
+  <circle cx="1000" cy="28" r="16" fill="#05080c" stroke="#b0c4de" stroke-width="2"/>
+  <circle cx="1000" cy="28" r="6" class="neon-dot"/>
+  <rect x="953" y="50" width="18" height="18" rx="3" fill="#05080c" stroke="#8a9cb5" stroke-width="1.5"/>
+  <rect x="940" y="63" width="44" height="22" rx="6" class="arm-wrist"/>
+  <circle cx="962" cy="74" r="5" class="neon-dot"/>
+  <g id="r-claw-L" transform="translate(950,85)">
+    <path d="M 0 0 L -2 38 L -8 60 L -5 70" class="claw-line"/>
+    <path d="M 0 0 L -2 22" class="claw-neon"/>
+    <circle cx="-6" cy="62" r="4" class="neon-dot"/>
+  </g>
+  <g id="r-claw-R" transform="translate(974,85)">
+    <path d="M 0 0 L 2 38 L 8 60 L 5 70" class="claw-line"/>
+    <path d="M 0 0 L 2 22" class="claw-neon"/>
+    <circle cx="6" cy="62" r="4" class="neon-dot"/>
+  </g>
+</g>
+</svg>
+</div>
+
+<!-- ====== HERO CARD ====== -->
+<div class="hero-wrapper">
+  <section class="hero-section" id="hero-card">
+    <div class="flip-card">
+      <div class="flip-card-inner">
+        <!-- FRONT -->
+        <div class="flip-card-front">
+          <div class="pitch-section">
+            <div class="pitch-headline">Got a vision, but blocked by development costs?</div>
+            <div class="pitch-body">Skip the $150/hr agency fees and heavy retainers. I leverage cutting-edge AI to build smarter, faster, and leaner.</div>
+            <div class="pitch-highlight">Zero risk. Pay a flat $1,000 only when I deliver your working MVP.</div>
+          </div>
+          <div class="contact-section">
+            <div class="name">ardy W</div>
+            <div class="info-group"><div class="label">Email</div><div class="value">unleashbuildwithai@gmail.com</div></div>
+            <div class="info-group"><div class="label">Phone</div><div class="value">832-387-7878</div></div>
+          </div>
+        </div>
+
+        <!-- BACK: Genius Unleashed -->
+        <div class="flip-card-back">
+          <div class="back-content">
+            <div class="neon-text">
+              <span class="letter-g">G
+
+                <!-- ═══ WELDER ROBOT — centred behind/below G, welding arm pointing UP ═══ -->
+                <div class="robot-wrapper">
+                  <svg class="robot-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <filter id="pt" x="-10%" y="-10%" width="120%" height="120%">
+                        <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="4" result="n"/>
+                        <feDisplacementMap in="SourceGraphic" in2="n" scale="1.5" xChannelSelector="R" yChannelSelector="G"/>
+                      </filter>
+                    </defs>
+
+                    <!-- GROUND LINE -->
+                    <line x1="22" y1="133" x2="118" y2="133" class="sketch-line"/>
+
+                    <!-- FEET -->
+                    <rect x="36" y="127" width="20" height="7" rx="2" class="sketch-line-thick"/>
+                    <line x1="40" y1="127" x2="40" y2="134" class="sketch-line" opacity="0.5"/>
+                    <line x1="44" y1="127" x2="44" y2="134" class="sketch-line" opacity="0.5"/>
+                    <line x1="48" y1="127" x2="48" y2="134" class="sketch-line" opacity="0.5"/>
+                    <rect x="84" y="127" width="20" height="7" rx="2" class="sketch-line-thick"/>
+                    <line x1="88" y1="127" x2="88" y2="134" class="sketch-line" opacity="0.5"/>
+                    <line x1="92" y1="127" x2="92" y2="134" class="sketch-line" opacity="0.5"/>
+                    <line x1="96" y1="127" x2="96" y2="134" class="sketch-line" opacity="0.5"/>
+
+                    <!-- LEGS -->
+                    <!-- Left leg upper + panel -->
+                    <line x1="52" y1="97" x2="46" y2="114" class="sketch-line-thick" stroke-width="5"/>
+                    <rect x="43" y="100" width="11" height="10" rx="2" class="sketch-line"/>
+                    <line x1="44" y1="104" x2="53" y2="104" class="sketch-line" opacity="0.6"/>
+                    <circle cx="46" cy="114" r="6" class="sketch-line"/>
+                    <circle cx="46" cy="114" r="3" class="sketch-line-thick"/>
+                    <circle cx="46" cy="114" r="1.5" class="neon-fill" opacity="0.6"/>
+                    <line x1="46" y1="114" x2="45" y2="127" class="sketch-line-thick" stroke-width="4"/>
+                    <!-- Right leg upper + panel -->
+                    <line x1="88" y1="97" x2="94" y2="114" class="sketch-line-thick" stroke-width="5"/>
+                    <rect x="86" y="100" width="11" height="10" rx="2" class="sketch-line"/>
+                    <line x1="87" y1="104" x2="96" y2="104" class="sketch-line" opacity="0.6"/>
+                    <circle cx="94" cy="114" r="6" class="sketch-line"/>
+                    <circle cx="94" cy="114" r="3" class="sketch-line-thick"/>
+                    <circle cx="94" cy="114" r="1.5" class="neon-fill" opacity="0.6"/>
+                    <line x1="94" y1="114" x2="95" y2="127" class="sketch-line-thick" stroke-width="4"/>
+
+                    <!-- TORSO — slightly leaning toward left (welding side) -->
+                    <polygon points="42,50 100,50 106,97 36,97" class="sketch-line-thick"/>
+                    <polygon points="49,56 93,56 98,91 44,91" class="sketch-line"/>
+                    <line x1="41" y1="68" x2="101" y2="68" class="sketch-line"/>
+                    <line x1="39" y1="80" x2="101" y2="80" class="sketch-line" stroke-dasharray="5,3" opacity="0.7"/>
+                    <!-- Energy core -->
+                    <circle cx="70" cy="61" r="9" class="sketch-line"/>
+                    <circle cx="70" cy="61" r="6" class="sketch-line" stroke-dasharray="3,2"/>
+                    <circle cx="70" cy="61" r="3.5" class="neon-fill" opacity="0.85"/>
+                    <circle cx="70" cy="61" r="1.5" fill="#ffffff"/>
+                    <!-- Chest badge -->
+                    <path d="M 64 78 L 70 71 L 68 74 L 76 71 L 70 78 L 72 74 Z" class="neon-accent"/>
+                    <!-- Hip belt -->
+                    <rect x="48" y="87" width="44" height="6" rx="2" class="sketch-line"/>
+                    <rect x="62" y="87" width="16" height="6" rx="1" class="neon-accent" opacity="0.35"/>
+
+                    <!-- SHOULDER PADS -->
+                    <path d="M 42 52 L 24 52 L 20 65 L 24 76 L 42 76 L 44 68 Z" class="sketch-line-thick"/>
+                    <line x1="24" y1="56" x2="24" y2="72" class="sketch-line" opacity="0.8"/>
+                    <line x1="29" y1="54" x2="29" y2="74" class="sketch-line" opacity="0.6"/>
+                    <circle cx="22" cy="74" r="5" class="sketch-line"/>
+                    <circle cx="22" cy="74" r="2.5" class="neon-fill" opacity="0.5"/>
+                    <path d="M 98 52 L 116 52 L 120 65 L 116 76 L 98 76 L 96 68 Z" class="sketch-line-thick"/>
+                    <line x1="116" y1="56" x2="116" y2="72" class="sketch-line" opacity="0.8"/>
+                    <line x1="111" y1="54" x2="111" y2="74" class="sketch-line" opacity="0.6"/>
+                    <circle cx="118" cy="74" r="5" class="sketch-line"/>
+                    <circle cx="118" cy="74" r="2.5" class="neon-fill" opacity="0.5"/>
+
+                    <!-- LEFT ARM — WELDING ARM pointing UPWARD toward G letter -->
+                    <!-- Upper arm: goes UP-LEFT from shoulder socket -->
+                    <line x1="22" y1="74" x2="14" y2="56" class="sketch-line-thick" stroke-width="5"/>
+                    <!-- Elbow joint -->
+                    <circle cx="14" cy="56" r="6" class="sketch-line"/>
+                    <circle cx="14" cy="56" r="3" class="sketch-line-thick"/>
+                    <!-- Forearm: continues UP toward G -->
+                    <line x1="14" y1="56" x2="8" y2="36" class="sketch-line-thick" stroke-width="4"/>
+                    <!-- Wrist -->
+                    <circle cx="8" cy="36" r="4" class="sketch-line"/>
+                    <circle cx="8" cy="36" r="2" class="neon-fill" opacity="0.65"/>
+                    <!-- Torch body — angled upward -->
+                    <rect x="4" y="28" width="7" height="11" rx="2" class="sketch-line" transform="rotate(10,7,33)"/>
+                    <!-- Torch nozzle pointing UP at the G -->
+                    <line x1="7" y1="26" x2="8" y2="18" class="neon-accent" stroke-width="2.5"/>
+                    <!-- WELDING SPARK — at the top (near the G letter) -->
+                    <circle cx="8" cy="16" r="5" class="welding-spark"/>
+
+                    <!-- RIGHT ARM — utility/balance arm -->
+                    <line x1="118" y1="74" x2="128" y2="88" class="sketch-line-thick" stroke-width="5"/>
+                    <circle cx="128" cy="88" r="6" class="sketch-line"/>
+                    <circle cx="128" cy="88" r="3" class="sketch-line-thick"/>
+                    <line x1="128" y1="88" x2="134" y2="76" class="sketch-line-thick" stroke-width="4"/>
+                    <rect x="128" y="66" width="14" height="11" rx="2" class="sketch-line"/>
+                    <rect x="130" y="68" width="10" height="7" rx="1" class="neon-accent" opacity="0.45"/>
+                    <circle cx="132" cy="66" r="1.5" class="neon-fill" opacity="0.8"/>
+                    <circle cx="135" cy="62" r="1.2" class="neon-fill" opacity="0.55"/>
+                    <circle cx="138" cy="58" r="1" class="neon-fill" opacity="0.3"/>
+
+                    <!-- NECK -->
+                    <rect x="60" y="42" width="20" height="10" rx="3" class="sketch-line-thick"/>
+                    <line x1="64" y1="42" x2="64" y2="52" class="sketch-line" opacity="0.7"/>
+                    <line x1="68" y1="42" x2="68" y2="52" class="sketch-line" opacity="0.7"/>
+                    <line x1="72" y1="42" x2="72" y2="52" class="sketch-line" opacity="0.7"/>
+                    <line x1="76" y1="42" x2="76" y2="52" class="sketch-line" opacity="0.7"/>
+
+                    <!-- HEAD — slightly tilted toward welding side -->
+                    <path d="M 44 14 L 92 14 L 101 22 L 102 40 L 94 46 L 42 46 L 34 40 L 34 22 Z" class="sketch-line-thick"/>
+                    <path d="M 49 17 L 87 17 L 95 24 L 96 38 L 89 43 L 47 43 L 41 38 L 40 24 Z" class="sketch-line"/>
+                    <line x1="44" y1="14" x2="92" y2="14" class="neon-accent" stroke-width="2" opacity="0.55"/>
+                    <circle cx="34" cy="31" r="2.5" class="sketch-line"/>
+                    <circle cx="102" cy="31" r="2.5" class="sketch-line"/>
+                    <path d="M 44 14 Q 68 6 92 14" class="sketch-line"/>
+                    <!-- VISOR -->
+                    <rect x="42" y="20" width="52" height="17" rx="4" class="sketch-line-thick"/>
+                    <rect x="44" y="22" width="48" height="13" rx="3" class="neon-accent" opacity="0.35"/>
+                    <rect x="66" y="22" width="4" height="13" rx="1" class="sketch-line" opacity="0.35"/>
+                    <!-- Eyes focused left (watching the weld) -->
+                    <circle cx="57" cy="29" r="5" class="sketch-line"/>
+                    <circle cx="57" cy="29" r="3.5" class="neon-fill"/>
+                    <circle cx="55.5" cy="27.5" r="1.3" fill="#ffffff" opacity="0.9"/>
+                    <circle cx="77" cy="29" r="5" class="sketch-line"/>
+                    <circle cx="77" cy="29" r="3.5" class="neon-fill"/>
+                    <circle cx="75.5" cy="27.5" r="1.3" fill="#ffffff" opacity="0.9"/>
+                    <!-- Ear vents -->
+                    <rect x="27" y="20" width="8" height="20" rx="2" class="sketch-line"/>
+                    <line x1="28" y1="25" x2="34" y2="25" class="sketch-line" opacity="0.7"/>
+                    <line x1="28" y1="29" x2="34" y2="29" class="sketch-line" opacity="0.7"/>
+                    <line x1="28" y1="33" x2="34" y2="33" class="sketch-line" opacity="0.7"/>
+                    <line x1="28" y1="37" x2="34" y2="37" class="sketch-line" opacity="0.7"/>
+                    <rect x="101" y="20" width="8" height="20" rx="2" class="sketch-line"/>
+                    <line x1="102" y1="25" x2="108" y2="25" class="sketch-line" opacity="0.7"/>
+                    <line x1="102" y1="29" x2="108" y2="29" class="sketch-line" opacity="0.7"/>
+                    <line x1="102" y1="33" x2="108" y2="33" class="sketch-line" opacity="0.7"/>
+                    <line x1="102" y1="37" x2="108" y2="37" class="sketch-line" opacity="0.7"/>
+                    <!-- Chin plate -->
+                    <path d="M 54 46 L 82 46 L 78 52 L 58 52 Z" class="sketch-line"/>
+                    <!-- Antenna -->
+                    <line x1="68" y1="6" x2="68" y2="4" class="sketch-line-thick" stroke-width="3"/>
+                    <circle cx="68" cy="4" r="4" class="sketch-line"/>
+                    <circle cx="68" cy="4" r="2.5" class="neon-fill"/>
+                    <line x1="53" y1="9" x2="49" y2="5" class="sketch-line" stroke-width="1.5"/>
+                    <circle cx="49" cy="5" r="2" class="sketch-line"/>
+                    <circle cx="49" cy="5" r="1" class="neon-fill" opacity="0.7"/>
+                    <line x1="83" y1="9" x2="87" y2="5" class="sketch-line" stroke-width="1.5"/>
+                    <circle cx="87" cy="5" r="2" class="sketch-line"/>
+                    <circle cx="87" cy="5" r="1" class="neon-fill" opacity="0.7"/>
+                  </svg>
+                  <!-- Sparks drip DOWN off the G (positioned at top of wrapper) -->
+                  <div class="falling-sparks"><i></i><i></i><i></i><i></i></div>
+                </div>
+                <!-- ═══ END WELDER ROBOT ═══ -->
+
+              </span>enius
+            </div>
+
+            <div class="sub-text-container">
+              <div class="neon-line"></div>
+              <!-- SITTING ROBOT — butt on line, legs dangle above "A" in UNLEASHED -->
+              <div class="small-robot-wrapper">
+                <svg viewBox="0 0 50 60" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <filter id="pts" x="-20%" y="-20%" width="140%" height="140%">
+                      <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="3" result="n"/>
+                      <feDisplacementMap in="SourceGraphic" in2="n" scale="1" xChannelSelector="R" yChannelSelector="G"/>
+                    </filter>
+                  </defs>
+                  <style>
+                    .sl2{fill:none;stroke:#b0c4de;stroke-width:1;stroke-linecap:round;filter:url(#pts)}
+                    .slt2{fill:none;stroke:#8a9cb5;stroke-width:1.5;filter:url(#pts)}
+                    .nc2{fill:#00ffcc;filter:drop-shadow(0 0 3px #00ffcc)}
+                  </style>
+
+                  <!-- ANTENNA -->
+                  <line x1="25" y1="4" x2="25" y2="1" class="slt2"/>
+                  <circle cx="25" cy="1" r="1.5" class="nc2"/>
+
+                  <!-- HEAD (y=4–19) -->
+                  <rect x="14" y="4" width="22" height="15" rx="4" class="slt2"/>
+                  <rect x="17" y="7" width="16" height="9" rx="2" class="sl2"/>
+                  <!-- Eyes (neon arcs) -->
+                  <path d="M 18 12 Q 21 9 23 12" fill="none" stroke="#00ffcc" stroke-width="1.5"/>
+                  <path d="M 27 12 Q 30 9 32 12" fill="none" stroke="#00ffcc" stroke-width="1.5"/>
+
+                  <!-- TORSO (y=19–28, BOTTOM at y=28 = sits on the neon line) -->
+                  <rect x="13" y="19" width="24" height="9" rx="3" class="slt2"/>
+                  <rect x="17" y="21" width="16" height="5" rx="2" class="sl2"/>
+                  <!-- Chest glow dot -->
+                  <circle cx="25" cy="24" r="1.5" class="nc2"/>
+
+                  <!-- SIDE ARMS (tiny, tucked at sides) -->
+                  <path d="M 13 22 Q 8 24 7 27" class="slt2"/>
+                  <circle cx="7" cy="27" r="1.5" class="nc2"/>
+                  <path d="M 37 22 Q 42 24 43 27" class="slt2"/>
+                  <circle cx="43" cy="27" r="1.5" class="nc2"/>
+
+                  <!-- HIP-LINE at y=28 (the neon-line sits here) -->
+                  <line x1="17" y1="28" x2="33" y2="28" class="sl2" opacity="0.5"/>
+
+                  <!-- LEFT LEG — dangling below y=28, swings from hip (19,28) -->
+                  <g>
+                    <line x1="19" y1="28" x2="17" y2="40" class="slt2">
+                      <animateTransform attributeName="transform" type="rotate"
+                        values="-20 19 28; 24 19 28; -20 19 28"
+                        dur="1.4s" repeatCount="indefinite"/>
+                    </line>
+                    <circle cx="17" cy="40" r="1.8" class="sl2">
+                      <animateTransform attributeName="transform" type="rotate"
+                        values="-20 19 28; 24 19 28; -20 19 28"
+                        dur="1.4s" repeatCount="indefinite"/>
+                    </circle>
+                    <line x1="17" y1="40" x2="13" y2="50" class="slt2">
+                      <animateTransform attributeName="transform" type="rotate"
+                        values="-20 19 28; 24 19 28; -20 19 28"
+                        dur="1.4s" repeatCount="indefinite"/>
+                    </line>
+                    <line x1="10" y1="50" x2="16" y2="50" class="slt2">
+                      <animateTransform attributeName="transform" type="rotate"
+                        values="-20 19 28; 24 19 28; -20 19 28"
+                        dur="1.4s" repeatCount="indefinite"/>
+                    </line>
+                  </g>
+
+                  <!-- RIGHT LEG — dangling below y=28, swings from hip (31,28) -->
+                  <g>
+                    <line x1="31" y1="28" x2="33" y2="40" class="slt2">
+                      <animateTransform attributeName="transform" type="rotate"
+                        values="24 31 28; -20 31 28; 24 31 28"
+                        dur="1.4s" repeatCount="indefinite"/>
+                    </line>
+                    <circle cx="33" cy="40" r="1.8" class="sl2">
+                      <animateTransform attributeName="transform" type="rotate"
+                        values="24 31 28; -20 31 28; 24 31 28"
+                        dur="1.4s" repeatCount="indefinite"/>
+                    </circle>
+                    <line x1="33" y1="40" x2="37" y2="50" class="slt2">
+                      <animateTransform attributeName="transform" type="rotate"
+                        values="24 31 28; -20 31 28; 24 31 28"
+                        dur="1.4s" repeatCount="indefinite"/>
+                    </line>
+                    <line x1="34" y1="50" x2="40" y2="50" class="slt2">
+                      <animateTransform attributeName="transform" type="rotate"
+                        values="24 31 28; -20 31 28; 24 31 28"
+                        dur="1.4s" repeatCount="indefinite"/>
+                    </line>
+                  </g>
+                </svg>
+              </div>
+              <div class="sub-text">Unleashed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator" id="scroll-prompt">Scroll to Initiate Build Sequence</div>
+  </section>
+</div>
+
+<!-- ====== CONTENT LAYER ====== -->
+<div id="content-layer">
+
+  <!-- SECTION 1: THE ARSENAL -->
+  <div class="content-section-wrapper" id="section-1">
+    <div class="grab-bar"><div class="grab-handle left"></div><div class="grab-handle right"></div></div>
+    <section class="section">
+      <div class="arsenal-header-wrap">
+        <h2 class="arsenal-header" id="arsenal-header">
+          <span class="a-char" data-i="0">T</span><span class="a-char" data-i="1">H</span><span class="a-char" data-i="2">E</span><span class="a-char spacer">&nbsp;</span><span class="a-char" data-i="3">A</span><span class="a-char" data-i="4">R</span><span class="a-char" data-i="5">S</span><span class="a-char" data-i="6">E</span><span class="a-char" data-i="7">N</span><span class="a-char" data-i="8">A</span><span class="a-char" data-i="9">L</span>
+        </h2>
+        <div class="arsenal-underline" id="arsenal-underline"></div>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-box" id="box1">
+          <div class="feature-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <h3 class="feature-title">AI-Powered Velocity</h3>
+          <p>While traditional devs spend weeks writing boilerplate, I use AI to lay the foundation in hours — straight to the custom logic that makes your idea unique.</p>
+        </div>
+        <div class="feature-box" id="box2">
+          <div class="feature-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
+          <h3 class="feature-title">Full-Stack Architecture</h3>
+          <p>From database to sleek frontend. I build scalable, modern applications designed to handle real users from day one.</p>
+        </div>
+        <div class="feature-box" id="box3">
+          <div class="feature-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <h3 class="feature-title">Zero Risk Model</h3>
+          <p>You shouldn't pay for promises. I deliver a functional MVP before you pay the flat $1,000 fee. If I don't build it, you don't pay.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- SECTION 2: THE PROCESS -->
+  <div class="content-section-wrapper" id="section-2">
+    <div class="grab-bar"><div class="grab-handle left"></div><div class="grab-handle right"></div></div>
+    <section class="section">
+      <div class="process-header-wrap">
+        <h2 class="process-header" id="process-header"><span class="p-char" data-i="0">T</span><span class="p-char" data-i="1">H</span><span class="p-char" data-i="2">E</span><span class="p-char spacer">&nbsp;</span><span class="p-char" data-i="3">P</span><span class="p-char" data-i="4">R</span><span class="p-char" data-i="5">O</span><span class="p-char" data-i="6">C</span><span class="p-char" data-i="7">E</span><span class="p-char" data-i="8">S</span><span class="p-char" data-i="9">S</span></h2>
+        <div class="process-underline" id="process-underline"></div>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item left" id="time1"><div class="timeline-content"><h3>01. The Blueprint</h3><p>We jump on a quick call. You tell me your vision, the core features, and the problem it solves. No tech jargon required.</p></div></div>
+        <div class="timeline-item right" id="time2"><div class="timeline-content"><h3>02. The Forge</h3><p>I go dark and get to work. Using AI coding agents and modern frameworks, I build the core architecture at record speed.</p></div></div>
+        <div class="timeline-item left" id="time3"><div class="timeline-content"><h3>03. The Reveal</h3><p>I present the working MVP. Click it, test it, break it. Only when you see the vision realized do you pay the flat fee.</p></div></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- SECTION 3: CTA -->
+  <div class="content-section-wrapper" id="section-3">
+    <div class="grab-bar"><div class="grab-handle left"></div><div class="grab-handle right"></div></div>
+    <section class="cta-section" id="cta">
+      <h2 style="font-size:2rem;margin-bottom:20px;text-shadow:0 0 10px rgba(0,255,204,.5);text-transform:uppercase;letter-spacing:2px;">Ready to Unleash Your Idea?</h2>
+      <p>Stop waiting for the perfect developer. Build it now.</p>
+      <a href="mailto:unleashbuildwithai@gmail.com" class="cta-btn">Initiate Project</a>
+    </section>
+  </div>
+
+</div>
+
+<!-- ====== GSAP + ScrollTrigger ====== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// ===================================================
+// SETUP
+// ===================================================
+const VH      = window.innerHeight;
+const TOTAL_H = VH * 7;
+document.body.style.height = TOTAL_H + 'px';
+const MAX_S   = TOTAL_H - VH; // VH * 6
+
+const ARM_REACH = 700;
+const GEAR_DEG  = 1440; // 4 full gear rotations per ARM_REACH travel
+
+// ── INDEPENDENT CLAW ANGLES ──────────────────────────────────────
+// Each claw rotates independently so they cross to grip from the outside.
+// "L" claws (outer/left side of wrist): rotate +12 open → -16 grip
+// "R" claws (inner/right side of wrist): rotate -12 open → -41 grip
+// Both angles are NEGATIVE at grip = both tips swing RIGHT (past the bar),
+// creating the crossed-over pinch the user described.
+const CL_OPEN =  12;   // claw-L spread angle (tips LEFT of bar)
+const CR_OPEN = -12;   // claw-R spread angle (tips RIGHT of bar)
+const CL_GRIP = -16;   // claw-L grip: tip crosses to SVG x≈203 (screen ≈286)
+const CR_GRIP = -41;   // claw-R grip: tip crosses to SVG x≈262 (screen ≈345)
+
+const PULL_DIST = VH - 130;
+
+// ===== ELEMENT REFS =====
+const heroCard         = document.getElementById('hero-card');
+const scrollPrompt     = document.getElementById('scroll-prompt');
+const lCarriage        = document.getElementById('left-carriage');
+const rCarriage        = document.getElementById('right-carriage');
+const lClawL           = document.getElementById('l-claw-L');
+const lClawR           = document.getElementById('l-claw-R');
+const rClawL           = document.getElementById('r-claw-L');
+const rClawR           = document.getElementById('r-claw-R');
+const leftGear         = document.getElementById('left-gear');
+const rightGear        = document.getElementById('right-gear');
+const scrollLineGroup  = document.getElementById('scroll-line-group');
+const section1         = document.getElementById('section-1');
+const section2         = document.getElementById('section-2');
+const section3         = document.getElementById('section-3');
+const arsenalChars     = Array.from(document.querySelectorAll('.a-char:not(.spacer)'));
+const arsenalUnderline = document.getElementById('arsenal-underline');
+const processChars     = Array.from(document.querySelectorAll('.p-char:not(.spacer)'));
+const processUnderline = document.getElementById('process-underline');
+const box1  = document.getElementById('box1');
+const box2  = document.getElementById('box2');
+const box3  = document.getElementById('box3');
+const time1 = document.getElementById('time1');
+const time2 = document.getElementById('time2');
+const time3 = document.getElementById('time3');
+const cta   = document.getElementById('cta');
+
+// ===================================================
+// SVG PROXY — carriage y, 4 independent claw angles, gear rotation
+// clLa = left-carriage claw-L angle   clRa = left-carriage claw-R angle
+// crLa = right-carriage claw-L angle  crRa = right-carriage claw-R angle
+// ===================================================
+const LP = { lx: 150, ly: 85, rx: 174, ry: 85  };
+const RP = { lx: 950, ly: 85, rx: 974, ry: 85  };
+const svgProxy = { y: 0, clLa: 0, clRa: 0, crLa: 0, crRa: 0, gear: 0 };
+
+function updateSVG() {
+  const { y, clLa, clRa, crLa, crRa, gear } = svgProxy;
+
+  lCarriage.setAttribute('transform', `translate(0,${y})`);
+  rCarriage.setAttribute('transform', `translate(0,${y})`);
+  scrollLineGroup.setAttribute('transform', `translate(0,${y})`);
+
+  lClawL.setAttribute('transform', `translate(${LP.lx},${LP.ly}) rotate(${clLa})`);
+  lClawR.setAttribute('transform', `translate(${LP.rx},${LP.ry}) rotate(${clRa})`);
+  rClawL.setAttribute('transform', `translate(${RP.lx},${RP.ly}) rotate(${crLa})`);
+  rClawR.setAttribute('transform', `translate(${RP.rx},${RP.ry}) rotate(${crRa})`);
+
+  // Gear spins CW dropping (y↑), CCW rising (y↓); right gear mirrors left
+  leftGear.setAttribute('transform',  `rotate(${gear}  200  28)`);
+  rightGear.setAttribute('transform', `rotate(${-gear} 1000 28)`);
+}
+updateSVG();
+
+// ===================================================
+// INITIAL STATES
+// ===================================================
+gsap.set(heroCard,         { opacity: 1, scale: 1, y: 0, transformOrigin: 'center center' });
+gsap.set(scrollPrompt,     { opacity: 1 });
+gsap.set([section1, section2, section3], { opacity: 0, y: 0 });
+gsap.set(arsenalChars,     { opacity: 0, y: -18 });
+gsap.set(arsenalUnderline, { opacity: 0, width: '0%' });
+gsap.set(processChars,     { opacity: 0, y: -18 });
+gsap.set(processUnderline, { opacity: 0, scaleX: 0 });
+gsap.set([box1, box2, box3], { opacity: 0, y: 28 });
+gsap.set(time1, { opacity: 0, x: -65, scale: 0.85 });
+gsap.set(time2, { opacity: 0, x:  65, scale: 0.85 });
+gsap.set(time3, { opacity: 0, x: -65, scale: 0.85 });
+gsap.set(cta,   { opacity: 0, y: 45 });
+
+// ===================================================
+// MASTER SCROLL TIMELINE
+// ===================================================
+const tl = gsap.timeline({
+  scrollTrigger: {
+    trigger: 'body',
+    start: 'top top',
+    end: `+=${MAX_S}`,
+    scrub: true,
+  },
+  defaults: { ease: 'none' },
+});
+
+// ── 1. HERO FADE (0 → 0.09) ──────────────────────────────────────
+tl.to(heroCard,     { duration: 0.09,  opacity: 0, scale: 0.75, y: MAX_S * 0.09 * 0.35 }, 0);
+tl.to(scrollPrompt, { duration: 0.054, opacity: 0 }, 0);
+
+// ══════════════════════════════════════════════════════════════════
+// ARM CYCLE 1 — THE ARSENAL
+// DROP+OPEN: claws spread around bar handles during descent
+// GRIP: both tips swing to same side — crossed-over pinch grip
+// PULL: gripped claws carry section up
+// RELEASE: claws return to neutral
+// ══════════════════════════════════════════════════════════════════
+
+// Drop + OPEN (0.03 → 0.11)
+tl.to(svgProxy, {
+  duration: 0.08, y: ARM_REACH,
+  clLa: CL_OPEN, clRa: CR_OPEN, crLa: CL_OPEN, crRa: CR_OPEN,
+  gear: GEAR_DEG, onUpdate: updateSVG
+}, 0.03);
+
+// GRIP (0.11 → 0.15): both tips cross to right, pinching bar from outside
+tl.to(svgProxy, {
+  duration: 0.04,
+  clLa: CL_GRIP, clRa: CR_GRIP, crLa: CL_GRIP, crRa: CR_GRIP,
+  onUpdate: updateSVG
+}, 0.11);
+
+// Section 1 + Arsenal letters appear on grip
+tl.to(section1, { duration: 0.06, opacity: 1 }, 0.11);
+tl.to(arsenalChars, { duration: 0.008, opacity: 1, y: 0, stagger: 0.01 }, 0.11);
+tl.to(arsenalUnderline, { duration: 0.04, opacity: 1, width: '100%' }, 0.12);
+
+// Pull UP (0.15 → 0.23): claws stay gripped, section rises
+tl.to(svgProxy, { duration: 0.08, y: 0, gear: 0, onUpdate: updateSVG }, 0.15);
+tl.to(section1, { duration: 0.08, y: -PULL_DIST }, 0.15);
+
+// RELEASE (0.23 → 0.25)
+tl.to(svgProxy, {
+  duration: 0.02, clLa: 0, clRa: 0, crLa: 0, crRa: 0, onUpdate: updateSVG
+}, 0.23);
+
+// Feature boxes stagger in (0.25 → ~0.37)
+tl.to([box1, box2, box3], { duration: 0.08 / 3, opacity: 1, y: 0, stagger: 0.08 / 3 }, 0.25);
+
+// ══════════════════════════════════════════════════════════════════
+// ARSENAL FADES OUT DURING ARM 2 DESCENT (0.51 → 0.61)
+// ══════════════════════════════════════════════════════════════════
+tl.to([box1, box2, box3],          { duration: 0.07, opacity: 0 }, 0.51);
+tl.to([...arsenalChars].reverse(), { duration: 0.005, opacity: 0, stagger: 0.007 }, 0.53);
+tl.to(arsenalUnderline,            { duration: 0.05, opacity: 0, width: '0%' }, 0.53);
+tl.to(section1,                    { duration: 0.06, opacity: 0 }, 0.55);
+
+// ══════════════════════════════════════════════════════════════════
+// ARM CYCLE 2 — THE PROCESS
+// ══════════════════════════════════════════════════════════════════
+
+// Drop + OPEN (0.51 → 0.61)
+tl.to(svgProxy, {
+  duration: 0.10, y: ARM_REACH,
+  clLa: CL_OPEN, clRa: CR_OPEN, crLa: CL_OPEN, crRa: CR_OPEN,
+  gear: GEAR_DEG, onUpdate: updateSVG
+}, 0.51);
+
+// GRIP (0.61 → 0.65)
+tl.to(svgProxy, {
+  duration: 0.04,
+  clLa: CL_GRIP, clRa: CR_GRIP, crLa: CL_GRIP, crRa: CR_GRIP,
+  onUpdate: updateSVG
+}, 0.61);
+
+// Section 2 + Process letters stagger in on grip
+tl.to(section2, { duration: 0.06, opacity: 1 }, 0.61);
+tl.to(processChars, { duration: 0.008, opacity: 1, y: 0, stagger: 0.01 }, 0.61);
+tl.to(processUnderline, { duration: 0.04, opacity: 1, scaleX: 1 }, 0.62);
+
+// Timeline items slide in sequentially
+tl.to(time1, { duration: 0.025, opacity: 1, x: 0, scale: 1 }, 0.64);
+tl.to(time2, { duration: 0.025, opacity: 1, x: 0, scale: 1 }, 0.67);
+tl.to(time3, { duration: 0.025, opacity: 1, x: 0, scale: 1 }, 0.70);
+
+// Pull UP (0.65 → 0.73)
+tl.to(svgProxy, { duration: 0.08, y: 0, gear: 0, onUpdate: updateSVG }, 0.65);
+tl.to(section2, { duration: 0.08, y: -PULL_DIST }, 0.65);
+
+// RELEASE (0.73 → 0.75)
+tl.to(svgProxy, {
+  duration: 0.02, clLa: 0, clRa: 0, crLa: 0, crRa: 0, onUpdate: updateSVG
+}, 0.73);
+
+// ══════════════════════════════════════════════════════════════════
+// PROCESS FADES OUT DURING ARM 3 DESCENT (0.83 → 0.91)
+// ══════════════════════════════════════════════════════════════════
+tl.to([...processChars].reverse(), { duration: 0.005, opacity: 0, stagger: 0.007 }, 0.83);
+tl.to(processUnderline,            { duration: 0.04, opacity: 0, scaleX: 0 }, 0.83);
+tl.to(section2, { duration: 0.06, opacity: 0 }, 0.85);
+
+// ══════════════════════════════════════════════════════════════════
+// ARM CYCLE 3 — CTA
+// ══════════════════════════════════════════════════════════════════
+
+// Drop + OPEN (0.87 → 0.91)
+tl.to(svgProxy, {
+  duration: 0.04, y: ARM_REACH,
+  clLa: CL_OPEN, clRa: CR_OPEN, crLa: CL_OPEN, crRa: CR_OPEN,
+  gear: GEAR_DEG, onUpdate: updateSVG
+}, 0.87);
+
+// GRIP (0.91 → 0.93)
+tl.to(svgProxy, {
+  duration: 0.02,
+  clLa: CL_GRIP, clRa: CR_GRIP, crLa: CL_GRIP, crRa: CR_GRIP,
+  onUpdate: updateSVG
+}, 0.91);
+
+// Section 3 fades in on grip
+tl.to(section3, { duration: 0.04, opacity: 1 }, 0.91);
+
+// Pull UP (0.93 → 0.99)
+tl.to(svgProxy, { duration: 0.06, y: 0, gear: 0, onUpdate: updateSVG }, 0.93);
+tl.to(section3, { duration: 0.06, y: -PULL_DIST }, 0.93);
+
+// RELEASE (0.99 → 1.00)
+tl.to(svgProxy, {
+  duration: 0.01, clLa: 0, clRa: 0, crLa: 0, crRa: 0, onUpdate: updateSVG
+}, 0.99);
+
+// CTA inner fade (0.96 → 1.00)
+tl.to(cta, { duration: 0.04, opacity: 1, y: 0 }, 0.96);
+
+// ══════════════════════════════════════════════════════════════════
+// DEBUG OVERLAY — press D to show/hide
+// Shows: mouse X/Y, scroll px, scroll lines, timeline progress
+// ══════════════════════════════════════════════════════════════════
+const dbgPanel = document.createElement('div');
+dbgPanel.style.cssText = [
+  'position:fixed','bottom:20px','right:20px',
+  'background:rgba(0,0,0,.85)',
+  'border:1px solid rgba(0,255,204,.6)',
+  'border-radius:8px','padding:12px 16px',
+  'font-family:monospace','font-size:11px',
+  'color:#00ffcc','z-index:99999',
+  'letter-spacing:.5px','line-height:1.9',
+  'display:block','white-space:pre',
+  'backdrop-filter:blur(8px)',
+  'min-width:240px'
+].join(';');
+document.body.appendChild(dbgPanel);
+
+let dbgOn = true;
+let mouseX = 0, mouseY = 0, lineCount = 0;
+
+document.addEventListener('keydown', e => {
+  if (e.key.toLowerCase() === 'd') {
+    dbgOn = !dbgOn;
+    dbgPanel.style.display = dbgOn ? 'block' : 'none';
+  }
+});
+
+window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+
+window.addEventListener('wheel', e => {
+  // Normalise to "lines" regardless of deltaMode
+  // deltaMode 0=px, 1=lines, 2=pages
+  const lines = e.deltaMode === 0 ? e.deltaY / 16
+              : e.deltaMode === 1 ? e.deltaY
+              : e.deltaY * 20;
+  lineCount += lines;
+}, { passive: true });
+
+(function dbgLoop() {
+  if (dbgOn) {
+    const prog = Math.min(1, scrollY / MAX_S);
+    dbgPanel.textContent =
+      `MOUSE   x: ${String(mouseX).padStart(4)}  y: ${String(mouseY).padStart(4)}\n` +
+      `SCROLL  px: ${String(Math.round(scrollY)).padStart(5)} / ${MAX_S}\n` +
+      `LINES   ≈ ${String(Math.round(lineCount)).padStart(6)}\n` +
+      `PROGRESS  ${prog.toFixed(4)}\n` +
+      `─── Press D to hide ───`;
+  }
+  requestAnimationFrame(dbgLoop);
+}());
+</script>
+</body>
+</html>
