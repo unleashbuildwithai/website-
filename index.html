@@ -10,20 +10,24 @@
 body{background:var(--bg);font-family:'Inter','Arial',sans-serif;color:var(--text);overflow-x:hidden;}
 h1,h2,h3{text-transform:uppercase;letter-spacing:2px;}
 p{line-height:1.6;color:var(--muted);}
-.ver-nav{position:fixed;top:14px;right:14px;z-index:9999;display:flex;gap:8px;}
+.ver-nav{position:fixed;top:14px;right:14px;z-index:9999;display:flex;gap:8px;align-items:center;}
 .ver-nav a,.ver-nav span{padding:5px 13px;border-radius:20px;font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;transition:all .3s;cursor:pointer;}
 .ver-nav a{background:rgba(0,255,204,.07);border:1px solid rgba(0,255,204,.35);color:#00ffcc;}
 .ver-nav a:hover{background:rgba(0,255,204,.18);}
 .ver-nav span{background:rgba(0,255,204,.18);border:1px solid rgba(0,255,204,.8);color:#00ffcc;box-shadow:0 0 12px rgba(0,255,204,.3);}
+/* ─── TOP INITIATE BUTTON */
+.initiate-btn-top{position:fixed;top:10px;left:60px;z-index:9999;display:inline-flex;flex-direction:column;align-items:center;padding:9px 22px 7px;background:rgba(0,255,204,.08);color:#00ffcc;border:1.5px solid rgba(0,255,204,.6);border-radius:25px;font-size:.75rem;font-weight:bold;text-transform:uppercase;letter-spacing:1.5px;cursor:pointer;font-family:inherit;transition:all .2s;box-shadow:0 0 12px rgba(0,255,204,.15);}
+.initiate-btn-top:hover{background:rgba(0,255,204,.15);box-shadow:0 0 24px rgba(0,255,204,.35);}
+.btn-helper{font-size:.55rem;font-weight:400;letter-spacing:1px;opacity:.6;margin-top:2px;text-transform:lowercase;}
 .bg-robot-container{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-2;pointer-events:none;display:flex;justify-content:center;align-items:flex-start;}
 .bg-robot-svg{width:100%;height:120%;max-width:1200px;overflow:visible;}
 .hero-wrapper{position:fixed;top:0;left:0;width:100vw;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;perspective:1200px;z-index:10;pointer-events:none;}
-.hero-section{transform-origin:center;will-change:transform,opacity;pointer-events:auto;}
-.scroll-indicator{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);color:var(--neon);font-size:.8rem;letter-spacing:3px;text-transform:uppercase;animation:bounce 2s infinite;opacity:.7;}
-@keyframes bounce{0%,20%,50%,80%,100%{transform:translateY(0) translateX(-50%);}40%{transform:translateY(-10px) translateX(-50%);}60%{transform:translateY(-5px) translateX(-50%);}}
+.hero-section{transform-origin:center;will-change:transform,opacity;pointer-events:auto;position:relative;}
+/* ─── ORANGE ENERGY SCROLL INDICATOR */
+.scroll-indicator{position:absolute;top:calc(100% + 14px);left:50%;transform:translateX(-50%);color:#ff8c42;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;animation:prompt-pulse 1.4s ease-in-out infinite;opacity:.85;text-shadow:0 0 15px #ff8c42,0 0 30px #ff6b35,0 0 50px rgba(255,107,53,.4);white-space:nowrap;}
+@keyframes prompt-pulse{0%,100%{opacity:.7;text-shadow:0 0 12px #ff8c42,0 0 25px #ff6b35;}50%{opacity:1;text-shadow:0 0 25px #ff8c42,0 0 50px #ff6b35,0 0 80px rgba(255,107,53,.5);}}
 .flip-card{background-color:transparent;width:350px;height:480px;perspective:1000px;cursor:pointer;}
 .flip-card-inner{position:relative;width:100%;height:100%;text-align:center;transform-style:preserve-3d;}
-/* hover flip removed — scroll velocity controls rotation via JS */
 .flip-card-front,.flip-card-back{position:absolute;width:100%;height:100%;-webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:20px;overflow:hidden;}
 .flip-card-front{background:rgba(10,18,28,.92);backdrop-filter:blur(30px);border:1px solid rgba(0,255,204,.5);border-top:1px solid rgba(0,255,204,.9);border-left:1px solid rgba(0,255,204,.9);box-shadow:inset 0 0 50px rgba(0,255,204,.15),0 25px 60px rgba(0,0,0,.95),0 0 25px rgba(0,255,204,.25);display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;padding:35px 25px;text-align:left;}
 .pitch-section{z-index:2;display:flex;flex-direction:column;gap:12px;}
@@ -96,8 +100,6 @@ p{line-height:1.6;color:var(--muted);}
 .initiate-btn:hover{background:rgba(0,255,204,.1);box-shadow:0 0 30px rgba(0,255,204,.5),0 0 60px rgba(0,255,204,.2);}
 .initiate-btn:hover::after{opacity:1;}
 .initiate-btn:active{transform:scale(0.96);box-shadow:0 0 50px rgba(0,255,204,.9),0 0 20px rgba(0,255,204,.5);}
-.initiate-btn:active::after{opacity:1;}
-@keyframes btn-pulse{0%{box-shadow:0 0 15px rgba(0,255,204,.2);}50%{box-shadow:0 0 40px rgba(0,255,204,.7),0 0 80px rgba(0,255,204,.3);}100%{box-shadow:0 0 15px rgba(0,255,204,.2);}}
 /* ─── MODAL */
 #initiate-modal{display:none;position:fixed;inset:0;z-index:99998;align-items:center;justify-content:center;background:rgba(0,0,0,.82);backdrop-filter:blur(14px);}
 #initiate-modal.open{display:flex;}
@@ -156,7 +158,6 @@ p{line-height:1.6;color:var(--muted);}
 .msg-detail-reply{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:rgba(0,255,204,.1);color:#00ffcc;border:1px solid rgba(0,255,204,.4);border-radius:20px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;cursor:pointer;text-decoration:none;transition:all .2s;}
 .msg-detail-reply:hover{background:rgba(0,255,204,.2);}
 .inbox-empty{display:flex;align-items:center;justify-content:center;flex:1;color:rgba(0,255,204,.2);font-size:.9rem;letter-spacing:2px;text-transform:uppercase;}
-/* ─── INBOX TABS & STATUS */
 .inbox-tabs{display:flex;gap:7px;align-items:center;flex-wrap:wrap;}
 .inbox-tab{padding:7px 15px;background:transparent;color:rgba(0,255,204,.4);border:1px solid rgba(0,255,204,.18);border-radius:20px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;cursor:pointer;transition:all .2s;font-family:inherit;}
 .inbox-tab:hover{color:#00ffcc;border-color:rgba(0,255,204,.5);}
@@ -180,7 +181,6 @@ p{line-height:1.6;color:var(--muted);}
 .msg-action-restore:hover{background:rgba(64,255,170,.1);}
 .msg-action-perm{color:#ff2020;border:2px solid rgba(255,32,32,.6);font-weight:900;}
 .msg-action-perm:hover{background:rgba(255,32,32,.15);}
-/* ─── TRASH CONFIRM */
 #trash-confirm{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;background:rgba(0,0,0,.88);backdrop-filter:blur(14px);}
 #trash-confirm.open{display:flex;}
 .trash-confirm-box{background:rgba(4,6,10,.97);border:1px solid rgba(255,96,96,.4);border-top:2px solid rgba(255,96,96,.85);border-radius:20px;padding:40px 36px;max-width:420px;width:92%;box-shadow:0 0 60px rgba(255,96,96,.08),0 30px 80px rgba(0,0,0,.9);text-align:center;animation:modal-in .4s cubic-bezier(.175,.885,.32,1.275) forwards;}
@@ -192,9 +192,71 @@ p{line-height:1.6;color:var(--muted);}
 .trash-btn-delete:hover{background:rgba(255,96,96,.22);box-shadow:0 0 20px rgba(255,96,96,.3);}
 .trash-btn-view{padding:13px 22px;background:transparent;color:rgba(0,255,204,.5);border:1px solid rgba(0,255,204,.22);border-radius:25px;font-size:.82rem;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:all .2s;font-family:inherit;}
 .trash-btn-view:hover{border-color:rgba(0,255,204,.5);color:#00ffcc;}
-/* ─── EMPTY TRASH HEADER BTN */
 .empty-trash-btn{padding:7px 15px;background:transparent;color:rgba(255,96,96,.5);border:1px solid rgba(255,96,96,.25);border-radius:20px;font-size:.68rem;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:all .2s;font-family:inherit;margin-left:8px;}
 .empty-trash-btn:hover{background:rgba(255,96,96,.1);color:#ff6060;border-color:rgba(255,96,96,.6);}
+/* ─── HAND ANIMATOR PANEL */
+#hand-animator{display:none;position:fixed;left:14px;top:60px;z-index:99997;flex-direction:column;width:280px;background:rgba(3,5,10,.96);border:1px solid rgba(0,255,204,.35);border-top:2px solid rgba(0,255,204,.8);border-radius:16px;box-shadow:0 0 40px rgba(0,255,204,.1),0 20px 60px rgba(0,0,0,.9);overflow:hidden;font-family:inherit;}
+.ha-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(0,255,204,.15);background:rgba(0,255,204,.04);}
+.ha-title{font-size:.7rem;font-weight:900;color:#00ffcc;text-transform:uppercase;letter-spacing:3px;}
+.ha-close{background:transparent;border:none;color:rgba(0,255,204,.5);font-size:1.2rem;cursor:pointer;line-height:1;padding:0 4px;}
+.ha-close:hover{color:#00ffcc;}
+.ha-body{padding:14px 16px;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 100px);overflow-y:auto;}
+.ha-section{background:rgba(0,255,204,.03);border:1px solid rgba(0,255,204,.1);border-radius:10px;padding:10px 12px;}
+.ha-section-title{font-size:.6rem;font-weight:700;color:rgba(0,255,204,.6);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;}
+.ha-pos-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.ha-pos-label{font-size:.65rem;color:rgba(0,255,204,.5);text-transform:uppercase;letter-spacing:1px;}
+.ha-pos-val{font-size:.7rem;color:#00ffcc;font-family:monospace;font-weight:700;}
+.ha-scroll-row{display:flex;align-items:center;gap:8px;justify-content:space-between;}
+.ha-scroll-info{font-size:.7rem;color:#00ffcc;font-family:monospace;}
+.ha-step-btn{padding:5px 10px;background:rgba(0,255,204,.08);border:1px solid rgba(0,255,204,.3);border-radius:8px;color:#00ffcc;font-size:.7rem;cursor:pointer;font-family:inherit;transition:all .2s;}
+.ha-step-btn:hover{background:rgba(0,255,204,.18);}
+.ha-save-btn{width:100%;padding:12px;background:rgba(0,255,204,.1);border:2px solid #00ffcc;border-radius:12px;color:#00ffcc;font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:3px;cursor:pointer;font-family:inherit;transition:all .2s;box-shadow:0 0 15px rgba(0,255,204,.15);}
+.ha-save-btn:hover{background:rgba(0,255,204,.2);box-shadow:0 0 30px rgba(0,255,204,.35);}
+.ha-save-btn:active{transform:scale(0.97);}
+.ha-export-btn{width:100%;padding:10px;background:transparent;border:1px solid rgba(0,255,204,.3);border-radius:10px;color:rgba(0,255,204,.7);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;cursor:pointer;font-family:inherit;transition:all .2s;}
+.ha-export-btn:hover{background:rgba(0,255,204,.08);border-color:rgba(0,255,204,.6);color:#00ffcc;}
+.ha-kf-list{display:flex;flex-direction:column;gap:5px;max-height:160px;overflow-y:auto;}
+.ha-kf-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:rgba(0,255,204,.04);border:1px solid rgba(0,255,204,.1);border-radius:8px;cursor:pointer;transition:all .2s;}
+.ha-kf-item:hover{background:rgba(0,255,204,.09);border-color:rgba(0,255,204,.3);}
+.ha-kf-num{font-size:.6rem;color:rgba(0,255,204,.5);font-weight:700;min-width:18px;}
+.ha-kf-pos{font-size:.7rem;color:#00ffcc;font-family:monospace;flex:1;}
+.ha-kf-pct{font-size:.65rem;color:rgba(0,255,204,.6);font-family:monospace;}
+.ha-kf-del{background:transparent;border:none;color:rgba(255,96,96,.5);font-size:.9rem;cursor:pointer;padding:0 2px;line-height:1;}
+.ha-kf-del:hover{color:#ff6060;}
+.ha-hint{font-size:.6rem;color:rgba(0,255,204,.35);text-align:center;line-height:1.5;letter-spacing:.5px;}
+/* ─── CONTROL POINT STYLES (in SVG) */
+.ctrl-elbow{cursor:grab;transition:r .15s;}
+.ctrl-elbow:hover{filter:drop-shadow(0 0 8px #0096ff);}
+.ctrl-wrist{cursor:grab;transition:r .15s;}
+.ctrl-wrist:hover{filter:drop-shadow(0 0 8px #00ff64);}
+/* ─── RESPONSIVE — tablet & mobile */
+@media(max-width:768px){
+  .flip-card{width:min(350px,88vw);height:auto;min-height:460px;}
+  .flip-card-front,.flip-card-back{border-radius:16px;}
+  .feature-grid{grid-template-columns:1fr;}
+  .timeline-item{width:100%;left:0!important;padding:8px 16px 8px 44px;}
+  .timeline::after{left:16px;}
+  .timeline-item::after{left:8px!important;right:auto!important;}
+  .section{padding:15px 15px 60px;}
+  .arsenal-header{font-size:1.8rem;letter-spacing:4px;}
+  .process-header{font-size:1.5rem;letter-spacing:3px;}
+  .neon-text{font-size:2.5rem;}
+  #hand-animator{width:240px;}
+}
+@media(max-width:480px){
+  .flip-card{width:92vw;min-height:420px;}
+  .flip-card-front{padding:22px 16px;}
+  .pitch-headline{font-size:1rem;}
+  .pitch-body{font-size:.8rem;}
+  .name{font-size:1.4rem;}
+  .initiate-btn-top{left:50px;padding:7px 14px 5px;font-size:.65rem;}
+  .btn-helper{display:none;}
+  .ver-nav span{font-size:.55rem;padding:4px 9px;}
+  .scroll-indicator{font-size:.65rem;letter-spacing:2px;}
+  .arsenal-header{font-size:1.4rem;letter-spacing:2px;}
+  .grab-bar{width:86%;}
+  .neon-text{font-size:2rem;letter-spacing:2px;}
+}
 </style>
 </head>
 <body>
@@ -202,6 +264,12 @@ p{line-height:1.6;color:var(--muted);}
 <nav class="ver-nav">
   <span>🌍 ARDY W | COSMIC</span>
 </nav>
+
+<!-- TOP INITIATE BUILD BUTTON -->
+<button class="initiate-btn-top" id="initiate-btn-top">
+  ⚡ INITIATE BUILD SEQUENCE
+  <span class="btn-helper">click here to send a message</span>
+</button>
 
 <!-- ADMIN LOGIN BUTTON -->
 <button id="admin-btn" title="Admin">🔐</button>
@@ -260,7 +328,6 @@ p{line-height:1.6;color:var(--muted);}
     <stop offset="70%" stop-color="#050508" stop-opacity="0.95"/>
     <stop offset="100%" stop-color="#000" stop-opacity="0.6"/>
   </radialGradient>
-  <!-- Grass gradient: solid at base, fades to transparent at vanishing point -->
   <linearGradient id="grassGradL" x1="0" y1="1" x2="0" y2="0" gradientUnits="objectBoundingBox">
     <stop offset="0%"   stop-color="#153a12" stop-opacity="1"/>
     <stop offset="30%"  stop-color="#153a12" stop-opacity="0.75"/>
@@ -273,7 +340,6 @@ p{line-height:1.6;color:var(--muted);}
     <stop offset="65%"  stop-color="#153a12" stop-opacity="0.2"/>
     <stop offset="100%" stop-color="#153a12" stop-opacity="0"/>
   </linearGradient>
-  <!-- World fade mask: black at top (y=180), white (opaque) at y=460 -->
   <linearGradient id="wfade" gradientUnits="userSpaceOnUse" x1="0" y1="180" x2="0" y2="460">
     <stop offset="0%" stop-color="black"/>
     <stop offset="100%" stop-color="white"/>
@@ -281,17 +347,14 @@ p{line-height:1.6;color:var(--muted);}
   <mask id="world-mask">
     <rect x="0" y="0" width="1200" height="950" fill="url(#wfade)"/>
   </mask>
-  <!-- Road over body: trapezoid fade — transparent at mouth top, opaque below body -->
   <linearGradient id="rfg" gradientUnits="userSpaceOnUse" x1="0" y1="193" x2="0" y2="640">
     <stop offset="0%"   stop-color="white" stop-opacity="0"/>
     <stop offset="40%"  stop-color="white" stop-opacity="0"/>
     <stop offset="100%" stop-color="white" stop-opacity="1"/>
   </linearGradient>
   <mask id="road-fade-mask">
-    <!-- Straight rectangular road mask — full width up to y=215 -->
     <polygon points="443,950 757,950 757,215 443,215" fill="url(#rfg)"/>
   </mask>
-  <!-- Arm / robot styles -->
   <style>
     .arm-seg{fill:none;stroke:#7a8fa8;stroke-width:9;stroke-linecap:round;}
     .arm-neon{fill:none;stroke:#00ffcc;stroke-width:2.5;stroke-linecap:round;filter:drop-shadow(0 0 6px #00ffcc);}
@@ -316,27 +379,21 @@ p{line-height:1.6;color:var(--muted);}
 <g id="robot-body" opacity="0.70" filter="url(#nf)">
 
   <!-- === HEAD === -->
-  <!-- Main head polygon -->
   <polygon points="487,8 713,8 745,38 752,95 740,155 706,175 494,175 460,155 448,95 455,38" fill="#05080c" stroke="#7a8fa8" stroke-width="3"/>
-  <!-- Inner head panel -->
   <polygon points="497,16 703,16 732,44 738,92 727,148 698,166 502,166 472,148 462,92 468,44" fill="#05080c" stroke="#b0c4de" stroke-width="1.5"/>
-  <!-- Head detail line -->
   <line x1="452" y1="125" x2="748" y2="125" stroke="#b0c4de" stroke-width="1.5" opacity="0.6"/>
-  <!-- Ear vents left -->
   <rect x="433" y="58" width="18" height="48" rx="4" fill="#05080c" stroke="#7a8fa8" stroke-width="2"/>
   <line x1="435" y1="68" x2="450" y2="68" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
   <line x1="435" y1="76" x2="450" y2="76" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
   <line x1="435" y1="84" x2="450" y2="84" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
   <line x1="435" y1="92" x2="450" y2="92" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
   <line x1="435" y1="100" x2="450" y2="100" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
-  <!-- Ear vents right -->
   <rect x="749" y="58" width="18" height="48" rx="4" fill="#05080c" stroke="#7a8fa8" stroke-width="2"/>
   <line x1="751" y1="68" x2="766" y2="68" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
   <line x1="751" y1="76" x2="766" y2="76" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
   <line x1="751" y1="84" x2="766" y2="84" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
   <line x1="751" y1="92" x2="766" y2="92" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
   <line x1="751" y1="100" x2="766" y2="100" stroke="#b0c4de" stroke-width="1" opacity=".7"/>
-  <!-- Antenna -->
   <line x1="600" y1="8" x2="600" y2="-8" stroke="#7a8fa8" stroke-width="3.5"/>
   <circle cx="600" cy="-12" r="7" fill="#05080c" stroke="#b0c4de" stroke-width="1.8"/>
   <circle cx="600" cy="-12" r="4" class="neon-dot"/>
@@ -344,7 +401,6 @@ p{line-height:1.6;color:var(--muted);}
   <circle cx="567" cy="-6" r="3.5" fill="#05080c" stroke="#b0c4de" stroke-width="1.2"/><circle cx="567" cy="-6" r="1.8" class="neon-dot"/>
   <line x1="624" y1="4" x2="631" y2="-4" stroke="#b0c4de" stroke-width="1.5"/>
   <circle cx="633" cy="-6" r="3.5" fill="#05080c" stroke="#b0c4de" stroke-width="1.2"/><circle cx="633" cy="-6" r="1.8" class="neon-dot"/>
-  <!-- Visor -->
   <rect x="494" y="50" width="212" height="58" rx="8" fill="#05080c" stroke="#00ffcc" stroke-width="1.5" opacity="0.4"/>
   <rect x="596" y="50" width="4" height="58" fill="none" stroke="#7a8fa8" stroke-width="1" opacity="0.35"/>
   <!-- LEFT EYE -->
@@ -357,13 +413,11 @@ p{line-height:1.6;color:var(--muted);}
   <circle cx="653" cy="79" r="15" fill="#00ffcc" style="filter:drop-shadow(0 0 20px #00ffcc)"/>
   <circle cx="646" cy="73" r="5" fill="#fff" opacity=".9"/>
   <circle cx="653" cy="79" r="6" fill="#004433" opacity="0.6"/>
-  <!-- Head bottom panel -->
   <rect x="455" y="130" width="290" height="24" rx="3" fill="#080d12" stroke="#7a8fa8" stroke-width="1.5"/>
   <line x1="462" y1="140" x2="738" y2="140" stroke="#00ffcc" stroke-width="1" opacity="0.3"/>
 
-  <!-- === UPPER JAW (with teeth pointing down) === -->
+  <!-- === UPPER JAW === -->
   <rect x="460" y="154" width="280" height="22" fill="#080c10" stroke="#7a8fa8" stroke-width="2"/>
-  <!-- Teeth (upper) - 7 teeth -->
   <polygon points="467,176 484,176 480,193 471,193" fill="#c8d0da" stroke="#8a9aaa" stroke-width="1"/>
   <polygon points="490,176 507,176 503,194 494,194" fill="#c8d0da" stroke="#8a9aaa" stroke-width="1"/>
   <polygon points="514,176 530,176 527,195 518,195" fill="#d0d8e2" stroke="#8a9aaa" stroke-width="1"/>
@@ -375,14 +429,12 @@ p{line-height:1.6;color:var(--muted);}
   <polygon points="693,176 710,176 706,193 697,193" fill="#c8d0da" stroke="#8a9aaa" stroke-width="1"/>
   <polygon points="716,176 732,176 728,192 719,192" fill="#c8d0da" stroke="#8a9aaa" stroke-width="1"/>
 
-  <!-- === MOUTH VOID (black abyss) === -->
+  <!-- === MOUTH VOID === -->
   <rect x="460" y="193" width="280" height="44" fill="url(#mouth-glow)"/>
   <rect x="462" y="193" width="276" height="44" fill="#000000"/>
-  <!-- Mouth shadow/depth -->
   <ellipse cx="600" cy="210" rx="130" ry="16" fill="#050508" opacity="0.8"/>
 
-  <!-- === LOWER JAW (with teeth pointing up) === -->
-  <!-- Lower teeth - offset from upper -->
+  <!-- === LOWER JAW === -->
   <polygon points="477,237 493,237 489,222 480,222" fill="#b8c0ca" stroke="#8a9aaa" stroke-width="1"/>
   <polygon points="500,237 517,237 513,221 504,221" fill="#c0c8d2" stroke="#8a9aaa" stroke-width="1"/>
   <polygon points="524,237 540,237 537,220 528,220" fill="#b8c0ca" stroke="#8a9aaa" stroke-width="1"/>
@@ -392,7 +444,6 @@ p{line-height:1.6;color:var(--muted);}
   <polygon points="682,237 699,237 695,222 686,222" fill="#b8c0ca" stroke="#8a9aaa" stroke-width="1"/>
   <polygon points="706,237 722,237 718,222 709,222" fill="#c0c8d2" stroke="#8a9aaa" stroke-width="1"/>
   <rect x="460" y="237" width="280" height="24" fill="#080c10" stroke="#7a8fa8" stroke-width="2"/>
-  <!-- Lower jaw curved bottom lip -->
   <path d="M 460,261 Q 600,285 740,261 L 740,268 Q 600,294 460,268 Z" fill="#05080c" stroke="#7a8fa8" stroke-width="1.5"/>
 
   <!-- === NECK === -->
@@ -405,18 +456,14 @@ p{line-height:1.6;color:var(--muted);}
   <!-- === TORSO === -->
   <polygon points="460,296 740,296 712,490 488,490" fill="#05080c" stroke="#7a8fa8" stroke-width="3.5"/>
   <polygon points="472,308 728,308 704,480 496,480" fill="#05080c" stroke="#b0c4de" stroke-width="1.5"/>
-  <!-- Torso horizontal lines -->
   <line x1="462" y1="348" x2="738" y2="348" stroke="#b0c4de" stroke-width="1.5"/>
   <line x1="470" y1="390" x2="730" y2="390" stroke="#b0c4de" stroke-width="1.5" stroke-dasharray="6 4" opacity=".6"/>
   <line x1="480" y1="432" x2="720" y2="432" stroke="#b0c4de" stroke-width="1" opacity=".4"/>
-  <!-- Energy core -->
   <circle cx="600" cy="395" r="44" fill="#05080c" stroke="#b0c4de" stroke-width="1.8"/>
   <circle cx="600" cy="395" r="28" fill="#05080c" stroke="#b0c4de" stroke-width="1.2" stroke-dasharray="5 3"/>
   <circle cx="600" cy="395" r="16" fill="#00ffcc" style="filter:drop-shadow(0 0 22px #00ffcc)"/>
   <circle cx="600" cy="395" r="6" fill="#fff"/>
-  <!-- Chest badge -->
   <path d="M 588,372 L 600,360 L 596,366 L 612,360 L 600,372 L 604,367 Z" stroke="#00ffcc" stroke-width="1.8" fill="none" style="filter:drop-shadow(0 0 5px #00ffcc)"/>
-  <!-- Hip belt -->
   <rect x="496" y="470" width="208" height="18" rx="5" fill="#05080c" stroke="#b0c4de" stroke-width="1.5"/>
   <rect x="572" y="470" width="56" height="18" rx="4" fill="none" stroke="#00ffcc" stroke-width="1.5" opacity=".5"/>
 
@@ -424,14 +471,11 @@ p{line-height:1.6;color:var(--muted);}
   <path d="M 460,296 L 325,296 L 298,342 L 305,400 L 360,420 L 460,408 L 468,350 Z" fill="#05080c" stroke="#7a8fa8" stroke-width="2.5"/>
   <line x1="325" y1="308" x2="325" y2="392" stroke="#b0c4de" stroke-width="1" opacity=".6"/>
   <line x1="342" y1="298" x2="342" y2="408" stroke="#b0c4de" stroke-width="1" opacity=".4"/>
-  <!-- Left shoulder socket -->
   <circle cx="338" cy="402" r="26" fill="#05080c" stroke="#b0c4de" stroke-width="3"/>
   <circle cx="338" cy="402" r="13" class="neon-dot"/>
-  <!-- Left piston housing -->
   <rect id="l-piston-housing" x="278" y="360" width="60" height="22" rx="4" fill="#05080c" stroke="#7a8fa8" stroke-width="2"/>
   <rect id="l-piston-rod" x="248" y="366" width="32" height="10" rx="3" fill="#8a9cb5" stroke="#6a7c95" stroke-width="1"/>
   <rect x="278" y="363" width="4" height="16" rx="1" fill="#00ffcc" opacity="0.5"/>
-  <!-- Left piston housing 2 -->
   <rect x="285" y="390" width="55" height="18" rx="3" fill="#05080c" stroke="#7a8fa8" stroke-width="1.5"/>
   <rect id="l-piston-rod2" x="258" y="395" width="28" height="8" rx="2" fill="#6a7c95" stroke="#4a5c75" stroke-width="1"/>
 
@@ -439,20 +483,15 @@ p{line-height:1.6;color:var(--muted);}
   <path d="M 740,296 L 875,296 L 902,342 L 895,400 L 840,420 L 740,408 L 732,350 Z" fill="#05080c" stroke="#7a8fa8" stroke-width="2.5"/>
   <line x1="875" y1="308" x2="875" y2="392" stroke="#b0c4de" stroke-width="1" opacity=".6"/>
   <line x1="858" y1="298" x2="858" y2="408" stroke="#b0c4de" stroke-width="1" opacity=".4"/>
-  <!-- Right shoulder socket -->
   <circle cx="862" cy="402" r="26" fill="#05080c" stroke="#b0c4de" stroke-width="3"/>
   <circle cx="862" cy="402" r="13" class="neon-dot"/>
-  <!-- Right piston housing -->
   <rect id="r-piston-housing" x="862" y="360" width="60" height="22" rx="4" fill="#05080c" stroke="#7a8fa8" stroke-width="2"/>
   <rect id="r-piston-rod" x="920" y="366" width="32" height="10" rx="3" fill="#8a9cb5" stroke="#6a7c95" stroke-width="1"/>
   <rect x="918" y="363" width="4" height="16" rx="1" fill="#00ffcc" opacity="0.5"/>
-  <!-- Right piston housing 2 -->
   <rect x="860" y="390" width="55" height="18" rx="3" fill="#05080c" stroke="#7a8fa8" stroke-width="1.5"/>
   <rect id="r-piston-rod2" x="914" y="395" width="28" height="8" rx="2" fill="#6a7c95" stroke="#4a5c75" stroke-width="1"/>
 
 </g><!-- end robot-body -->
-
-<!-- arms moved to overlay SVG -->
 </svg>
 </div>
 
@@ -554,7 +593,7 @@ p{line-height:1.6;color:var(--muted);}
         </div>
       </div>
     </div>
-    <div class="scroll-indicator" id="scroll-prompt">Scroll to Initiate Build Sequence</div>
+    <div class="scroll-indicator" id="scroll-prompt">▼ Scroll to Initiate Build Sequence ▼</div>
   </section>
 </div>
 
@@ -606,7 +645,7 @@ p{line-height:1.6;color:var(--muted);}
     <div class="grab-bar"><div class="grab-handle left"></div><div class="grab-handle right"></div></div>
     <section class="cta-section" id="cta">
       <h2 style="font-size:2rem;margin-bottom:20px;text-shadow:0 0 10px rgba(0,255,204,.5);text-transform:uppercase;letter-spacing:2px;">Ready to Unleash Your Genius?</h2>
-      <p>Stop waiting for a dream developer. I'm here now.</p>
+      <p style="margin-top:-8px;">Stop waiting for a dream developer. I'm here now.</p>
       <button class="initiate-btn" id="initiate-btn">⚡ INITIATE BUILD SEQUENCE</button>
     </section>
   </div>
@@ -631,7 +670,7 @@ p{line-height:1.6;color:var(--muted);}
   </div>
 </div>
 
-<!-- ARM & HAND OVERLAY SVG (z-index 20, renders in front of content so hands visually grip bars) -->
+<!-- ARM & HAND OVERLAY SVG -->
 <svg id="armSVG" style="position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:1200px;height:120%;z-index:20;pointer-events:none;overflow:visible;" viewBox="0 0 1200 950" preserveAspectRatio="xMidYMin meet" xmlns="http://www.w3.org/2000/svg">
 <style>
 .as{fill:none;stroke:#7a8fa8;stroke-width:9;stroke-linecap:round;}
@@ -672,27 +711,83 @@ p{line-height:1.6;color:var(--muted);}
 <line id="lo-r-f2s1" class="af"/><line id="lo-r-f2s2" class="af"/><line id="lo-r-f2n1" class="afn"/><line id="lo-r-f2n2" class="afn"/><circle id="lo-r-f2j" class="afj" r="5.5"/><circle id="lo-r-f2t" class="aft" r="4"/>
 <line id="lo-r-f3s1" class="af"/><line id="lo-r-f3s2" class="af"/><line id="lo-r-f3n1" class="afn"/><line id="lo-r-f3n2" class="afn"/><circle id="lo-r-f3j" class="afj" r="5.5"/><circle id="lo-r-f3t" class="aft" r="4"/>
 <line id="lo-r-f4s1" class="af"/><line id="lo-r-f4s2" class="af"/><line id="lo-r-f4n1" class="afn"/><line id="lo-r-f4n2" class="afn"/><circle id="lo-r-f4j" class="afj" r="5.5"/><circle id="lo-r-f4t" class="aft" r="4"/>
+<!-- ANIMATOR CONTROL POINTS (hidden by default, pointer-events enabled) -->
+<circle id="ctrl-l-elbow" class="ctrl-elbow" r="14" fill="rgba(0,150,255,0.35)" stroke="#0096ff" stroke-width="2.5" display="none" style="pointer-events:all;"/>
+<circle id="ctrl-l-wrist" class="ctrl-wrist"  r="14" fill="rgba(0,255,100,0.35)" stroke="#00ff64" stroke-width="2.5" display="none" style="pointer-events:all;"/>
+<circle id="ctrl-r-elbow" class="ctrl-elbow" r="14" fill="rgba(0,150,255,0.35)" stroke="#0096ff" stroke-width="2.5" display="none" style="pointer-events:all;"/>
+<circle id="ctrl-r-wrist" class="ctrl-wrist"  r="14" fill="rgba(0,255,100,0.35)" stroke="#00ff64" stroke-width="2.5" display="none" style="pointer-events:all;"/>
 </svg>
+
+<!-- HAND ANIMATOR PANEL -->
+<div id="hand-animator">
+  <div class="ha-header">
+    <div class="ha-title">🎨 Hand Animator</div>
+    <button class="ha-close" id="ha-close">×</button>
+  </div>
+  <div class="ha-body">
+    <div class="ha-hint">Press <strong style="color:#00ffcc;">H</strong> to toggle &nbsp;|&nbsp; 🔵 = Elbow &nbsp;|&nbsp; 🟢 = Wrist</div>
+    <!-- Scroll step controls -->
+    <div class="ha-section">
+      <div class="ha-section-title">Scroll Position</div>
+      <div class="ha-scroll-row">
+        <button class="ha-step-btn" id="ha-step-back">◀ -50</button>
+        <div class="ha-scroll-info"><span id="anim-scroll">0</span>px &nbsp; <span id="anim-progress">0</span>%</div>
+        <button class="ha-step-btn" id="ha-step-fwd">+50 ▶</button>
+      </div>
+      <div class="ha-scroll-row" style="margin-top:6px;">
+        <button class="ha-step-btn" id="ha-step-back1">◀ -10</button>
+        <button class="ha-step-btn" id="ha-step-fwd1" style="margin-left:auto;">+10 ▶</button>
+      </div>
+    </div>
+    <!-- Left arm coords -->
+    <div class="ha-section">
+      <div class="ha-section-title">🔵 Left Elbow &nbsp; 🟢 Left Wrist</div>
+      <div class="ha-pos-row"><span class="ha-pos-label">Elbow</span><span class="ha-pos-val">(<span id="l-elbow-x">—</span>, <span id="l-elbow-y">—</span>)</span></div>
+      <div class="ha-pos-row"><span class="ha-pos-label">Wrist</span><span class="ha-pos-val">(<span id="l-wrist-x">—</span>, <span id="l-wrist-y">—</span>)</span></div>
+    </div>
+    <!-- Right arm coords -->
+    <div class="ha-section">
+      <div class="ha-section-title">🔵 Right Elbow &nbsp; 🟢 Right Wrist</div>
+      <div class="ha-pos-row"><span class="ha-pos-label">Elbow</span><span class="ha-pos-val">(<span id="r-elbow-x">—</span>, <span id="r-elbow-y">—</span>)</span></div>
+      <div class="ha-pos-row"><span class="ha-pos-label">Wrist</span><span class="ha-pos-val">(<span id="r-wrist-x">—</span>, <span id="r-wrist-y">—</span>)</span></div>
+    </div>
+    <!-- Save button -->
+    <button class="ha-save-btn" id="ha-save">💾 SAVE KEYFRAME</button>
+    <!-- Keyframe list -->
+    <div class="ha-section">
+      <div class="ha-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>Saved Keyframes (<span id="kf-count">0</span>)</span>
+        <button id="ha-clear" style="background:transparent;border:1px solid rgba(255,96,96,.4);border-radius:6px;color:rgba(255,96,96,.6);font-size:.58rem;padding:2px 7px;cursor:pointer;font-family:inherit;transition:all .2s;" onmouseover="this.style.color='#ff6060';this.style.borderColor='rgba(255,96,96,.8)'" onmouseout="this.style.color='rgba(255,96,96,.6)';this.style.borderColor='rgba(255,96,96,.4)'">✕ Clear All</button>
+      </div>
+      <div class="ha-kf-list" id="keyframe-items">
+        <div style="color:rgba(0,255,204,.3);font-size:.7rem;text-align:center;padding:8px;">No keyframes yet</div>
+      </div>
+    </div>
+    <!-- Export -->
+    <button class="ha-export-btn" id="ha-export">📤 Export GSAP Code</button>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
 gsap.registerPlugin(ScrollTrigger);
 
-// ─── PAGE SETUP
-const VH=window.innerHeight, TOTAL_H=VH*9;
+// ─── HA declared early so updateAll() can safely reference it before HA is fully defined
+let HA = null;
+
+// ─── PAGE SETUP — 5x viewport = ~4500px total scroll
+const VH=window.innerHeight, TOTAL_H=VH*5;
 document.body.style.height=TOTAL_H+'px';
 const MAX_S=TOTAL_H-VH, PULL_DIST=VH-130;
 
-// ─── TIMING ANCHORS (all units = scrollPx/MAX_S)
-const HAND_START = 300/MAX_S;   // arms start reaching at scroll 300
-const AP         = 500/MAX_S;   // Arsenal section starts at scroll 500
-const LSTG       = 100/MAX_S;   // Arsenal letter stagger (~100px each)
-const LXSTG      = 45/MAX_S;    // Arsenal letter exit stagger
-const AP_EXIT    = 1900/MAX_S;  // Arsenal exit starts at scroll 1900
-const PLSTG      = 85/MAX_S;    // Blueprint letter stagger
-const PLXSTG     = 40/MAX_S;    // Blueprint exit stagger
-// PP and CP defined inside timeline (const PP=AP+0.44, const CP=PP+0.48)
+// ─── TIMING ANCHORS (compressed to fit in 5x scroll)
+// AP = Arsenal starts at 8% scroll
+// PP = Blueprint at 40%
+// CP = CTA at 70%
+const AP = 0.08;
+const PP = AP + 0.30;  // Blueprint at ~38%
+const CP = PP + 0.28;  // CTA at ~66%
 
 // ─── MOUTH TARGET
 const MOUTH_DX=0;
@@ -718,18 +813,21 @@ const MOUTH_DY=-(VH*0.27);
 }());
 
 // ─── ARM GEOMETRY
-// L_UP / R_UP wrist positions kept BELOW shoulder (LS_Y=402) to prevent IK flip
 const LS_X=338,LS_Y=402, RS_X=862,RS_Y=402, ARM_L=270;
 const L_INIT={wx:175,wy:560}, L_DOWN={wx:575,wy:820}, L_UP={wx:220,wy:500};
 const R_INIT={wx:1025,wy:560},R_DOWN={wx:625,wy:820}, R_UP={wx:980,wy:500};
 
-// GSAP proxies — grip (0=open hand, 1=fist)
+// GSAP proxies
 const LP={wx:L_INIT.wx,wy:L_INIT.wy,grip:0};
 const RP={wx:R_INIT.wx,wy:R_INIT.wy,grip:0};
 const gProxy={y:0}, gearL={rot:0}, gearR={rot:0};
 const barOp={b1:1,b2:1,b3:1};
 
-// ─── IK SOLVER — with natural elbow constraint (over-bicep mechanic)
+// Gear rotation accumulator driven by scroll velocity
+let gearScrollAccum = 0;
+let lastScrollY_gear = 0;
+
+// ─── IK SOLVER
 function solveIK(sx,sy,tx,ty,L1,L2,flip){
   const dx=tx-sx,dy=ty-sy,d=Math.hypot(dx,dy);
   const maxR=L1+L2-0.1,dc=Math.min(d,maxR);
@@ -749,7 +847,7 @@ function solveIK(sx,sy,tx,ty,L1,L2,flip){
   return{ex,ey,wx:tx2,wy:ty2};
 }
 
-// ─── 5-FINGER HAND GEOMETRY (local space: wrist at origin, fingers DOWN)
+// ─── 5-FINGER HAND GEOMETRY
 const F_OPEN=[
   {b:[-22,40],m:[-30,65],t:[-34,82]},
   {b:[-11,43],m:[-14,70],t:[-15,88]},
@@ -767,7 +865,6 @@ const F_FIST=[
 function lrp(a,b,t){return a*(1-t)+b*t;}
 function rPt(px,py,a){const c=Math.cos(a),s=Math.sin(a);return[px*c-py*s,px*s+py*c];}
 
-// pfx = 'lo-l' or 'lo-r' | mirror = -1 left, 1 right (flips thumb side)
 function updateHand(pfx,wx,wy,grip,angle,mirror){
   const pel=document.getElementById(pfx+'-palm');
   if(!pel)return;
@@ -793,7 +890,7 @@ function updateHand(pfx,wx,wy,grip,angle,mirror){
   }
 }
 
-// ─── ELEMENT REFS (overlay SVG lo-* elements)
+// ─── ELEMENT REFS
 const q=id=>document.getElementById(id);
 const lU=q('lo-l-upper'),lUN=q('lo-l-upper-n');
 const lEl=q('lo-l-elbow'),lED=q('lo-l-elbow-d'),lEG=q('lo-l-gear');
@@ -813,21 +910,28 @@ const grabBar3=document.querySelector('#section-3 .grab-bar');
 function ln(el,x1,y1,x2,y2){if(!el)return;el.setAttribute('x1',x1);el.setAttribute('y1',y1);el.setAttribute('x2',x2);el.setAttribute('y2',y2);}
 function cxy(el,x,y){if(!el)return;el.setAttribute('cx',x);el.setAttribute('cy',y);}
 
-// ─── ROAD STREAMING — scroll-velocity drives the scene continuously
+// ─── SCROLL-DRIVEN GEAR ROTATION
+// Accumulates rotation from scroll velocity so gears ALWAYS spin with scroll
+window.addEventListener('scroll',()=>{
+  const delta = scrollY - lastScrollY_gear;
+  lastScrollY_gear = scrollY;
+  gearScrollAccum += delta * 0.6; // spin speed multiplier
+},{passive:true});
+
+// ─── ROAD STREAMING
 const roadBonus={y:0};
 let lastScrollY_r=0,scrollVel_r=0,roadTicking=false;
 window.addEventListener('scroll',()=>{
   const delta=scrollY-lastScrollY_r;
   lastScrollY_r=scrollY;
-  scrollVel_r=delta*0.45; // road speed multiplier
+  scrollVel_r=delta*0.45;
   if(!roadTicking){roadTicking=true;requestAnimationFrame(roadLoop);}
 },{passive:true});
 
 function roadLoop(){
   if(Math.abs(scrollVel_r)>0.1){
     roadBonus.y-=scrollVel_r;
-    scrollVel_r*=0.85; // friction decay
-    // Seamless loop: scene content height = 1400 local units
+    scrollVel_r*=0.85;
     if(roadBonus.y<-1400)roadBonus.y+=1400;
     if(roadBonus.y>100)roadBonus.y=0;
     updateAll();
@@ -841,8 +945,11 @@ function roadLoop(){
 // ─── MAIN UPDATE
 function updateAll(){
   if(globeScene)globeScene.setAttribute('transform',`translate(0,${900+gProxy.y+roadBonus.y})`);
+
+  // Compute IK — hand animator may override wrist targets
   const L=solveIK(LS_X,LS_Y,LP.wx,LP.wy,ARM_L,ARM_L,1);
   const R=solveIK(RS_X,RS_Y,RP.wx,RP.wy,ARM_L,ARM_L,-1);
+
   // Left arm
   ln(lU,LS_X,LS_Y,L.ex,L.ey); ln(lUN,LS_X,LS_Y,L.ex,L.ey);
   cxy(lEl,L.ex,L.ey); cxy(lED,L.ex,L.ey); cxy(lEG,L.ex,L.ey);
@@ -853,14 +960,19 @@ function updateAll(){
   cxy(rEl,R.ex,R.ey); cxy(rED,R.ex,R.ey); cxy(rEG,R.ex,R.ey);
   ln(rLo,R.ex,R.ey,R.wx,R.wy); ln(rLN,R.ex,R.ey,R.wx,R.wy);
   if(rW){rW.setAttribute('x',R.wx-22);rW.setAttribute('y',R.wy-11);}
-  // Elbow gears
-  if(lEG)lEG.setAttribute('transform',`rotate(${gearL.rot},${L.ex},${L.ey})`);
-  if(rEG)rEG.setAttribute('transform',`rotate(${gearR.rot},${R.ex},${R.ey})`);
+
+  // Elbow gears — use accumulated scroll rotation PLUS timeline rotation
+  const totalGearL = gearL.rot + gearScrollAccum;
+  const totalGearR = gearR.rot - gearScrollAccum;
+  if(lEG)lEG.setAttribute('transform',`rotate(${totalGearL},${L.ex},${L.ey})`);
+  if(rEG)rEG.setAttribute('transform',`rotate(${totalGearR},${R.ex},${R.ey})`);
+
   // 5-finger hands
   const lAng=Math.atan2(L.wy-L.ey,L.wx-L.ex)-Math.PI/2;
   const rAng=Math.atan2(R.wy-R.ey,R.wx-R.ex)-Math.PI/2;
   updateHand('lo-l',L.wx,L.wy,LP.grip,lAng,-1);
   updateHand('lo-r',R.wx,R.wy,RP.grip,rAng, 1);
+
   // Pistons
   const pExtL=Math.max(0,Math.min(1,(LP.wy-500)/320))*38;
   const pExtR=Math.max(0,Math.min(1,(RP.wy-500)/320))*38;
@@ -868,10 +980,14 @@ function updateAll(){
   if(lPistonRod2)lPistonRod2.setAttribute('x',260-pExtL*0.6);
   if(rPistonRod) rPistonRod.setAttribute('x',920+pExtR);
   if(rPistonRod2)rPistonRod2.setAttribute('x',914+pExtR*0.6);
+
   // Grab bar dimming
   if(grabBar1)grabBar1.style.opacity=barOp.b1;
   if(grabBar2)grabBar2.style.opacity=barOp.b2;
   if(grabBar3)grabBar3.style.opacity=barOp.b3;
+
+  // Update animator control points if open (HA starts null, check first)
+  if(HA && HA.active) HA.syncControlPoints(L,R);
 }
 updateAll();
 
@@ -886,7 +1002,15 @@ const box1=q('box1'),box2=q('box2'),box3=q('box3');
 const time1=q('time1'),time2=q('time2'),time3=q('time3');
 const cta=q('cta');
 
-// ─── TYPEWRITER SETUP — letter-by-letter for box titles (| = line break)
+// ─── ORANGE SCROLL PROMPT — vanish instantly on first scroll tick
+window.addEventListener('scroll',function promptFade(){
+  if(scrollY > 8 && scrollPmt){
+    gsap.set(scrollPmt,{opacity:0}); // instant
+  }
+  window.removeEventListener('scroll',promptFade);
+},{passive:true});
+
+// ─── TYPEWRITER SETUP
 function setupTypewriter(boxEl){
   const t=boxEl.querySelector('.feature-title');
   if(!t)return[];
@@ -932,7 +1056,6 @@ gsap.set(cta,{opacity:0,y:45});
   let cardRot=0,cardVel=0,lastSY_c=0,settling=false,settled=false,hoverFlipped=false;
   const cp={r:0};
 
-  // ── Scroll: add velocity to spin card
   window.addEventListener('scroll',()=>{
     if(scrollY/MAX_S>0.09)return;
     const delta=scrollY-lastSY_c;
@@ -941,21 +1064,19 @@ gsap.set(cta,{opacity:0,y:45});
     cardVel+=delta*1.4;
   },{passive:true});
 
-  // ── Hover: flip to back on enter, flip to front on leave
   flipCardEl.addEventListener('mouseenter',()=>{
     if(scrollY/MAX_S>0.09)return;
-    if(Math.abs(cardVel)>2)return; // spinning — don't interfere
+    if(Math.abs(cardVel)>2)return;
     if(hoverFlipped)return;
-    hoverFlipped=true;
-    settling=true; settled=false;
+    hoverFlipped=true; settling=true; settled=false;
     gsap.killTweensOf(cp);
-    // Find nearest "back" face (180°, 540°, -180°…)
     const norm=((cardRot%360)+360)%360;
     const isOnFront=(norm<90||norm>270);
     const base=cardRot-norm;
-    const targetBack=isOnFront?base+180:cardRot; // already on back, no move
+    // Spin 2 full rotations then land on back (720 + 180 = 900°)
+    const targetBack=isOnFront?base+900:cardRot+720;
     cp.r=cardRot;
-    gsap.to(cp,{r:targetBack,duration:0.75,ease:'power2.inOut',
+    gsap.to(cp,{r:targetBack,duration:1.5,ease:'power2.inOut',
       onUpdate:()=>{fci.style.transform=`rotateY(${cp.r}deg)`;cardRot=cp.r;},
       onComplete:()=>{settling=false;settled=true;}
     });
@@ -964,19 +1085,17 @@ gsap.set(cta,{opacity:0,y:45});
   flipCardEl.addEventListener('mouseleave',()=>{
     if(scrollY/MAX_S>0.09)return;
     if(!hoverFlipped)return;
-    hoverFlipped=false;
-    settling=true; settled=false;
+    hoverFlipped=false; settling=true; settled=false;
     gsap.killTweensOf(cp);
-    // Snap to nearest front face (0°, 360°, -360°…)
-    const nearestFront=Math.round(cardRot/360)*360;
+    // Spin 2 full rotations back to nearest front
+    const nearestFront=Math.round(cardRot/360)*360+720;
     cp.r=cardRot;
-    gsap.to(cp,{r:nearestFront,duration:0.75,ease:'power2.inOut',
+    gsap.to(cp,{r:nearestFront,duration:1.5,ease:'power2.inOut',
       onUpdate:()=>{fci.style.transform=`rotateY(${cp.r}deg)`;cardRot=cp.r;},
       onComplete:()=>{settling=false;settled=true;}
     });
   });
 
-  // ── Animation loop: apply velocity + friction
   (function cardLoop(){
     if(!settled){
       if(Math.abs(cardVel)>0.25){
@@ -985,7 +1104,6 @@ gsap.set(cta,{opacity:0,y:45});
         fci.style.transform=`rotateY(${cardRot}deg)`;
       } else if(cardVel!==0&&!settling){
         settling=true; cardVel=0;
-        // Snap to nearest face (front preferred over back to avoid getting stuck)
         const nearestFront=Math.round(cardRot/360)*360;
         const nearestBack=Math.round((cardRot-180)/360)*360+180;
         const distFront=Math.abs(cardRot-nearestFront);
@@ -1002,190 +1120,227 @@ gsap.set(cta,{opacity:0,y:45});
   }());
 }());
 
-// ─── MASTER TIMELINE
+// ─── MASTER TIMELINE (compressed 5x viewport)
+// Sections: Hero exit(0-0.07) | Arsenal(AP-AP+0.28) | Blueprint(PP-PP+0.28) | CTA(CP-CP+0.26) | End
 const tl=gsap.timeline({
   scrollTrigger:{trigger:'body',start:'top top',end:`+=${MAX_S}`,scrub:true},
   defaults:{ease:'none'}
 });
 
-// ── HANDS ANIMATE FIRST — appear to grab/sweep the hero card into the mouth
-// Left hand: swoops in from left side toward center-left
-tl.to(LP,{duration:0.05,wx:490,wy:420,grip:0.4,onUpdate:updateAll},0);
-tl.to(gearL,{duration:0.05,rot:-120,onUpdate:updateAll},0);
-// Right hand: swoops in from right side toward center-right
-tl.to(RP,{duration:0.05,wx:710,wy:420,grip:0.4,onUpdate:updateAll},0);
-tl.to(gearR,{duration:0.05,rot:120,onUpdate:updateAll},0);
-// Both converge upward as card shrinks into mouth
-tl.to(LP,{duration:0.05,wx:555,wy:280,grip:0.85,onUpdate:updateAll},0.04);
-tl.to(RP,{duration:0.05,wx:645,wy:280,grip:0.85,onUpdate:updateAll},0.04);
-// Hands retract to init after card is gone
-tl.to(LP,{duration:0.04,wx:L_INIT.wx,wy:L_INIT.wy,grip:0,onUpdate:updateAll},0.09);
-tl.to(RP,{duration:0.04,wx:R_INIT.wx,wy:R_INIT.wy,grip:0,onUpdate:updateAll},0.09);
+// ── HERO CARD EXITS (fast: 0→0.07)
+tl.to(heroCard,{duration:0.07,opacity:0,scale:0,x:MOUTH_DX,y:MOUTH_DY},0);
+tl.to(scrollPmt,{duration:0.02,opacity:0},0);
 
-// ── HERO CARD exits (0→0.08)
-tl.to(heroCard,{duration:0.08,opacity:0,scale:0,x:MOUTH_DX,y:MOUTH_DY},0);
-tl.to(scrollPmt,{duration:0.03,opacity:0},0);
+// ── HANDS — stop-motion choreography (Hand Animator export, 22 keyframes)
+tl.to(gearL,{duration:0.04,rot:-80,onUpdate:updateAll},0);
+tl.to(gearR,{duration:0.04,rot:80,onUpdate:updateAll},0);
+tl.to(LP,{duration:0.0031,wx:439,wy:635,grip:1,onUpdate:updateAll},0);
+tl.to(RP,{duration:0.0031,wx:777,wy:635,grip:1,onUpdate:updateAll},0);
+tl.to(LP,{duration:0.0061,wx:450,wy:593,grip:1,onUpdate:updateAll},0.0031);
+tl.to(RP,{duration:0.0061,wx:775,wy:585,grip:1,onUpdate:updateAll},0.0031);
+tl.to(LP,{duration:0.0031,wx:437,wy:561,grip:1,onUpdate:updateAll},0.0092);
+tl.to(RP,{duration:0.0031,wx:769,wy:554,grip:1,onUpdate:updateAll},0.0092);
+tl.to(LP,{duration:0.0061,wx:459,wy:502,grip:1,onUpdate:updateAll},0.0123);
+tl.to(RP,{duration:0.0061,wx:750,wy:506,grip:1,onUpdate:updateAll},0.0123);
+tl.to(LP,{duration:0.0031,wx:462,wy:473,grip:1,onUpdate:updateAll},0.0184);
+tl.to(RP,{duration:0.0031,wx:740,wy:466,grip:1,onUpdate:updateAll},0.0184);
+tl.to(LP,{duration:0.003, wx:465,wy:470,grip:1,onUpdate:updateAll},0.0215);
+tl.to(RP,{duration:0.003, wx:750,wy:474,grip:1,onUpdate:updateAll},0.0215);
+tl.to(LP,{duration:0.0031,wx:495,wy:419,grip:0.24,onUpdate:updateAll},0.0245);
+tl.to(RP,{duration:0.0031,wx:722,wy:416,grip:0.24,onUpdate:updateAll},0.0245);
+tl.to(LP,{duration:0.0031,wx:544,wy:371,grip:0.27,onUpdate:updateAll},0.0276);
+tl.to(RP,{duration:0.0031,wx:676,wy:374,grip:0.27,onUpdate:updateAll},0.0276);
+tl.to(LP,{duration:0.003, wx:568,wy:342,grip:0.3,onUpdate:updateAll},0.0307);
+tl.to(RP,{duration:0.003, wx:655,wy:343,grip:0.3,onUpdate:updateAll},0.0307);
+tl.to(LP,{duration:0.0031,wx:580,wy:287,grip:0.44,onUpdate:updateAll},0.0337);
+tl.to(RP,{duration:0.0031,wx:628,wy:292,grip:0.44,onUpdate:updateAll},0.0337);
+tl.to(LP,{duration:0.0031,wx:590,wy:260,grip:0.48,onUpdate:updateAll},0.0368);
+tl.to(RP,{duration:0.0031,wx:598,wy:254,grip:0.48,onUpdate:updateAll},0.0368);
+tl.to(LP,{duration:0.003, wx:583,wy:282,grip:0.71,onUpdate:updateAll},0.0399);
+tl.to(RP,{duration:0.003, wx:606,wy:284,grip:0.71,onUpdate:updateAll},0.0399);
+tl.to(LP,{duration:0.0031,wx:513,wy:378,grip:0.56,onUpdate:updateAll},0.0429);
+tl.to(RP,{duration:0.0031,wx:687,wy:378,grip:0.56,onUpdate:updateAll},0.0429);
+tl.to(LP,{duration:0.0031,wx:519,wy:367,grip:0.6,onUpdate:updateAll},0.046);
+tl.to(RP,{duration:0.0031,wx:681,wy:367,grip:0.6,onUpdate:updateAll},0.046);
+tl.to(LP,{duration:0.003, wx:524,wy:356,grip:0.64,onUpdate:updateAll},0.0491);
+tl.to(RP,{duration:0.003, wx:676,wy:356,grip:0.64,onUpdate:updateAll},0.0491);
+tl.to(LP,{duration:0.0031,wx:530,wy:346,grip:0.68,onUpdate:updateAll},0.0521);
+tl.to(RP,{duration:0.0031,wx:670,wy:346,grip:0.68,onUpdate:updateAll},0.0521);
+tl.to(LP,{duration:0.0031,wx:536,wy:335,grip:0.72,onUpdate:updateAll},0.0552);
+tl.to(RP,{duration:0.0031,wx:664,wy:335,grip:0.72,onUpdate:updateAll},0.0552);
+tl.to(LP,{duration:0.003, wx:542,wy:324,grip:0.76,onUpdate:updateAll},0.0583);
+tl.to(RP,{duration:0.003, wx:662,wy:364,grip:0.76,onUpdate:updateAll},0.0583);
+tl.to(LP,{duration:0.0031,wx:561,wy:362,grip:0.8,onUpdate:updateAll},0.0613);
+tl.to(RP,{duration:0.0031,wx:669,wy:488,grip:0.8,onUpdate:updateAll},0.0613);
+tl.to(LP,{duration:0.0031,wx:555,wy:470,grip:0.84,onUpdate:updateAll},0.0644);
+tl.to(RP,{duration:0.0031,wx:733,wy:646,grip:0.84,onUpdate:updateAll},0.0644);
+tl.to(LP,{duration:0.0031,wx:274,wy:449,grip:0,onUpdate:updateAll},0.0675);
+tl.to(RP,{duration:0.0031,wx:835,wy:785,grip:0,onUpdate:updateAll},0.0675);
+// ── Dance ends cleanly — hands flow to 500px (0.138)
 
-// ══ ARSENAL — hand drops fast after mouth entry at ~0.092
-tl.to(RP,{duration:0.04,wx:R_DOWN.wx,wy:R_DOWN.wy,grip:0,onUpdate:updateAll},0.092);
-tl.to(gearR,{duration:0.04,rot:540,onUpdate:updateAll},0.092);
+// ══════════════════════════════════════
+// ── ARSENAL SECTION — BUILD FAST (AP)
+// ══════════════════════════════════════
+tl.to(gearR,{duration:0.03,rot:280,onUpdate:updateAll},AP-0.01);
 
-tl.to(section1,{duration:0.02,opacity:1},AP);
-tl.to(arsenalChs[0],{duration:0.06,opacity:1,y:0,scale:1,ease:'back.out(1.4)'},AP);
+// Section appears
+tl.to(section1,{duration:0.015,opacity:1},AP);
+// First letter drops in fast
+tl.to(arsenalChs[0],{duration:0.04,opacity:1,y:0,scale:1,ease:'back.out(1.7)'},AP);
+// Rest of letters cascade fast
+tl.to(arsenalChs.slice(1),{duration:0.03,opacity:1,y:0,stagger:0.008},AP+0.025);
+// Underline draws in
+tl.to(arsenalUL,{duration:0.05,opacity:1,width:'100%'},AP+0.04);
 
-tl.to(RP,{duration:0.02,grip:1,onUpdate:updateAll},AP+0.04);
-tl.to(barOp,{duration:0.02,b1:0.2,onUpdate:updateAll},AP+0.04);
+// Right hand grips bar
+tl.to(RP,{duration:0.015,grip:1,onUpdate:updateAll},AP+0.03);
+tl.to(barOp,{duration:0.015,b1:0.2,onUpdate:updateAll},AP+0.03);
 
-tl.to(arsenalChs.slice(1),{duration:0.04,opacity:1,y:0,stagger:0.013},AP+0.03);
-tl.to(arsenalUL,{duration:0.07,opacity:1,width:'100%'},AP+0.06);
+// Left arm sweeps down
+tl.to(LP,{duration:0.08,wx:L_DOWN.wx,wy:L_DOWN.wy,grip:0,onUpdate:updateAll},AP+0.04);
+tl.to(gearL,{duration:0.08,rot:-360,onUpdate:updateAll},AP+0.04);
 
-tl.to(LP,{duration:0.12,wx:L_DOWN.wx,wy:L_DOWN.wy,grip:0,onUpdate:updateAll},AP+0.07);
-tl.to(gearL,{duration:0.12,rot:-540,onUpdate:updateAll},AP+0.07);
+// Section slides up — right arm sweeps up with it
+tl.to(RP,{duration:0.10,wx:R_UP.wx,wy:R_UP.wy,onUpdate:updateAll},AP+0.04);
+tl.to(gProxy,{duration:0.10,y:-175,onUpdate:updateAll},AP+0.04);
+tl.to(gearR,{duration:0.10,rot:-120,onUpdate:updateAll},AP+0.04);
+tl.to(section1,{duration:0.10,y:-(VH-119)},AP+0.04);
 
-tl.to(RP,{duration:0.15,wx:R_UP.wx,wy:R_UP.wy,onUpdate:updateAll},AP+0.06);
-tl.to(gProxy,{duration:0.15,y:-175,onUpdate:updateAll},AP+0.06);
-tl.to(gearR,{duration:0.15,rot:-180,onUpdate:updateAll},AP+0.06);
-tl.to(section1,{duration:0.15,y:-(VH-119)},AP+0.06);
+// Boxes appear (fast build)
+tl.to(box1,{duration:0.025,opacity:1,y:0},AP+0.05);
+tl.to(box2,{duration:0.025,opacity:1,y:0},AP+0.065);
+tl.to(box3,{duration:0.025,opacity:1,y:0},AP+0.08);
+// ── Hand position at 450px (13.8%) — open spread
+tl.to(LP,{duration:0.02,wx:380,wy:600,grip:0,onUpdate:updateAll},0.138);
+tl.to(RP,{duration:0.02,wx:953,wy:699,grip:0,onUpdate:updateAll},0.138);
 
-tl.to(RP,{duration:0.02,grip:0,onUpdate:updateAll},AP+0.21);
-tl.to(barOp,{duration:0.04,b1:1,onUpdate:updateAll},AP+0.21);
-tl.to(RP,{duration:0.07,wx:R_INIT.wx,wy:R_INIT.wy,onUpdate:updateAll},AP+0.23);
-tl.to(gearR,{duration:0.07,rot:0,onUpdate:updateAll},AP+0.23);
+// ─── ARSENAL HOLD — stay visible
+tl.to(RP,{duration:0.015,grip:0,onUpdate:updateAll},AP+0.14);
+tl.to(barOp,{duration:0.015,b1:1,onUpdate:updateAll},AP+0.14);
+tl.to(RP,{duration:0.05,wx:R_INIT.wx,wy:R_INIT.wy,onUpdate:updateAll},AP+0.155);
+tl.to(gearR,{duration:0.05,rot:0,onUpdate:updateAll},AP+0.155);
+// Left arm sways during hold
+tl.to(LP,{duration:0.05,wx:490,wy:680,onUpdate:updateAll},AP+0.14);
+tl.to(gearL,{duration:0.05,rot:-420,onUpdate:updateAll},AP+0.14);
+tl.to(LP,{duration:0.05,wx:380,wy:600,onUpdate:updateAll},AP+0.19);
+tl.to(gearL,{duration:0.05,rot:-540,onUpdate:updateAll},AP+0.19);
 
-tl.to(box1,{duration:0.03,opacity:1,y:0},AP+0.12);
-tl.to(box2,{duration:0.03,opacity:1,y:0},AP+0.14);
-tl.to(box3,{duration:0.03,opacity:1,y:0},AP+0.16);
-
-// FIFO Arsenal exit: underline → letters OUT first → slides stay while arms move → boxes leave last
-tl.to(arsenalUL,{duration:0.04,opacity:0,width:'0%',scaleX:0},AP+0.24);
+// ─── ARSENAL DECONSTRUCT FAST
+tl.to(arsenalUL,{duration:0.025,opacity:0,width:'0%'},AP+0.205);
 const revChs=[...arsenalChs].reverse();
 revChs.forEach((el,i)=>{
-  tl.to(el,{duration:0.025,opacity:0,y:-240,scale:0.04,ease:'power2.in'},AP+0.25+i*0.012);
+  tl.to(el,{duration:0.018,opacity:0,y:-220,scale:0.03,ease:'power3.in'},AP+0.215+i*0.008);
 });
-// ── GAP FILL: Arsenal exit → Blueprint (AP+0.20 to AP+0.42)
-// Left arm sweeps upward from L_DOWN toward center
-tl.to(LP,{duration:0.10,wx:490,wy:720,onUpdate:updateAll},AP+0.20);
-tl.to(gearL,{duration:0.10,rot:-280,onUpdate:updateAll},AP+0.20);
-tl.to(LP,{duration:0.10,wx:390,wy:630,onUpdate:updateAll},AP+0.30);
-tl.to(gearL,{duration:0.10,rot:-420,onUpdate:updateAll},AP+0.30);
-tl.to(LP,{duration:0.09,wx:310,wy:570,onUpdate:updateAll},AP+0.40);
-tl.to(gearL,{duration:0.09,rot:-540,onUpdate:updateAll},AP+0.40);
-// Right arm sweeps inward from R_INIT toward center
-tl.to(RP,{duration:0.09,wx:950,wy:570,onUpdate:updateAll},AP+0.31);
-tl.to(gearR,{duration:0.09,rot:300,onUpdate:updateAll},AP+0.31);
-tl.to(RP,{duration:0.09,wx:850,wy:550,onUpdate:updateAll},AP+0.40);
-tl.to(gearR,{duration:0.09,rot:440,onUpdate:updateAll},AP+0.40);
+tl.to(box3,{duration:0.02,opacity:0,y:-120,scale:0.06},AP+0.215);
+tl.to(box2,{duration:0.02,opacity:0,y:-120,scale:0.06},AP+0.225);
+tl.to(box1,{duration:0.02,opacity:0,y:-120,scale:0.06},AP+0.235);
+tl.to(section1,{duration:0.03,opacity:0},AP+0.26);
 
-// Slides stay visible while arms are still moving — boxes leave AFTER letters are gone
-tl.to(box3,{duration:0.03,opacity:0,y:-130,scale:0.07,x:20},AP+0.35);
-tl.to(box2,{duration:0.03,opacity:0,y:-130,scale:0.07,x:10},AP+0.365);
-tl.to(box1,{duration:0.03,opacity:0,y:-130,scale:0.07,x:0},AP+0.38);
-tl.to(section1,{duration:0.05,opacity:0},AP+0.43);
+// ══════════════════════════════════════
+// ── BLUEPRINT SECTION — BUILD FAST (PP)
+// ══════════════════════════════════════
+// Left hand sweeps to grab bar position
+tl.to(LP,{duration:0.03,wx:L_DOWN.wx,wy:L_DOWN.wy+50,grip:0,onUpdate:updateAll},PP-0.01);
+tl.to(gearL,{duration:0.03,rot:-200,onUpdate:updateAll},PP-0.01);
 
-// ══ BLUEPRINT CYCLE (PP = AP+0.44)
-const PP=AP+0.44;
+// Section appears
+tl.to(section2,{duration:0.015,opacity:1},PP);
+tl.to(LP,{duration:0.015,grip:1,onUpdate:updateAll},PP);
+tl.to(barOp,{duration:0.015,b2:0.2,onUpdate:updateAll},PP);
 
-tl.to(LP,{duration:0.02,grip:1,onUpdate:updateAll},PP);
-tl.to(barOp,{duration:0.02,b2:0.2,onUpdate:updateAll},PP);
-tl.to(section2,{duration:0.02,opacity:1},PP);
+// First letter drops fast
+tl.to(processChs[0],{duration:0.04,opacity:1,y:0,scale:1,ease:'back.out(1.7)'},PP);
+tl.to(processChs.slice(1),{duration:0.03,opacity:1,y:0,stagger:0.008},PP+0.025);
+tl.to(processUL,{duration:0.05,opacity:1,scaleX:1},PP+0.04);
 
-tl.to(processChs[0],{duration:0.06,opacity:1,y:0,scale:1,ease:'back.out(1.4)'},PP);
-tl.to(processChs.slice(1),{duration:0.04,opacity:1,y:0,stagger:0.013},PP+0.03);
-tl.to(processUL,{duration:0.06,opacity:1,scaleX:1},PP+0.06);
-tl.to(time1,{duration:0.04,opacity:1,y:0,scale:1},PP+0.09);
-tl.to(time2,{duration:0.04,opacity:1,y:0,scale:1},PP+0.12);
-tl.to(time3,{duration:0.04,opacity:1,y:0,scale:1},PP+0.15);
+// Right arm sweeps down and away
+tl.to(RP,{duration:0.08,wx:R_DOWN.wx,wy:R_DOWN.wy,grip:0,onUpdate:updateAll},PP+0.035);
+tl.to(gearR,{duration:0.08,rot:240,onUpdate:updateAll},PP+0.035);
 
-tl.to(RP,{duration:0.10,wx:R_DOWN.wx,wy:R_DOWN.wy,grip:0,onUpdate:updateAll},PP+0.05);
-tl.to(gearR,{duration:0.10,rot:360,onUpdate:updateAll},PP+0.05);
+// Left arm pulls section up
+tl.to(LP,{duration:0.10,wx:L_UP.wx,wy:L_UP.wy,onUpdate:updateAll},PP+0.04);
+tl.to(gProxy,{duration:0.10,y:-350,onUpdate:updateAll},PP+0.04);
+tl.to(gearL,{duration:0.10,rot:150,onUpdate:updateAll},PP+0.04);
+tl.to(section2,{duration:0.10,y:-(VH-100)},PP+0.04);
 
-tl.to(LP,{duration:0.14,wx:L_UP.wx,wy:L_UP.wy,onUpdate:updateAll},PP+0.06);
-tl.to(gProxy,{duration:0.14,y:-350,onUpdate:updateAll},PP+0.06);
-tl.to(gearL,{duration:0.14,rot:180,onUpdate:updateAll},PP+0.06);
-// Blueprint: lowered slightly (VH-100 keeps content further down in viewport)
-tl.to(section2,{duration:0.14,y:-(VH-100)},PP+0.06);
+// Timeline items appear fast
+tl.to(time1,{duration:0.025,opacity:1,y:0,scale:1},PP+0.06);
+tl.to(time2,{duration:0.025,opacity:1,y:0,scale:1},PP+0.075);
+tl.to(time3,{duration:0.025,opacity:1,y:0,scale:1},PP+0.09);
 
-// ── GAP FILL: Blueprint hold (PP+0.16 to PP+0.27) — arms sway then return
-tl.to(RP,{duration:0.06,wx:R_DOWN.wx-50,wy:R_DOWN.wy-40,onUpdate:updateAll},PP+0.16);
-tl.to(gearR,{duration:0.06,rot:480,onUpdate:updateAll},PP+0.16);
-tl.to(RP,{duration:0.06,wx:R_DOWN.wx,wy:R_DOWN.wy,onUpdate:updateAll},PP+0.22);
-tl.to(LP,{duration:0.06,wx:L_UP.wx+50,wy:L_UP.wy+40,onUpdate:updateAll},PP+0.19);
-tl.to(gearL,{duration:0.06,rot:280,onUpdate:updateAll},PP+0.19);
-tl.to(LP,{duration:0.06,wx:L_UP.wx,wy:L_UP.wy,onUpdate:updateAll},PP+0.25);
+// ─── BLUEPRINT HOLD
+tl.to(LP,{duration:0.015,grip:0,onUpdate:updateAll},PP+0.14);
+tl.to(barOp,{duration:0.015,b2:1,onUpdate:updateAll},PP+0.14);
+tl.to(LP,{duration:0.05,wx:L_INIT.wx,wy:L_INIT.wy,onUpdate:updateAll},PP+0.155);
+tl.to(gearL,{duration:0.05,rot:0,onUpdate:updateAll},PP+0.155);
+// Right arm sways during hold
+tl.to(RP,{duration:0.04,wx:R_DOWN.wx-60,wy:R_DOWN.wy-50,onUpdate:updateAll},PP+0.14);
+tl.to(gearR,{duration:0.04,rot:380,onUpdate:updateAll},PP+0.14);
+tl.to(RP,{duration:0.04,wx:R_DOWN.wx,wy:R_DOWN.wy,onUpdate:updateAll},PP+0.18);
 
-// Blueprint exit: delayed by +0.10 so it stays on screen for more scroll rolls
-tl.to(LP,{duration:0.02,grip:0,onUpdate:updateAll},PP+0.29);
-tl.to(barOp,{duration:0.04,b2:1,onUpdate:updateAll},PP+0.29);
-tl.to(LP,{duration:0.07,wx:L_INIT.wx,wy:L_INIT.wy,onUpdate:updateAll},PP+0.31);
-tl.to(gearL,{duration:0.07,rot:0,onUpdate:updateAll},PP+0.31);
-
-// FIFO Blueprint exit: underline → letters OUT first → timeline items stay → slides leave last
-tl.to(processUL,{duration:0.04,opacity:0,scaleX:0},PP+0.295);
+// ─── BLUEPRINT DECONSTRUCT FAST
+tl.to(processUL,{duration:0.025,opacity:0,scaleX:0},PP+0.205);
 const revPChs=[...processChs].reverse();
 revPChs.forEach((el,i)=>{
-  tl.to(el,{duration:0.025,opacity:0,y:-240,scale:0.04,ease:'power2.in'},PP+0.305+i*0.012);
+  tl.to(el,{duration:0.018,opacity:0,y:-220,scale:0.03,ease:'power3.in'},PP+0.215+i*0.008);
 });
-// Timeline items stay while arms move — leave AFTER letters are gone
-tl.to(time3,{duration:0.03,opacity:0,y:-130,scale:0.07},PP+0.38);
-tl.to(time2,{duration:0.03,opacity:0,y:-130,scale:0.07},PP+0.395);
-tl.to(time1,{duration:0.03,opacity:0,y:-130,scale:0.07},PP+0.41);
-tl.to(section2,{duration:0.04,opacity:0},PP+0.47);
+tl.to(time3,{duration:0.02,opacity:0,y:-120,scale:0.06},PP+0.215);
+tl.to(time2,{duration:0.02,opacity:0,y:-120,scale:0.06},PP+0.225);
+tl.to(time1,{duration:0.02,opacity:0,y:-120,scale:0.06},PP+0.235);
+tl.to(section2,{duration:0.03,opacity:0},PP+0.26);
 
-// ══ CTA CYCLE (CP = PP+0.48 — shifted to accommodate longer blueprint)
-const CP=PP+0.48;
+// ══════════════════════════════════════
+// ── CTA SECTION (CP)
+// ══════════════════════════════════════
+// Right hand sweeps to grab
 tl.to(RP,{duration:0.02,grip:1,onUpdate:updateAll},CP);
 tl.to(barOp,{duration:0.02,b3:0.2,onUpdate:updateAll},CP);
-tl.to(section3,{duration:0.03,opacity:1},CP);
-tl.to(cta,{duration:0.08,opacity:1,y:0},CP);
-tl.to(RP,{duration:0.09,wx:R_UP.wx,wy:R_UP.wy,onUpdate:updateAll},CP+0.02);
-tl.to(gProxy,{duration:0.09,y:-490,onUpdate:updateAll},CP+0.02);
-tl.to(gearR,{duration:0.09,rot:-360,onUpdate:updateAll},CP+0.02);
-tl.to(section3,{duration:0.09,y:-(VH-119)},CP+0.02);
-tl.to(RP,{duration:0.02,grip:0,onUpdate:updateAll},CP+0.11);
-tl.to(barOp,{duration:0.04,b3:1,onUpdate:updateAll},CP+0.11);
-// ── OFFERING POSE at progress 1.0 — left hand flat palm up, right hand resting on top (hand in hand)
-tl.to(LP,{duration:0.14,wx:560,wy:590,grip:0,onUpdate:updateAll},CP+0.11);
-tl.to(RP,{duration:0.14,wx:560,wy:555,grip:0,onUpdate:updateAll},CP+0.11);
+tl.to(section3,{duration:0.02,opacity:1},CP);
+tl.to(cta,{duration:0.06,opacity:1,y:0},CP);
+
+tl.to(RP,{duration:0.08,wx:R_UP.wx,wy:R_UP.wy,onUpdate:updateAll},CP+0.02);
+tl.to(gProxy,{duration:0.08,y:-490,onUpdate:updateAll},CP+0.02);
+tl.to(gearR,{duration:0.08,rot:-280,onUpdate:updateAll},CP+0.02);
+tl.to(section3,{duration:0.08,y:-(VH-119)},CP+0.02);
+
+tl.to(RP,{duration:0.015,grip:0,onUpdate:updateAll},CP+0.10);
+tl.to(barOp,{duration:0.03,b3:1,onUpdate:updateAll},CP+0.10);
+
+// ─── FINAL OFFERING POSE — both hands palm up, side by side
+tl.to(LP,{duration:0.12,wx:520,wy:600,grip:0,onUpdate:updateAll},CP+0.10);
+tl.to(RP,{duration:0.12,wx:680,wy:600,grip:0,onUpdate:updateAll},CP+0.10);
+tl.to(gearL,{duration:0.12,rot:-60,onUpdate:updateAll},CP+0.10);
+tl.to(gearR,{duration:0.12,rot:60,onUpdate:updateAll},CP+0.10);
 
 // ─── TYPEWRITER TRIGGERS
 let b1done=false,b2done=false,b3done=false;
-function fireTypewriter(chars,done,setDone){
-  if(done)return;
-  setDone(true);
-  gsap.to(chars,{opacity:1,duration:0.04,stagger:0.055,ease:'none'});
-}
 ScrollTrigger.create({
   trigger:'body',
-  start:`${Math.round(MAX_S*(AP+0.13))} top`,
-  onEnter:()=>{if(!b1done){b1done=true;gsap.to(b1chars,{opacity:1,duration:0.04,stagger:0.05,ease:'none',delay:0.1});}},
+  start:`${Math.round(MAX_S*(AP+0.06))} top`,
+  onEnter:()=>{if(!b1done){b1done=true;gsap.to(b1chars,{opacity:1,duration:0.035,stagger:0.045,ease:'none',delay:0.05});}},
   onLeaveBack:()=>{b1done=false;b1chars.forEach(c=>{c.style.opacity=0;});}
 });
 ScrollTrigger.create({
   trigger:'body',
-  start:`${Math.round(MAX_S*(AP+0.15))} top`,
-  onEnter:()=>{if(!b2done){b2done=true;gsap.to(b2chars,{opacity:1,duration:0.04,stagger:0.05,ease:'none',delay:0.1});}},
+  start:`${Math.round(MAX_S*(AP+0.075))} top`,
+  onEnter:()=>{if(!b2done){b2done=true;gsap.to(b2chars,{opacity:1,duration:0.035,stagger:0.045,ease:'none',delay:0.05});}},
   onLeaveBack:()=>{b2done=false;b2chars.forEach(c=>{c.style.opacity=0;});}
 });
 ScrollTrigger.create({
   trigger:'body',
-  start:`${Math.round(MAX_S*(AP+0.17))} top`,
-  onEnter:()=>{if(!b3done){b3done=true;gsap.to(b3chars,{opacity:1,duration:0.04,stagger:0.05,ease:'none',delay:0.1});}},
+  start:`${Math.round(MAX_S*(AP+0.09))} top`,
+  onEnter:()=>{if(!b3done){b3done=true;gsap.to(b3chars,{opacity:1,duration:0.035,stagger:0.045,ease:'none',delay:0.05});}},
   onLeaveBack:()=>{b3done=false;b3chars.forEach(c=>{c.style.opacity=0;});}
 });
 
 // ─── INITIATE BUTTON MODAL
 const modal=document.getElementById('initiate-modal');
-const initiateBtn=document.getElementById('initiate-btn');
-initiateBtn.addEventListener('click',()=>{
-  modal.classList.add('open');
-  gsap.fromTo(initiateBtn,
-    {boxShadow:'0 0 0px rgba(0,255,204,0)'},
-    {boxShadow:'0 0 50px rgba(0,255,204,.85),0 0 100px rgba(0,255,204,.3)',duration:.12,yoyo:true,repeat:1}
-  );
-});
+function openModal(){modal.classList.add('open');}
+document.getElementById('initiate-btn').addEventListener('click',openModal);
+document.getElementById('initiate-btn-top').addEventListener('click',openModal);
 document.getElementById('m-close').addEventListener('click',()=>modal.classList.remove('open'));
 modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open');});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remove('open');});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!HA.active)modal.classList.remove('open');});
 document.getElementById('m-submit').addEventListener('click',function(){
   const name=document.getElementById('m-name').value.trim();
   const email=document.getElementById('m-email').value.trim();
@@ -1197,9 +1352,7 @@ document.getElementById('m-submit').addEventListener('click',function(){
     gsap.to('.modal-box',{x:[-8,8,-6,6,-3,3,0],duration:.35,ease:'none'});
     return;
   }
-  // ── Save to inbox FIRST before any DOM changes
   saveLocalMsg({name,email,vision,features:features||'',discord,timeline:timeline||'Not specified'});
-  // ── Show success
   const box=document.querySelector('.modal-box');
   box.innerHTML=`<div style="text-align:center;padding:20px 0;">
     <div style="font-size:2.5rem;margin-bottom:18px;">✅</div>
@@ -1218,17 +1371,13 @@ const adminOverlay=document.getElementById('admin-overlay');
 const adminInbox=document.getElementById('admin-inbox');
 const msgList=document.getElementById('msg-list');
 const msgDetail=document.getElementById('msg-detail');
-
 const ADMIN_USER='Admin';
 const ADMIN_PASS='Admin420';
-
 let currentTab='new';
 let showAll=false;
-
 const STATUS_COLORS={new:'rgba(0,255,204,.8)',accepted:'#ffa040',archived:'#8888cc',completed:'#40ff80',trash:'#ff6060'};
 const STATUS_LABELS={new:'New',accepted:'Accepted',archived:'Archived',completed:'Completed',trash:'Trash'};
 
-// ─── INJECT TRASH CONFIRM OVERLAY
 (function(){
   const tc=document.createElement('div');
   tc.id='trash-confirm';
@@ -1268,7 +1417,6 @@ function showTrashConfirm(){
   if(sub)sub.textContent=`Permanently delete ${count} item${count!==1?'s':''}? This cannot be undone.`;
   document.getElementById('trash-confirm').classList.add('open');
 }
-
 function updateTrashBtn(){
   const existing=document.getElementById('empty-trash-header-btn');
   if(existing)existing.remove();
@@ -1281,11 +1429,9 @@ function updateTrashBtn(){
     document.querySelector('.inbox-tabs').appendChild(btn);
   }
 }
-
 adminBtn.addEventListener('click',()=>adminOverlay.classList.add('open'));
 document.getElementById('a-cancel').addEventListener('click',()=>adminOverlay.classList.remove('open'));
 document.getElementById('inbox-close-btn').addEventListener('click',()=>{adminInbox.classList.remove('open');});
-
 document.getElementById('a-login').addEventListener('click',()=>{
   const u=document.getElementById('a-user').value.trim();
   const p=document.getElementById('a-pass').value;
@@ -1305,10 +1451,7 @@ document.getElementById('a-login').addEventListener('click',()=>{
     gsap.to('.admin-login-box',{x:[-6,6,-4,4,-2,2,0],duration:.3,ease:'none'});
   }
 });
-
 document.getElementById('a-pass').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('a-login').click();});
-
-// Tab switching
 document.querySelectorAll('.inbox-tab').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.inbox-tab').forEach(b=>b.classList.remove('active'));
@@ -1322,8 +1465,6 @@ document.querySelectorAll('.inbox-tab').forEach(btn=>{
     loadMessages();
   });
 });
-
-// Show All / Filter toggle
 document.getElementById('inbox-filter-btn').addEventListener('click',function(){
   showAll=!showAll;
   this.textContent=showAll?'Filter':'Show All';
@@ -1332,10 +1473,8 @@ document.getElementById('inbox-filter-btn').addEventListener('click',function(){
   updateTrashBtn();
   loadMessages();
 });
-
 function getLocalMsgs(){try{return JSON.parse(localStorage.getItem('ardyw_msgs')||'[]');}catch(e){return[];}}
 function saveAllMsgs(msgs){try{localStorage.setItem('ardyw_msgs',JSON.stringify(msgs));}catch(e){}}
-
 function updateMsgStatus(msgId,newStatus){
   const msgs=getLocalMsgs();
   const idx=msgs.findIndex(m=>m.id===msgId);
@@ -1343,22 +1482,18 @@ function updateMsgStatus(msgId,newStatus){
   msgDetail.innerHTML='<div class="msg-detail-empty">Status updated — select a message</div>';
   loadMessages();
 }
-
 function moveToTrash(msgId){updateMsgStatus(msgId,'trash');}
-
 function deletePermanently(msgId){
   const msgs=getLocalMsgs().filter(m=>m.id!==msgId);
   saveAllMsgs(msgs);
   msgDetail.innerHTML='<div class="msg-detail-empty">Message permanently deleted</div>';
   loadMessages();
 }
-
 function loadMessages(){
   const all=getLocalMsgs();
   const filtered=showAll?all:all.filter(m=>(m.status||'new')===currentTab);
   renderMessages(filtered);
 }
-
 function renderMessages(msgs){
   if(!msgs||msgs.length===0){
     msgList.innerHTML=`<div style="color:rgba(0,255,204,.2);text-align:center;padding:40px 0;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;">${showAll?'No messages yet':'No messages in this folder'}</div>`;
@@ -1383,7 +1518,6 @@ function renderMessages(msgs){
     msgList.appendChild(div);
   });
 }
-
 function showDetail(m){
   const d=new Date(m.ts||Date.now());
   const status=m.status||'new';
@@ -1420,7 +1554,6 @@ function showDetail(m){
     ${status!=='trash'?`<a class="msg-detail-reply" style="margin-top:16px;" href="mailto:${m.email}?subject=Re: Your Build Request — ${encodeURIComponent(m.name||'')}&body=Hi ${encodeURIComponent(m.name||'')},%0D%0A%0D%0AThank you for reaching out! I've reviewed your vision and I'm excited to get started.%0D%0A%0D%0A— Ardy W">✉️ Reply via Email</a>`:''}
   `;
 }
-
 function saveLocalMsg(msg){
   const msgs=getLocalMsgs();
   const id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -1428,19 +1561,333 @@ function saveLocalMsg(msg){
   saveAllMsgs(msgs.slice(0,50));
 }
 
-// ─── DEBUG OVERLAY
+// ═══════════════════════════════════════════════════════
+// ─── HAND ANIMATOR TOOL — Press 'H' to open
+// ═══════════════════════════════════════════════════════
+HA = {
+  active: false,
+  dragging: null,       // 'l-elbow' | 'l-wrist' | 'r-elbow' | 'r-wrist'
+  savedKeyframes: [],
+  frozenScrollY: 0,
+
+  // Control point SVG elements
+  get ctrlLE(){ return document.getElementById('ctrl-l-elbow'); },
+  get ctrlLW(){ return document.getElementById('ctrl-l-wrist'); },
+  get ctrlRE(){ return document.getElementById('ctrl-r-elbow'); },
+  get ctrlRW(){ return document.getElementById('ctrl-r-wrist'); },
+
+  open(){
+    this.active = true;
+    document.getElementById('hand-animator').style.display = 'flex';
+    this.showControls(true);
+    this.frozenScrollY = window.scrollY;
+    this.refreshScrollDisplay();
+    updateAll();
+  },
+
+  close(){
+    this.active = false;
+    document.getElementById('hand-animator').style.display = 'none';
+    this.showControls(false);
+    this.dragging = null;
+  },
+
+  toggle(){
+    this.active ? this.close() : this.open();
+  },
+
+  showControls(show){
+    const d = show ? 'inline' : 'none';
+    [this.ctrlLE, this.ctrlLW, this.ctrlRE, this.ctrlRW].forEach(el => {
+      if(el) el.setAttribute('display', d);
+    });
+    // Enable pointer events on the armSVG when open so drags work
+    const svg = document.getElementById('armSVG');
+    if(svg) svg.style.pointerEvents = show ? 'all' : 'none';
+  },
+
+  refreshScrollDisplay(){
+    const s = Math.round(this.frozenScrollY);
+    const pct = ((s / MAX_S) * 100).toFixed(1);
+    const el = document.getElementById('anim-scroll');
+    const ep = document.getElementById('anim-progress');
+    if(el) el.textContent = s;
+    if(ep) ep.textContent = pct;
+  },
+
+  stepScroll(delta){
+    this.frozenScrollY = Math.max(0, Math.min(MAX_S, this.frozenScrollY + delta));
+    this.refreshScrollDisplay();
+    // Scrub the GSAP timeline to the new position
+    const prog = this.frozenScrollY / MAX_S;
+    if(tl.scrollTrigger) tl.scrollTrigger.scroll(this.frozenScrollY);
+    window.scrollTo(0, this.frozenScrollY);
+  },
+
+  syncControlPoints(L, R){
+    const pts = [
+      { el: this.ctrlLE, x: L.ex, y: L.ey },
+      { el: this.ctrlLW, x: LP.wx, y: LP.wy },
+      { el: this.ctrlRE, x: R.ex, y: R.ey },
+      { el: this.ctrlRW, x: RP.wx, y: RP.wy },
+    ];
+    pts.forEach(p => {
+      if(p.el){ p.el.setAttribute('cx', p.x); p.el.setAttribute('cy', p.y); }
+    });
+    // Update coord display
+    this.setVal('l-elbow-x', Math.round(L.ex));
+    this.setVal('l-elbow-y', Math.round(L.ey));
+    this.setVal('l-wrist-x', Math.round(LP.wx));
+    this.setVal('l-wrist-y', Math.round(LP.wy));
+    this.setVal('r-elbow-x', Math.round(R.ex));
+    this.setVal('r-elbow-y', Math.round(R.ey));
+    this.setVal('r-wrist-x', Math.round(RP.wx));
+    this.setVal('r-wrist-y', Math.round(RP.wy));
+  },
+
+  setVal(id, val){
+    const el = document.getElementById(id);
+    if(el) el.textContent = val;
+  },
+
+  setupDrag(){
+    const svg = document.getElementById('armSVG');
+    const idMap = {
+      'ctrl-l-elbow': 'l-elbow',
+      'ctrl-l-wrist': 'l-wrist',
+      'ctrl-r-elbow': 'r-elbow',
+      'ctrl-r-wrist': 'r-wrist',
+    };
+
+    // Track mousedown position to distinguish click vs drag
+    let mouseDownX = 0, mouseDownY = 0;
+
+    // Mousedown on control circles
+    ['ctrl-l-elbow','ctrl-l-wrist','ctrl-r-elbow','ctrl-r-wrist'].forEach(cid => {
+      const el = document.getElementById(cid);
+      if(!el) return;
+      el.addEventListener('mousedown', e => {
+        if(!this.active) return;
+        e.preventDefault(); e.stopPropagation();
+        this.dragging = idMap[cid];
+        mouseDownX = e.clientX;
+        mouseDownY = e.clientY;
+        el.setAttribute('r', '18');
+      });
+    });
+
+    document.addEventListener('mouseup', e => {
+      if(this.dragging){
+        const moved = Math.hypot(e.clientX - mouseDownX, e.clientY - mouseDownY);
+        const wasClick = moved < 4; // less than 4px = click, not drag
+
+        // Wrist click = toggle hand open/close
+        if(wasClick && this.dragging === 'l-wrist'){
+          LP.grip = LP.grip > 0.5 ? 0 : 1;
+          updateAll();
+        } else if(wasClick && this.dragging === 'r-wrist'){
+          RP.grip = RP.grip > 0.5 ? 0 : 1;
+          updateAll();
+        }
+
+        this.dragging = null;
+        ['ctrl-l-elbow','ctrl-l-wrist','ctrl-r-elbow','ctrl-r-wrist'].forEach(cid => {
+          const el = document.getElementById(cid);
+          if(el) el.setAttribute('r','14');
+        });
+      }
+    });
+
+    document.addEventListener('mousemove', e => {
+      if(!this.active || !this.dragging) return;
+
+      // Convert to SVG coordinate space
+      const pt = svg.createSVGPoint();
+      pt.x = e.clientX; pt.y = e.clientY;
+      const svgPt = pt.matrixTransform(svg.getScreenCTM().inverse());
+      const mx = svgPt.x, my = svgPt.y;
+
+      if(this.dragging === 'l-elbow'){
+        // Drag elbow: upper arm follows mouse, forearm hangs down
+        const dx = mx - LS_X, dy = my - LS_Y;
+        const d = Math.hypot(dx, dy);
+        const clamped = Math.min(d, ARM_L * 0.97);
+        const angle = Math.atan2(dy, dx);
+        const ex = LS_X + clamped * Math.cos(angle);
+        const ey = LS_Y + clamped * Math.sin(angle);
+        // Wrist: continue from elbow in same direction (straight arm pointing where user dragged)
+        LP.wx = ex + ARM_L * Math.cos(angle);
+        LP.wy = ey + ARM_L * Math.sin(angle);
+
+      } else if(this.dragging === 'l-wrist'){
+        // Direct wrist control
+        LP.wx = mx; LP.wy = my;
+
+      } else if(this.dragging === 'r-elbow'){
+        const dx = mx - RS_X, dy = my - RS_Y;
+        const d = Math.hypot(dx, dy);
+        const clamped = Math.min(d, ARM_L * 0.97);
+        const angle = Math.atan2(dy, dx);
+        const ex = RS_X + clamped * Math.cos(angle);
+        const ey = RS_Y + clamped * Math.sin(angle);
+        RP.wx = ex + ARM_L * Math.cos(angle);
+        RP.wy = ey + ARM_L * Math.sin(angle);
+
+      } else if(this.dragging === 'r-wrist'){
+        RP.wx = mx; RP.wy = my;
+      }
+
+      updateAll();
+    });
+  },
+
+  saveKeyframe(){
+    const L = solveIK(LS_X,LS_Y,LP.wx,LP.wy,ARM_L,ARM_L,1);
+    const R = solveIK(RS_X,RS_Y,RP.wx,RP.wy,ARM_L,ARM_L,-1);
+    const scrollPos = Math.round(this.frozenScrollY);
+    const progress = parseFloat((scrollPos / MAX_S).toFixed(4));
+
+    // Replace keyframe at same scroll pos if exists
+    const existing = this.savedKeyframes.findIndex(k => k.scrollPos === scrollPos);
+    const kf = {
+      id: Date.now(),
+      scrollPos,
+      progress,
+      L: { wx: Math.round(LP.wx), wy: Math.round(LP.wy), grip: parseFloat(LP.grip.toFixed(2)) },
+      R: { wx: Math.round(RP.wx), wy: Math.round(RP.wy), grip: parseFloat(RP.grip.toFixed(2)) }
+    };
+
+    if(existing >= 0){
+      this.savedKeyframes[existing] = kf;
+    } else {
+      this.savedKeyframes.push(kf);
+      this.savedKeyframes.sort((a,b) => a.scrollPos - b.scrollPos);
+    }
+
+    this.renderKeyframes();
+    // Flash save button
+    const btn = document.getElementById('ha-save');
+    if(btn){ btn.textContent = '✅ SAVED!'; setTimeout(()=>{ btn.textContent = '💾 SAVE KEYFRAME'; }, 900); }
+  },
+
+  renderKeyframes(){
+    const container = document.getElementById('keyframe-items');
+    const countEl = document.getElementById('kf-count');
+    if(countEl) countEl.textContent = this.savedKeyframes.length;
+    if(!container) return;
+    if(this.savedKeyframes.length === 0){
+      container.innerHTML = '<div style="color:rgba(0,255,204,.3);font-size:.7rem;text-align:center;padding:8px;">No keyframes yet</div>';
+      return;
+    }
+    container.innerHTML = this.savedKeyframes.map((kf, i) => `
+      <div class="ha-kf-item" onclick="HA.jumpToKeyframe(${kf.id})">
+        <span class="ha-kf-num">#${i+1}</span>
+        <span class="ha-kf-pos">${kf.scrollPos}px</span>
+        <span class="ha-kf-pct">${(kf.progress*100).toFixed(1)}%</span>
+        <button class="ha-kf-del" onclick="event.stopPropagation();HA.deleteKeyframe(${kf.id})">×</button>
+      </div>
+    `).join('');
+  },
+
+  deleteKeyframe(id){
+    this.savedKeyframes = this.savedKeyframes.filter(k => k.id !== id);
+    this.renderKeyframes();
+  },
+
+  jumpToKeyframe(id){
+    const kf = this.savedKeyframes.find(k => k.id === id);
+    if(!kf) return;
+    this.frozenScrollY = kf.scrollPos;
+    LP.wx = kf.L.wx; LP.wy = kf.L.wy; LP.grip = kf.L.grip;
+    RP.wx = kf.R.wx; RP.wy = kf.R.wy; RP.grip = kf.R.grip;
+    this.refreshScrollDisplay();
+    window.scrollTo(0, kf.scrollPos);
+    updateAll();
+  },
+
+  exportCode(){
+    if(this.savedKeyframes.length < 1){
+      alert('Save at least 1 keyframe first!');
+      return;
+    }
+    let code = '// ────────────────────────────────────────────────\n';
+    code += '// HAND ANIMATOR EXPORT — paste into master timeline\n';
+    code += `// Generated: ${new Date().toLocaleString()}\n`;
+    code += `// Keyframes: ${this.savedKeyframes.length} | MAX_S: ${MAX_S}px\n`;
+    code += '// ────────────────────────────────────────────────\n\n';
+
+    this.savedKeyframes.forEach((kf, i) => {
+      code += `// ── Keyframe ${i+1}  |  scroll: ${kf.scrollPos}px  (${(kf.progress*100).toFixed(1)}%)\n`;
+      code += `tl.to(LP,{duration:0.02,wx:${kf.L.wx},wy:${kf.L.wy},grip:${kf.L.grip},onUpdate:updateAll},${kf.progress});\n`;
+      code += `tl.to(RP,{duration:0.02,wx:${kf.R.wx},wy:${kf.R.wy},grip:${kf.R.grip},onUpdate:updateAll},${kf.progress});\n\n`;
+    });
+
+    code += '// ─── Between-frame tweens (auto-generated smooth transitions)\n';
+    for(let i = 0; i < this.savedKeyframes.length - 1; i++){
+      const a = this.savedKeyframes[i], b = this.savedKeyframes[i+1];
+      const dur = parseFloat((b.progress - a.progress).toFixed(4));
+      code += `// Tween ${i+1}→${i+2}  duration: ${dur}\n`;
+      code += `tl.to(LP,{duration:${dur},wx:${b.L.wx},wy:${b.L.wy},grip:${b.L.grip},onUpdate:updateAll},${a.progress});\n`;
+      code += `tl.to(RP,{duration:${dur},wx:${b.R.wx},wy:${b.R.wy},grip:${b.R.grip},onUpdate:updateAll},${a.progress});\n\n`;
+    }
+
+    navigator.clipboard.writeText(code).then(()=>{
+      const btn = document.getElementById('ha-export');
+      if(btn){ btn.textContent = '✅ Copied to Clipboard!'; setTimeout(()=>{ btn.textContent = '📤 Export GSAP Code'; }, 2500); }
+    }).catch(()=>{
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta);
+      alert('Code copied! (fallback method)');
+    });
+  }
+};
+
+// ─── Initialize hand animator
+HA.setupDrag();
+document.getElementById('ha-close').addEventListener('click', () => HA.close());
+document.getElementById('ha-save').addEventListener('click', () => HA.saveKeyframe());
+document.getElementById('ha-export').addEventListener('click', () => HA.exportCode());
+document.getElementById('ha-clear').addEventListener('click', () => {
+  HA.savedKeyframes = [];
+  HA.renderKeyframes();
+});
+document.getElementById('ha-step-fwd').addEventListener('click', () => HA.stepScroll(50));
+document.getElementById('ha-step-back').addEventListener('click', () => HA.stepScroll(-50));
+document.getElementById('ha-step-fwd1').addEventListener('click', () => HA.stepScroll(10));
+document.getElementById('ha-step-back1').addEventListener('click', () => HA.stepScroll(-10));
+
+// ─── Toggle animator with 'H' key
+document.addEventListener('keydown', e => {
+  const tag = e.target.tagName.toLowerCase();
+  // Don't trigger when typing in inputs
+  if(tag === 'input' || tag === 'textarea' || tag === 'select') return;
+  if(e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.metaKey){
+    e.preventDefault();
+    HA.toggle();
+  }
+});
+
+// ─── DEBUG OVERLAY (press 'D')
 const dbg=document.createElement('div');
 dbg.style.cssText='position:fixed;bottom:20px;right:20px;background:rgba(0,0,0,.88);border:1px solid rgba(0,255,204,.6);border-radius:8px;padding:12px 16px;font-family:monospace;font-size:11px;color:#00ffcc;z-index:99999;letter-spacing:.5px;line-height:1.9;white-space:pre;backdrop-filter:blur(8px);min-width:240px';
 document.body.appendChild(dbg);
-let dbgOn=false,mx=0,my=0,lc=0;
+let dbgOn=false,mx=0,my=0;
 dbg.style.display='none';
-document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='d'){dbgOn=!dbgOn;dbg.style.display=dbgOn?'block':'none';}});
+document.addEventListener('keydown',e=>{
+  const tag=e.target.tagName.toLowerCase();
+  if(tag==='input'||tag==='textarea'||tag==='select')return;
+  if(e.key.toLowerCase()==='d'){dbgOn=!dbgOn;dbg.style.display=dbgOn?'block':'none';}
+});
 window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
-window.addEventListener('wheel',e=>{lc+=e.deltaMode===0?e.deltaY/16:e.deltaMode===1?e.deltaY:e.deltaY*20;},{passive:true});
 (function loop(){
   if(dbgOn){
     const prog=Math.min(1,scrollY/MAX_S);
-    dbg.textContent=`MOUSE   x:${String(mx).padStart(4)}  y:${String(my).padStart(4)}\nSCROLL  px:${String(Math.round(scrollY)).padStart(5)} / ${MAX_S}\nPROGRESS  ${prog.toFixed(4)}\nGLOBE Y  ${gProxy.y.toFixed(1)}\nL-GRIP  ${LP.grip.toFixed(2)}  L (${Math.round(LP.wx)},${Math.round(LP.wy)})\nR-GRIP  ${RP.grip.toFixed(2)}  R (${Math.round(RP.wx)},${Math.round(RP.wy)})\n─── Press D to hide ───`;
+    const apPx=Math.round(AP*MAX_S), ppPx=Math.round(PP*MAX_S), cpPx=Math.round(CP*MAX_S);
+    dbg.textContent=`SCROLL  ${Math.round(scrollY)}px / ${MAX_S}px\nPROGRESS  ${(prog*100).toFixed(2)}%\nMOUSE  (${mx}, ${my})\nGLOBE Y  ${gProxy.y.toFixed(1)}\nL (${Math.round(LP.wx)},${Math.round(LP.wy)}) grip:${LP.grip.toFixed(2)}\nR (${Math.round(RP.wx)},${Math.round(RP.wy)}) grip:${RP.grip.toFixed(2)}\nGEAR-L ${gearL.rot.toFixed(0)}° + scroll ${gearScrollAccum.toFixed(0)}°\n──────────────────────\nAP:${apPx}px  PP:${ppPx}px  CP:${cpPx}px\n─── D=debug  H=animator ───`;
   }
   requestAnimationFrame(loop);
 }());
