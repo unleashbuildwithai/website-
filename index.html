@@ -1234,14 +1234,13 @@ gsap.set(time2,{opacity:0,y:70,scale:0.88});
 gsap.set(time3,{opacity:0,y:70,scale:0.88});
 gsap.set(cta,{opacity:0,y:45});
 
-// ─── HERO CARD: mouse-reactive spin, hover flips
+// ─── HERO CARD: smooth mouse-reactive gliding (no flip)
 (function(){
   const fci=document.querySelector('.flip-card-inner');
   const flipCardEl=document.querySelector('.flip-card');
   if(!fci||!flipCardEl)return;
   fci.style.transition='none';
-  let cardRot=0,settling=false,settled=false,hoverFlipped=false;
-  const cp={r:0};
+  let cardRot=0;
   let mouseX=window.innerWidth/2;
 
   // Track mouse position globally
@@ -1250,47 +1249,16 @@ gsap.set(cta,{opacity:0,y:45});
     mouseX=e.clientX;
   },{passive:true});
 
-  flipCardEl.addEventListener('mouseenter',()=>{
-    if(scrollY/MAX_S>0.09)return;
-    if(hoverFlipped)return;
-    hoverFlipped=true; settling=true; settled=false;
-    gsap.killTweensOf(cp);
-    const norm=((cardRot%360)+360)%360;
-    const isOnFront=(norm<90||norm>270);
-    const base=cardRot-norm;
-    // Spin 2 full rotations then land on back (720 + 180 = 900°)
-    const targetBack=isOnFront?base+900:cardRot+720;
-    cp.r=cardRot;
-    gsap.to(cp,{r:targetBack,duration:1.5,ease:'power2.inOut',
-      onUpdate:()=>{fci.style.transform=`rotateY(${cp.r}deg)`;cardRot=cp.r;},
-      onComplete:()=>{settling=false;settled=true;}
-    });
-  });
-
-  flipCardEl.addEventListener('mouseleave',()=>{
-    if(scrollY/MAX_S>0.09)return;
-    if(!hoverFlipped)return;
-    hoverFlipped=false; settling=true; settled=false;
-    gsap.killTweensOf(cp);
-    // Spin 2 full rotations back to nearest front
-    const nearestFront=Math.round(cardRot/360)*360+720;
-    cp.r=cardRot;
-    gsap.to(cp,{r:nearestFront,duration:1.5,ease:'power2.inOut',
-      onUpdate:()=>{fci.style.transform=`rotateY(${cp.r}deg)`;cardRot=cp.r;},
-      onComplete:()=>{settling=false;settled=true;}
-    });
-  });
-
-  // Mouse-reactive spinning loop
+  // Smooth gliding animation loop
   (function cardLoop(){
-    if(scrollY/MAX_S<=0.09 && !hoverFlipped && !settling){
+    if(scrollY/MAX_S<=0.09){
       // Map mouse X position to rotation (-30 to 30 degrees)
       const centerX = window.innerWidth / 2;
       const offsetX = mouseX - centerX;
       const targetRot = (offsetX / centerX) * 30; // max ±30 degrees tilt
       
-      // Smooth interpolation to target
-      cardRot += (targetRot - cardRot) * 0.1;
+      // Smooth interpolation for stable gliding
+      cardRot += (targetRot - cardRot) * 0.08; // Slower interpolation = smoother
       fci.style.transform = `rotateY(${cardRot}deg)`;
     }
     requestAnimationFrame(cardLoop);
