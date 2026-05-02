@@ -5,7 +5,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { initDatabase, messageDB } = require('./database');
+const { initDatabase, messageDB, failedLoginDB } = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -68,7 +68,7 @@ app.get('/api/health', (req, res) => {
 // Submit new message (public)
 app.post('/api/messages', async (req, res) => {
   try {
-    const { name, email, vision, features, discord, timeline } = req.body;
+    const { name, email, vision, features, discord, timeline, referral } = req.body;
 
     // Validation
     if (!name || !email || !vision) {
@@ -87,6 +87,7 @@ app.post('/api/messages', async (req, res) => {
       features: features?.trim() || '',
       discord: discord?.trim() || '',
       timeline: timeline || 'Not specified',
+      referral: referral?.trim() || '',
       status: 'new',
       ts
     };
@@ -123,12 +124,20 @@ app.post('/api/auth/login', authLimiter, async (req, res) => {
     }
 
     if (username !== ADMIN_USER) {
+      // Log failed login attempt
+      const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
+      const userAgent = req.get('user-agent') || 'unknown';
+      await failedLoginDB.log(username, ipAddress, userAgent);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     // Verify password
     const isValid = await bcrypt.compare(password, ADMIN_PASS_HASH);
     if (!isValid) {
+      // Log failed login attempt
+      const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
+      const userAgent = req.get('user-agent') || 'unknown';
+      await failedLoginDB.log(username, ipAddress, userAgent);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
@@ -221,6 +230,37 @@ app.delete('/api/admin/trash', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Error emptying trash:', error);
     res.status(500).json({ error: 'Failed to empty trash' });
+  }
+});
+
+// Get failed login attempts (admin only)
+app.get('/api/admin/failed-attempts', authenticateToken, async (req, res) => {
+  try {
+    const attempts = await failedLoginDB.getAll();
+    const count = await failedLoginDB.getCount();
+    res.json({ 
+      success: true, 
+      attempts,
+      count
+    });
+  } catch (error) {
+    console.error('Error fetching failed attempts:', error);
+    res.status(500).json({ error: 'Failed to fetch failed attempts' });
+  }
+});
+
+// Clear all failed login attempts (admin only)
+app.delete('/api/admin/failed-attempts', authenticateToken, async (req, res) => {
+  try {
+    const result = await failedLoginDB.clearAll();
+    res.json({ 
+      success: true, 
+      message: 'Failed login attempts cleared',
+      deleted: result.changes
+    });
+  } catch (error) {
+    console.error('Error clearing failed attempts:', error);
+    res.status(500).json({ error: 'Failed to clear failed attempts' });
   }
 });
 

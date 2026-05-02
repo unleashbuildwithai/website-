@@ -21,6 +21,7 @@ function initDatabase() {
           features TEXT,
           discord TEXT,
           timeline TEXT,
+          referral TEXT,
           status TEXT DEFAULT 'new',
           ts INTEGER NOT NULL,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -34,6 +35,24 @@ function initDatabase() {
       });
       
       db.run('CREATE INDEX IF NOT EXISTS idx_ts ON messages(ts DESC)', (err) => {
+        if (err) return reject(err);
+      });
+      
+      // Failed login attempts table
+      db.run(`
+        CREATE TABLE IF NOT EXISTS failed_logins (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          username TEXT NOT NULL,
+          ip_address TEXT,
+          user_agent TEXT,
+          ts INTEGER NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `, (err) => {
+        if (err) return reject(err);
+      });
+      
+      db.run('CREATE INDEX IF NOT EXISTS idx_failed_ts ON failed_logins(ts DESC)', (err) => {
         if (err) return reject(err);
         console.log('✅ Database initialized successfully');
         resolve();
@@ -74,11 +93,11 @@ const messageDB = {
   // Create new message
   create(message) {
     return new Promise((resolve, reject) => {
-      const { id, name, email, vision, features, discord, timeline, status, ts } = message;
+      const { id, name, email, vision, features, discord, timeline, referral, status, ts } = message;
       db.run(
-        `INSERT INTO messages (id, name, email, vision, features, discord, timeline, status, ts)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [id, name, email, vision, features || '', discord || '', timeline || '', status || 'new', ts],
+        `INSERT INTO messages (id, name, email, vision, features, discord, timeline, referral, status, ts)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [id, name, email, vision, features || '', discord || '', timeline || '', referral || '', status || 'new', ts],
         function(err) {
           if (err) reject(err);
           else resolve({ id, changes: this.changes });
@@ -128,7 +147,57 @@ const messageDB = {
   }
 };
 
+// Failed login operations
+const failedLoginDB = {
+  // Log a failed login attempt
+  log(username, ipAddress, userAgent) {
+    return new Promise((resolve, reject) => {
+      const ts = Date.now();
+      db.run(
+        `INSERT INTO failed_logins (username, ip_address, user_agent, ts)
+         VALUES (?, ?, ?, ?)`,
+        [username, ipAddress || 'unknown', userAgent || 'unknown', ts],
+        function(err) {
+          if (err) reject(err);
+          else resolve({ id: this.lastID, changes: this.changes });
+        }
+      );
+    });
+  },
+
+  // Get all failed login attempts
+  getAll() {
+    return new Promise((resolve, reject) => {
+      db.all('SELECT * FROM failed_logins ORDER BY ts DESC LIMIT 100', (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  },
+
+  // Get count of failed attempts
+  getCount() {
+    return new Promise((resolve, reject) => {
+      db.get('SELECT COUNT(*) as count FROM failed_logins', (err, row) => {
+        if (err) reject(err);
+        else resolve(row ? row.count : 0);
+      });
+    });
+  },
+
+  // Clear all failed login attempts
+  clearAll() {
+    return new Promise((resolve, reject) => {
+      db.run('DELETE FROM failed_logins', function(err) {
+        if (err) reject(err);
+        else resolve({ changes: this.changes });
+      });
+    });
+  }
+};
+
 module.exports = {
   initDatabase,
-  messageDB
+  messageDB,
+  failedLoginDB
 };

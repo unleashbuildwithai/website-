@@ -1651,8 +1651,34 @@ document.getElementById('a-login').addEventListener('click',async ()=>{
   
   // ── JUMP SCARE for troll credentials
   if(u === ADMIN_USER_FAKE && p === ADMIN_PASS_FAKE){
+    // ── Show dramatic "checking" state
+    err.textContent = 'Checking credentials...';
+    err.style.display='block';
+    err.style.color = '#00ffcc';
+    
+    // ── LOG INTRUSION ATTEMPT TO BACKEND FIRST (with suspenseful delay)
+    try {
+      await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username: u, password: p})
+      });
+      
+      // Reload intrusions count if admin panel is open
+      if(adminInbox.classList.contains('open')){
+        await loadFailedAttempts();
+      }
+      
+      // Brief pause to let them see the count update
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+    } catch(e) {
+      console.log('Failed to log intrusion attempt:', e);
+    }
+    
     const js = document.getElementById('jumpscare');
     js.style.display = 'flex';
+    err.style.display = 'none'; // Hide the checking message
     
     // ── Web Audio API alarm sound (no file needed!)
     try {
@@ -2347,7 +2373,7 @@ function renderFailedAttempts(attempts, count){
   }
   
   intrusionsList.innerHTML = attempts.map(att => {
-    const d = new Date(att.timestamp);
+    const d = new Date(att.ts);
     const timeStr = d.toLocaleString([], {
       month: 'short',
       day: 'numeric',
