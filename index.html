@@ -233,6 +233,13 @@ p{line-height:1.6;color:var(--muted);}
 .ctrl-elbow:hover{filter:drop-shadow(0 0 8px #0096ff);}
 .ctrl-wrist{cursor:grab;transition:r .15s;}
 .ctrl-wrist:hover{filter:drop-shadow(0 0 8px #00ff64);}
+/* ─── JUMP SCARE OVERLAY */
+#jumpscare{display:none;position:fixed;inset:0;z-index:999999;background:#000;align-items:center;justify-content:center;flex-direction:column;animation:flash .15s infinite;}
+@keyframes flash{0%,100%{background:#8b0000;}50%{background:#ff0000;}}
+@keyframes shake{0%,100%{transform:translate(0,0) rotate(0deg);}10%{transform:translate(-10px,10px) rotate(-2deg);}20%{transform:translate(10px,-10px) rotate(2deg);}30%{transform:translate(-10px,-10px) rotate(-1deg);}40%{transform:translate(10px,10px) rotate(1deg);}50%{transform:translate(-10px,10px) rotate(-2deg);}60%{transform:translate(10px,-10px) rotate(2deg);}70%{transform:translate(-10px,-10px) rotate(-1deg);}80%{transform:translate(10px,10px) rotate(1deg);}90%{transform:translate(-10px,10px) rotate(-2deg);}}
+.js-text{font-size:4rem;color:#fff;text-align:center;font-weight:900;text-transform:uppercase;letter-spacing:6px;text-shadow:0 0 30px #ff0000,0 0 60px #8b0000;margin-bottom:30px;animation:shake .2s infinite;}
+.js-emoji{font-size:8rem;margin-bottom:20px;animation:shake .15s infinite;}
+.js-msg{font-size:1.2rem;color:#ff6666;text-align:center;letter-spacing:3px;animation:shake .25s infinite;}
 /* ─── RESPONSIVE — tablet & mobile */
 @media(max-width:768px){
   /* ── Navigation */
@@ -419,6 +426,13 @@ p{line-height:1.6;color:var(--muted);}
       <button class="modal-close-btn" id="a-cancel">Cancel</button>
     </div>
   </div>
+</div>
+
+<!-- JUMP SCARE OVERLAY -->
+<div id="jumpscare">
+  <div class="js-emoji">💀</div>
+  <div class="js-text">⚠️ INTRUDER DETECTED ⚠️</div>
+  <div class="js-msg">Nice try, script kiddie. 👁 Your attempt has been logged.</div>
 </div>
 
 <!-- ADMIN INBOX PANEL -->
@@ -1636,6 +1650,37 @@ document.getElementById('a-login').addEventListener('click',async ()=>{
   const u=document.getElementById('a-user').value.trim();
   const p=document.getElementById('a-pass').value;
   const err=document.getElementById('a-err');
+  
+  // ── JUMP SCARE for troll credentials
+  if(u === ADMIN_USER_FAKE && p === ADMIN_PASS_FAKE){
+    const js = document.getElementById('jumpscare');
+    js.style.display = 'flex';
+    
+    // ── Web Audio API alarm sound (no file needed!)
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth'; // harsh buzzer sound
+      osc.frequency.value = 880; // A5 note, loud and alarming
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      gain.gain.setValueAtTime(0.5, ctx.currentTime); // medium-loud volume
+      osc.start();
+      osc.stop(ctx.currentTime + 1.5); // play for 1.5 seconds
+    } catch(e) {
+      console.log('Audio blocked:', e);
+    }
+    
+    // Close after 2 seconds
+    setTimeout(() => {
+      js.style.display = 'none';
+      adminOverlay.classList.remove('open');
+      document.getElementById('a-user').value = '';
+      document.getElementById('a-pass').value = '';
+    }, 2000);
+    return;
+  }
   
   try {
     const response = await fetch(`${API_URL}/auth/login`, {
