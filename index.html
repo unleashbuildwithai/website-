@@ -1331,8 +1331,8 @@ tl.to(barOp,{duration:0.015,b1:0.2,onUpdate:updateAll},AP+0.03);
 tl.to(LP,{duration:0.08,wx:L_DOWN.wx,wy:L_DOWN.wy,grip:0,onUpdate:updateAll},AP+0.04);
 tl.to(gearL,{duration:0.08,rot:-360,onUpdate:updateAll},AP+0.04);
 
-// Section slides up — right arm sweeps up with it
-tl.to(RP,{duration:0.10,wx:R_UP.wx,wy:R_UP.wy,onUpdate:updateAll},AP+0.04);
+// Section slides up — right arm sweeps up with it (STAYS CLOSED during pull)
+tl.to(RP,{duration:0.10,wx:R_UP.wx,wy:R_UP.wy,grip:1,onUpdate:updateAll},AP+0.04);
 tl.to(gProxy,{duration:0.10,y:-175,onUpdate:updateAll},AP+0.04);
 tl.to(gearR,{duration:0.10,rot:-120,onUpdate:updateAll},AP+0.04);
 tl.to(section1,{duration:0.10,y:-(VH-119)},AP+0.04);
@@ -1388,8 +1388,8 @@ tl.to(processUL,{duration:0.05,opacity:1,scaleX:1},PP+0.04);
 tl.to(RP,{duration:0.08,wx:R_DOWN.wx,wy:R_DOWN.wy,grip:0,onUpdate:updateAll},PP+0.035);
 tl.to(gearR,{duration:0.08,rot:240,onUpdate:updateAll},PP+0.035);
 
-// Left arm pulls section up
-tl.to(LP,{duration:0.10,wx:L_UP.wx,wy:L_UP.wy,onUpdate:updateAll},PP+0.04);
+// Left arm pulls section up (STAYS CLOSED during pull)
+tl.to(LP,{duration:0.10,wx:L_UP.wx,wy:L_UP.wy,grip:1,onUpdate:updateAll},PP+0.04);
 tl.to(gProxy,{duration:0.10,y:-350,onUpdate:updateAll},PP+0.04);
 tl.to(gearL,{duration:0.10,rot:150,onUpdate:updateAll},PP+0.04);
 tl.to(section2,{duration:0.10,y:-(VH-100)},PP+0.04);
@@ -1429,7 +1429,7 @@ tl.to(barOp,{duration:0.02,b3:0.2,onUpdate:updateAll},CP);
 tl.to(section3,{duration:0.02,opacity:1},CP);
 tl.to(cta,{duration:0.06,opacity:1,y:0},CP);
 
-tl.to(RP,{duration:0.08,wx:R_UP.wx,wy:R_UP.wy,onUpdate:updateAll},CP+0.02);
+tl.to(RP,{duration:0.08,wx:R_UP.wx,wy:R_UP.wy,grip:1,onUpdate:updateAll},CP+0.02);
 tl.to(gProxy,{duration:0.08,y:-490,onUpdate:updateAll},CP+0.02);
 tl.to(gearR,{duration:0.08,rot:-280,onUpdate:updateAll},CP+0.02);
 tl.to(section3,{duration:0.08,y:-(VH-119)},CP+0.02);
