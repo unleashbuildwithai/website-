@@ -169,6 +169,12 @@ p{line-height:1.6;color:var(--muted);}
 .inbox-filter-btn{padding:7px 15px;background:transparent;color:rgba(0,255,204,.4);border:1px solid rgba(0,255,204,.2);border-radius:20px;font-size:.68rem;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:all .2s;font-family:inherit;margin-left:4px;}
 .inbox-filter-btn:hover,.inbox-filter-btn.active{background:rgba(0,255,204,.1);color:#00ffcc;border-color:rgba(0,255,204,.6);}
 .msg-status-badge{display:inline-block;font-size:.58rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:10px;margin-left:6px;vertical-align:middle;}
+.msg-thread-count{display:inline-block;background:rgba(0,255,204,.15);border:1px solid rgba(0,255,204,.5);border-radius:10px;padding:2px 7px;margin-left:6px;font-size:.58rem;font-weight:700;color:#00ffcc;}
+.inbox-pagination{display:flex;justify-content:center;align-items:center;gap:8px;padding:16px 16px 12px;border-top:1px solid rgba(0,255,204,.08);}
+.page-btn{padding:6px 12px;background:rgba(0,255,204,.05);border:1px solid rgba(0,255,204,.2);border-radius:8px;color:rgba(0,255,204,.6);font-size:.7rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;}
+.page-btn:hover{background:rgba(0,255,204,.12);border-color:rgba(0,255,204,.5);color:#00ffcc;}
+.page-btn.active{background:rgba(0,255,204,.18);border-color:rgba(0,255,204,.8);color:#00ffcc;box-shadow:0 0 10px rgba(0,255,204,.15);}
+.page-btn.dots{background:transparent;border:none;cursor:pointer;padding:6px 8px;}
 .msg-action-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
 .msg-action-btn{padding:10px 18px;background:transparent;border-radius:20px;font-size:.77rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;cursor:pointer;transition:all .2s;font-family:inherit;}
 .msg-action-accept{color:#ffa040;border:1px solid rgba(255,160,64,.5);}
@@ -1588,7 +1594,11 @@ document.getElementById('m-submit').addEventListener('click',async function(){
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:3000/api'  // Local development
   : 'https://website-5nvl.onrender.com/api'; // Production
-let authToken = localStorage.getItem('admin_token');
+
+// ═══════════════════════════════════════════════════════
+// ─── SECURE TOKEN STORAGE (memory-only, no localStorage!)
+// ═══════════════════════════════════════════════════════
+let authToken = null; // Token only lives in memory - cleared on page refresh
 
 // ═══════════════════════════════════════════════════════
 // ─── ADMIN PANEL WITH BACKEND INTEGRATION
@@ -1603,6 +1613,24 @@ const msgDetail=document.getElementById('msg-detail');
 const ADMIN_USER_FAKE='SuperAdmin';
 const ADMIN_PASS_FAKE='admin123'; // This doesn't work! Real auth is server-side
 
+// ═══════════════════════════════════════════════════════
+// ─── XSS SANITIZER — escape HTML entities
+// ═══════════════════════════════════════════════════════
+function esc(str){
+  if(!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// ═══════════════════════════════════════════════════════
+// ─── PAGINATION & THREADING
+// ═══════════════════════════════════════════════════════
+const THREADS_PER_PAGE = 10;
+let currentPage = 1;
 let currentTab='new';
 let showAll=false;
 const STATUS_COLORS={new:'rgba(0,255,204,.8)',accepted:'#ffa040',archived:'#8888cc',completed:'#40ff80',trash:'#ff6060'};
@@ -1752,7 +1780,9 @@ document.getElementById('a-login').addEventListener('click',async ()=>{
     
     if(data.success && data.token){
       authToken = data.token;
-      localStorage.setItem('admin_token', data.token);
+      // ── SECURITY: Clear credentials immediately
+      document.getElementById('a-user').value = '';
+      document.getElementById('a-pass').value = '';
       err.style.display='none';
       adminOverlay.classList.remove('open');
       adminInbox.classList.add('open');
@@ -1871,16 +1901,64 @@ function renderMessages(msgs){
     msgList.innerHTML=`<div style="color:rgba(0,255,204,.2);text-align:center;padding:40px 0;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;">${showAll?'No messages yet':'No messages in this folder'}</div>`;
     return;
   }
+  
+  // ─── AUTO-TRASH KEEPALIVE MESSAGES (if not already in trash)
+  if(authToken && currentTab !== 'trash'){
+    msgs.forEach(m => {
+      if(m.email === 'keepalive@system.internal' && m.status !== 'trash'){
+        fetch(`${API_URL}/admin/messages/${m.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify({status: 'trash'})
+        }).catch(err => console.log('Auto-trash keepalive failed:', err));
+      }
+    });
+  }
+  
+  // ─── GROUP BY EMAIL (threading)
+  const threads = {};
+  msgs.forEach(m => {
+    const email = m.email || 'unknown';
+    if(!threads[email]){
+      threads[email] = [];
+    }
+    threads[email].push(m);
+  });
+  
+  // Convert to array and sort by most recent message timestamp
+  const threadArray = Object.entries(threads).map(([email, messages]) => {
+    const sortedMsgs = messages.sort((a,b) => (b.ts||0) - (a.ts||0));
+    return {
+      email,
+      count: messages.length,
+      latest: sortedMsgs[0],
+      allMessages: sortedMsgs
+    };
+  }).sort((a,b) => (b.latest.ts||0) - (a.latest.ts||0));
+  
+  // ─── PAGINATION
+  const totalPages = Math.ceil(threadArray.length / THREADS_PER_PAGE);
+  currentPage = Math.max(1, Math.min(currentPage, totalPages || 1));
+  const startIdx = (currentPage - 1) * THREADS_PER_PAGE;
+  const endIdx = startIdx + THREADS_PER_PAGE;
+  const pageThreads = threadArray.slice(startIdx, endIdx);
+  
+  // ─── RENDER THREADS
   msgList.innerHTML='';
-  msgs.forEach(m=>{
+  pageThreads.forEach(thread=>{
+    const m = thread.latest;
     const div=document.createElement('div');
     div.className='msg-item';
     const status=m.status||'new';
     const d=new Date(m.ts||Date.now());
     const sColor=STATUS_COLORS[status]||'rgba(0,255,204,.8)';
     const sLabel=STATUS_LABELS[status]||'New';
-    div.innerHTML=`<div class="msg-item-name">${m.name||'Unknown'} <span class="msg-status-badge" style="color:${sColor};border:1px solid ${sColor}44">${sLabel}</span></div>
-      <div class="msg-item-email">${m.email||''}</div>
+    const threadBadge = thread.count > 1 ? `<span class="msg-thread-count">(${thread.count})</span>` : '';
+    div.innerHTML=`<div class="msg-item-name">${esc(m.name||'Unknown')} <span class="msg-status-badge" style="color:${sColor};border:1px solid ${sColor}44">${sLabel}</span>${threadBadge}</div>
+      <div class="msg-item-email">${esc(m.email||'')}</div>
       <div class="msg-item-date">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>`;
     div.addEventListener('click',()=>{
       document.querySelectorAll('.msg-item').forEach(el=>el.classList.remove('active'));
@@ -1889,41 +1967,114 @@ function renderMessages(msgs){
     });
     msgList.appendChild(div);
   });
+  
+  // ─── RENDER PAGINATION
+  if(totalPages > 1){
+    renderPagination(currentPage, totalPages);
+  }
+}
+
+function renderPagination(current, total){
+  const paginationDiv = document.createElement('div');
+  paginationDiv.className = 'inbox-pagination';
+  
+  const buttons = [];
+  
+  // Smart pagination: show 1...4 5 6...12 style
+  if(total <= 5){
+    // Show all pages
+    for(let i=1; i<=total; i++){
+      buttons.push(i);
+    }
+  } else {
+    // Always show first page
+    buttons.push(1);
+    
+    // Show dots or pages around current
+    if(current > 3){
+      buttons.push('...');
+    }
+    
+    // Show pages around current (current-1, current, current+1)
+    for(let i=Math.max(2, current-1); i<=Math.min(total-1, current+1); i++){
+      if(!buttons.includes(i)){
+        buttons.push(i);
+      }
+    }
+    
+    // Show dots before last
+    if(current < total - 2){
+      if(!buttons.includes('...')){
+        buttons.push('...');
+      }
+    }
+    
+    // Always show last page
+    if(!buttons.includes(total)){
+      buttons.push(total);
+    }
+  }
+  
+  buttons.forEach(btn => {
+    if(btn === '...'){
+      const dots = document.createElement('span');
+      dots.className = 'page-btn dots';
+      dots.textContent = '...';
+      dots.style.cursor = 'default';
+      paginationDiv.appendChild(dots);
+    } else {
+      const pageBtn = document.createElement('button');
+      pageBtn.className = 'page-btn' + (btn === current ? ' active' : '');
+      pageBtn.textContent = btn;
+      pageBtn.addEventListener('click', () => {
+        currentPage = btn;
+        loadMessages();
+      });
+      paginationDiv.appendChild(pageBtn);
+    }
+  });
+  
+  msgList.appendChild(paginationDiv);
 }
 function showDetail(m){
   const d=new Date(m.ts||Date.now());
   const status=m.status||'new';
   const actions=[];
+  // Message ID validation - alphanumeric only for safety
+  const safeId = String(m.id).replace(/[^a-zA-Z0-9]/g, '');
   if(status==='trash'){
-    actions.push(`<button class="msg-action-btn msg-action-restore" onclick="updateMsgStatus('${m.id}','new')">↩️ Restore</button>`);
-    actions.push(`<button class="msg-action-btn msg-action-perm" onclick="deletePermanently('${m.id}')">💀 Delete Forever</button>`);
+    actions.push(`<button class="msg-action-btn msg-action-restore" onclick="updateMsgStatus('${safeId}','new')">↩️ Restore</button>`);
+    actions.push(`<button class="msg-action-btn msg-action-perm" onclick="deletePermanently('${safeId}')">💀 Delete Forever</button>`);
   } else {
     if(status==='new'){
-      actions.push(`<button class="msg-action-btn msg-action-accept" onclick="updateMsgStatus('${m.id}','accepted')">✅ Accept</button>`);
-      actions.push(`<button class="msg-action-btn msg-action-archive" onclick="updateMsgStatus('${m.id}','archived')">📁 Archive</button>`);
+      actions.push(`<button class="msg-action-btn msg-action-accept" onclick="updateMsgStatus('${safeId}','accepted')">✅ Accept</button>`);
+      actions.push(`<button class="msg-action-btn msg-action-archive" onclick="updateMsgStatus('${safeId}','archived')">📁 Archive</button>`);
     } else if(status==='accepted'){
-      actions.push(`<button class="msg-action-btn msg-action-complete" onclick="updateMsgStatus('${m.id}','completed')">🏆 Complete</button>`);
-      actions.push(`<button class="msg-action-btn msg-action-archive" onclick="updateMsgStatus('${m.id}','archived')">📁 Archive</button>`);
+      actions.push(`<button class="msg-action-btn msg-action-complete" onclick="updateMsgStatus('${safeId}','completed')">🏆 Complete</button>`);
+      actions.push(`<button class="msg-action-btn msg-action-archive" onclick="updateMsgStatus('${safeId}','archived')">📁 Archive</button>`);
     }
     if(status!=='new'){
-      actions.push(`<button class="msg-action-btn msg-action-reopen" onclick="updateMsgStatus('${m.id}','new')">↩️ Reopen</button>`);
+      actions.push(`<button class="msg-action-btn msg-action-reopen" onclick="updateMsgStatus('${safeId}','new')">↩️ Reopen</button>`);
     }
-    actions.push(`<button class="msg-action-btn msg-action-delete" onclick="moveToTrash('${m.id}')">🗑 Delete</button>`);
+    actions.push(`<button class="msg-action-btn msg-action-delete" onclick="moveToTrash('${safeId}')">🗑 Delete</button>`);
   }
-  const discordRow=m.discord?`<div class="msg-detail-label">Discord</div><div class="msg-detail-text">${m.discord}</div>`:'';
+  const discordRow=m.discord?`<div class="msg-detail-label">Discord</div><div class="msg-detail-text">${esc(m.discord)}</div>`:'';
+  const featuresRow=m.features?`<div class="msg-detail-label">Core Features</div><div class="msg-detail-text">${esc(m.features).replace(/\n/g,'<br>')}</div>`:'';
+  const referralRow=m.referral?`<div class="msg-detail-label">Referral</div><div class="msg-detail-text">${esc(m.referral)}</div>`:'';
   msgDetail.innerHTML=`
-    <div class="msg-detail-name">${m.name||'Unknown'}</div>
-    <div class="msg-detail-email">${m.email||''}</div>
+    <div class="msg-detail-name">${esc(m.name||'Unknown')}</div>
+    <div class="msg-detail-email">${esc(m.email||'')}</div>
     <div class="msg-detail-label">Vision / Description</div>
-    <div class="msg-detail-text">${(m.vision||'No description provided').replace(/\n/g,'<br>')}</div>
-    ${m.features?`<div class="msg-detail-label">Core Features</div><div class="msg-detail-text">${m.features.replace(/\n/g,'<br>')}</div>`:''}
+    <div class="msg-detail-text">${esc(m.vision||'No description provided').replace(/\n/g,'<br>')}</div>
+    ${featuresRow}
     <div class="msg-detail-label">Timeline</div>
-    <div class="msg-detail-text">${m.timeline||'Not specified'}</div>
+    <div class="msg-detail-text">${esc(m.timeline||'Not specified')}</div>
     ${discordRow}
+    ${referralRow}
     <div class="msg-detail-label">Received</div>
     <div class="msg-detail-text">${d.toLocaleString()}</div>
     <div class="msg-action-row">${actions.join('')}</div>
-    ${status!=='trash'?`<a class="msg-detail-reply" style="margin-top:16px;" href="mailto:${m.email}?subject=Re: Your Build Request — ${encodeURIComponent(m.name||'')}&body=Hi ${encodeURIComponent(m.name||'')},%0D%0A%0D%0AThank you for reaching out! I've reviewed your vision and I'm excited to get started.%0D%0A%0D%0A— Ardy W">✉️ Reply via Email</a>`:''}
+    ${status!=='trash'?`<a class="msg-detail-reply" style="margin-top:16px;" href="mailto:${encodeURIComponent(m.email||'')}?subject=Re: Your Build Request — ${encodeURIComponent(m.name||'')}&body=Hi ${encodeURIComponent(m.name||'')},%0D%0A%0D%0AThank you for reaching out! I've reviewed your vision and I'm excited to get started.%0D%0A%0D%0A— Ardy W">✉️ Reply via Email</a>`:''}
   `;
 }
 function saveLocalMsg(msg){
@@ -2413,13 +2564,14 @@ function renderFailedAttempts(attempts, count){
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      second: '2-digit'
     });
     
     return `
       <div class="intrusion-item">
-        <div><span class="intrusion-user">${att.username || 'unknown'}</span> — failed login</div>
-        <div class="intrusion-ip">IP: ${att.ip_address || 'unknown'}</div>
+        <div><span class="intrusion-user">${esc(att.username || 'unknown')}</span> — failed login</div>
+        <div class="intrusion-ip">IP: ${esc(att.ip_address || 'unknown')}</div>
         <div class="intrusion-time">${timeStr}</div>
       </div>
     `;
