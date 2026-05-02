@@ -1234,7 +1234,7 @@ gsap.set(time2,{opacity:0,y:70,scale:0.88});
 gsap.set(time3,{opacity:0,y:70,scale:0.88});
 gsap.set(cta,{opacity:0,y:45});
 
-// ─── HERO CARD: smooth mouse-reactive gliding (no flip)
+// ─── HERO CARD: smooth mouse-reactive gliding + hover spin + scroll wheel rotation
 (function(){
   const fci=document.querySelector('.flip-card-inner');
   const flipCardEl=document.querySelector('.flip-card');
@@ -1242,6 +1242,9 @@ gsap.set(cta,{opacity:0,y:45});
   fci.style.transition='none';
   let cardRot=0;
   let mouseX=window.innerWidth/2;
+  let isHovering=false;
+  let hoverSpinVelocity=0;
+  let scrollSpinAccum=0;
 
   // Track mouse position globally
   window.addEventListener('mousemove',(e)=>{
@@ -1249,17 +1252,46 @@ gsap.set(cta,{opacity:0,y:45});
     mouseX=e.clientX;
   },{passive:true});
 
+  // Hover events
+  flipCardEl.addEventListener('mouseenter',()=>{
+    if(scrollY/MAX_S<=0.09) isHovering=true;
+  });
+  flipCardEl.addEventListener('mouseleave',()=>{
+    isHovering=false;
+  });
+
+  // Scroll wheel rotation
+  flipCardEl.addEventListener('wheel',(e)=>{
+    if(scrollY/MAX_S>0.09)return;
+    e.preventDefault();
+    // Accumulate scroll delta for smooth continuous rotation
+    scrollSpinAccum += e.deltaY * 0.3;
+  },{passive:false});
+
   // Smooth gliding animation loop
   (function cardLoop(){
     if(scrollY/MAX_S<=0.09){
-      // Map mouse X position to rotation (-30 to 30 degrees)
+      // Hover spin effect
+      if(isHovering){
+        hoverSpinVelocity += 0.4; // Accelerate spin
+      } else {
+        hoverSpinVelocity *= 0.95; // Decelerate when not hovering
+      }
+      
+      // Mouse position tilt (subtle when scrolling)
       const centerX = window.innerWidth / 2;
       const offsetX = mouseX - centerX;
-      const targetRot = (offsetX / centerX) * 30; // max ±30 degrees tilt
+      const tiltTarget = (offsetX / centerX) * 15; // Reduced to 15° for subtlety
       
-      // Smooth interpolation for stable gliding
-      cardRot += (targetRot - cardRot) * 0.08; // Slower interpolation = smoother
+      // Combine: base rotation + mouse tilt + hover spin + scroll spin
+      const targetRot = tiltTarget + hoverSpinVelocity + scrollSpinAccum;
+      
+      // Smooth interpolation
+      cardRot += (targetRot - cardRot) * 0.08;
       fci.style.transform = `rotateY(${cardRot}deg)`;
+      
+      // Decay scroll spin gradually
+      scrollSpinAccum *= 0.98;
     }
     requestAnimationFrame(cardLoop);
   }());
