@@ -242,10 +242,21 @@ p{line-height:1.6;color:var(--muted);}
   .initiate-btn-top{left:46px;top:6px;padding:8px 14px 6px;font-size:.65rem;}
   .btn-helper{display:none;}
 
-  /* ── Flip card */
-  .flip-card{width:min(340px,88vw);height:auto;min-height:460px;}
-  .flip-card-front,.flip-card-back{border-radius:16px;}
-  .flip-card-front{padding:26px 18px;}
+  /* ── Flip card — FIXED for mobile stability */
+  .flip-card{width:min(340px,88vw);height:520px;min-height:520px;}
+  .flip-card-inner{height:100%;}
+  .flip-card-front,.flip-card-back{border-radius:16px;height:100%;}
+  .flip-card-front{padding:28px 20px;display:flex;flex-direction:column;justify-content:space-between;}
+  
+  /* ── Card content adjustments */
+  .pitch-section{flex:0 0 auto;}
+  .pitch-headline{font-size:1.05rem;line-height:1.25;margin-bottom:8px;}
+  .pitch-body{font-size:.82rem;line-height:1.45;}
+  .pitch-highlight{font-size:.85rem;margin-top:8px;padding-left:10px;}
+  .contact-section{flex:0 0 auto;margin-top:auto;}
+  .name{font-size:1.6rem;letter-spacing:2px;margin-bottom:8px;padding-bottom:8px;}
+  .label{font-size:.68rem;}
+  .value{font-size:.88rem;}
 
   /* ── Content sections */
   .section{padding:15px 15px 60px;}
@@ -302,14 +313,15 @@ p{line-height:1.6;color:var(--muted);}
   #admin-btn{top:48px;left:6px;width:28px;height:28px;font-size:.8rem;}
   .initiate-btn-top{left:40px;top:5px;padding:6px 11px 5px;font-size:.58rem;}
 
-  /* ── Flip card */
-  .flip-card{width:min(320px,93vw);min-height:430px;}
-  .flip-card-front{padding:20px 15px;}
-  .pitch-headline{font-size:.95rem;letter-spacing:.5px;}
-  .pitch-body{font-size:.78rem;}
-  .pitch-highlight{font-size:.82rem;}
-  .name{font-size:1.35rem;letter-spacing:2px;}
-  .value{font-size:.85rem;}
+  /* ── Flip card — more compact for small phones */
+  .flip-card{width:min(320px,93vw);height:480px;min-height:480px;}
+  .flip-card-front{padding:24px 16px;}
+  .pitch-headline{font-size:.92rem;letter-spacing:.5px;line-height:1.2;}
+  .pitch-body{font-size:.76rem;line-height:1.4;}
+  .pitch-highlight{font-size:.8rem;padding-left:8px;}
+  .name{font-size:1.3rem;letter-spacing:1.5px;}
+  .value{font-size:.82rem;}
+  .label{font-size:.65rem;}
   .neon-text{font-size:1.9rem;letter-spacing:2px;}
 
   /* ── Content headers */
@@ -357,9 +369,13 @@ p{line-height:1.6;color:var(--muted);}
 
 /* ─── Extra small screens (older/small phones) */
 @media(max-width:360px){
-  .flip-card{width:96vw;}
-  .flip-card-front{padding:16px 12px;}
-  .name{font-size:1.2rem;}
+  .flip-card{width:96vw;height:450px;min-height:450px;}
+  .flip-card-front{padding:20px 14px;}
+  .pitch-headline{font-size:.88rem;line-height:1.2;}
+  .pitch-body{font-size:.74rem;}
+  .pitch-highlight{font-size:.78rem;}
+  .name{font-size:1.15rem;letter-spacing:1px;}
+  .value{font-size:.8rem;}
   .neon-text{font-size:1.6rem;}
   .arsenal-header,.process-header{font-size:1.1rem;letter-spacing:1px;}
 }
