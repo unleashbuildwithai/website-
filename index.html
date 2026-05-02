@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Ardy W | Genius Unleashed — No Road</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -1452,7 +1454,7 @@ document.getElementById('initiate-btn-top').addEventListener('click',openModal);
 document.getElementById('m-close').addEventListener('click',()=>modal.classList.remove('open'));
 modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open');});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!HA.active)modal.classList.remove('open');});
-document.getElementById('m-submit').addEventListener('click',function(){
+document.getElementById('m-submit').addEventListener('click',async function(){
   const name=document.getElementById('m-name').value.trim();
   const email=document.getElementById('m-email').value.trim();
   const vision=document.getElementById('m-vision').value.trim();
@@ -1463,27 +1465,72 @@ document.getElementById('m-submit').addEventListener('click',function(){
     gsap.to('.modal-box',{x:[-8,8,-6,6,-3,3,0],duration:.35,ease:'none'});
     return;
   }
-  saveLocalMsg({name,email,vision,features:features||'',discord,timeline:timeline||'Not specified'});
-  const box=document.querySelector('.modal-box');
-  box.innerHTML=`<div style="text-align:center;padding:20px 0;">
-    <div style="font-size:2.5rem;margin-bottom:18px;">✅</div>
-    <div class="modal-title" style="margin-bottom:10px;">Build Request Sent!</div>
-    <p style="color:#e2e8f0;font-size:.95rem;line-height:1.7;margin-bottom:28px;">
-      Your packet is in my inbox — I'll review and reach out ASAP.<br>
-      <span style="color:rgba(0,255,204,.6);font-size:.8rem;">— Ardy W</span>
-    </p>
-    <button class="modal-close-btn" onclick="document.getElementById('initiate-modal').classList.remove('open')" style="width:100%;justify-content:center;">Close</button>
-  </div>`;
+  
+  // Send to backend API
+  try {
+    const response = await fetch(`${API_URL}/messages`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        name,
+        email,
+        vision,
+        features: features || '',
+        discord,
+        timeline: timeline || 'Not specified'
+      })
+    });
+    
+    const data = await response.json();
+    
+    if(data.success){
+      const box=document.querySelector('.modal-box');
+      box.innerHTML=`<div style="text-align:center;padding:20px 0;">
+        <div style="font-size:2.5rem;margin-bottom:18px;">✅</div>
+        <div class="modal-title" style="margin-bottom:10px;">Build Request Sent!</div>
+        <p style="color:#e2e8f0;font-size:.95rem;line-height:1.7;margin-bottom:28px;">
+          Your packet is in my inbox — I'll review and reach out ASAP.<br>
+          <span style="color:rgba(0,255,204,.6);font-size:.8rem;">— Ardy W</span>
+        </p>
+        <button class="modal-close-btn" onclick="document.getElementById('initiate-modal').classList.remove('open')" style="width:100%;justify-content:center;">Close</button>
+      </div>`;
+    } else {
+      throw new Error(data.error || 'Failed to send message');
+    }
+  } catch (error) {
+    console.error('Message submission error:', error);
+    const box=document.querySelector('.modal-box');
+    box.innerHTML=`<div style="text-align:center;padding:20px 0;">
+      <div style="font-size:2.5rem;margin-bottom:18px;">⚠️</div>
+      <div class="modal-title" style="margin-bottom:10px;color:#ff6060;">Connection Error</div>
+      <p style="color:#e2e8f0;font-size:.95rem;line-height:1.7;margin-bottom:28px;">
+        Failed to send message. Is the backend server running?<br>
+        <span style="color:rgba(255,96,96,.6);font-size:.8rem;">${error.message}</span>
+      </p>
+      <button class="modal-close-btn" onclick="location.reload()" style="width:100%;justify-content:center;">Reload Page</button>
+    </div>`;
+  }
 });
 
-// ─── ADMIN PANEL
+// ═══════════════════════════════════════════════════════
+// ─── API CONFIGURATION
+// ═══════════════════════════════════════════════════════
+const API_URL = 'http://localhost:3000/api'; // Change to your deployed backend URL
+let authToken = localStorage.getItem('admin_token');
+
+// ═══════════════════════════════════════════════════════
+// ─── ADMIN PANEL WITH BACKEND INTEGRATION
+// ═══════════════════════════════════════════════════════
 const adminBtn=document.getElementById('admin-btn');
 const adminOverlay=document.getElementById('admin-overlay');
 const adminInbox=document.getElementById('admin-inbox');
 const msgList=document.getElementById('msg-list');
 const msgDetail=document.getElementById('msg-detail');
-const ADMIN_USER='Admin';
-const ADMIN_PASS='Admin420';
+
+// FAKE credentials visible in source (for trolling snoopers)
+const ADMIN_USER_FAKE='SuperAdmin';
+const ADMIN_PASS_FAKE='admin123'; // This doesn't work! Real auth is server-side
+
 let currentTab='new';
 let showAll=false;
 const STATUS_COLORS={new:'rgba(0,255,204,.8)',accepted:'#ffa040',archived:'#8888cc',completed:'#40ff80',trash:'#ff6060'};
@@ -1503,12 +1550,24 @@ const STATUS_LABELS={new:'New',accepted:'Accepted',archived:'Archived',completed
   </div>`;
   document.body.appendChild(tc);
   tc.addEventListener('click',e=>{if(e.target===tc)tc.classList.remove('open');});
-  document.getElementById('trash-confirm-yes').addEventListener('click',()=>{
-    const msgs=getLocalMsgs().filter(m=>m.status!=='trash');
-    saveAllMsgs(msgs);
-    tc.classList.remove('open');
-    msgDetail.innerHTML='<div class="msg-detail-empty" style="color:rgba(255,96,96,.4);">🗑 Trash emptied</div>';
-    loadMessages();
+  document.getElementById('trash-confirm-yes').addEventListener('click',async ()=>{
+    try {
+      const response = await fetch(`${API_URL}/admin/trash`, {
+        method: 'DELETE',
+        headers: {'Authorization': `Bearer ${authToken}`}
+      });
+      
+      if(response.ok){
+        tc.classList.remove('open');
+        msgDetail.innerHTML='<div class="msg-detail-empty" style="color:rgba(255,96,96,.4);">🗑 Trash emptied</div>';
+        loadMessages();
+      } else {
+        throw new Error('Failed to empty trash');
+      }
+    } catch (error) {
+      console.error('Empty trash error:', error);
+      alert('Failed to empty trash. Please try again.');
+    }
   });
   document.getElementById('trash-confirm-view').addEventListener('click',()=>{
     tc.classList.remove('open');
@@ -1543,21 +1602,40 @@ function updateTrashBtn(){
 adminBtn.addEventListener('click',()=>adminOverlay.classList.add('open'));
 document.getElementById('a-cancel').addEventListener('click',()=>adminOverlay.classList.remove('open'));
 document.getElementById('inbox-close-btn').addEventListener('click',()=>{adminInbox.classList.remove('open');});
-document.getElementById('a-login').addEventListener('click',()=>{
+document.getElementById('a-login').addEventListener('click',async ()=>{
   const u=document.getElementById('a-user').value.trim();
   const p=document.getElementById('a-pass').value;
   const err=document.getElementById('a-err');
-  if(u===ADMIN_USER&&p===ADMIN_PASS){
-    err.style.display='none';
-    adminOverlay.classList.remove('open');
-    adminInbox.classList.add('open');
-    currentTab='new'; showAll=false;
-    document.querySelectorAll('.inbox-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='new'));
-    document.getElementById('inbox-filter-btn').textContent='Show All';
-    document.getElementById('inbox-filter-btn').classList.remove('active');
-    updateTrashBtn();
-    loadMessages();
-  } else {
+  
+  try {
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({username: u, password: p})
+    });
+    
+    const data = await response.json();
+    
+    if(data.success && data.token){
+      authToken = data.token;
+      localStorage.setItem('admin_token', data.token);
+      err.style.display='none';
+      adminOverlay.classList.remove('open');
+      adminInbox.classList.add('open');
+      currentTab='new'; showAll=false;
+      document.querySelectorAll('.inbox-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='new'));
+      document.getElementById('inbox-filter-btn').textContent='Show All';
+      document.getElementById('inbox-filter-btn').classList.remove('active');
+      updateTrashBtn();
+      loadMessages();
+    } else {
+      err.textContent = data.error || 'Invalid credentials';
+      err.style.display='block';
+      gsap.to('.admin-login-box',{x:[-6,6,-4,4,-2,2,0],duration:.3,ease:'none'});
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    err.textContent = 'Connection error - is backend running?';
     err.style.display='block';
     gsap.to('.admin-login-box',{x:[-6,6,-4,4,-2,2,0],duration:.3,ease:'none'});
   }
@@ -1584,26 +1662,75 @@ document.getElementById('inbox-filter-btn').addEventListener('click',function(){
   updateTrashBtn();
   loadMessages();
 });
-function getLocalMsgs(){try{return JSON.parse(localStorage.getItem('ardyw_msgs')||'[]');}catch(e){return[];}}
-function saveAllMsgs(msgs){try{localStorage.setItem('ardyw_msgs',JSON.stringify(msgs));}catch(e){}}
-function updateMsgStatus(msgId,newStatus){
-  const msgs=getLocalMsgs();
-  const idx=msgs.findIndex(m=>m.id===msgId);
-  if(idx>-1){msgs[idx].status=newStatus;saveAllMsgs(msgs);}
-  msgDetail.innerHTML='<div class="msg-detail-empty">Status updated — select a message</div>';
-  loadMessages();
+// API-based message functions
+async function updateMsgStatus(msgId,newStatus){
+  try {
+    const response = await fetch(`${API_URL}/admin/messages/${msgId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({status: newStatus})
+    });
+    
+    if(response.ok){
+      msgDetail.innerHTML='<div class="msg-detail-empty">Status updated — select a message</div>';
+      loadMessages();
+    } else {
+      throw new Error('Failed to update status');
+    }
+  } catch (error) {
+    console.error('Update status error:', error);
+    alert('Failed to update message status. Please try again.');
+  }
 }
+
 function moveToTrash(msgId){updateMsgStatus(msgId,'trash');}
-function deletePermanently(msgId){
-  const msgs=getLocalMsgs().filter(m=>m.id!==msgId);
-  saveAllMsgs(msgs);
-  msgDetail.innerHTML='<div class="msg-detail-empty">Message permanently deleted</div>';
-  loadMessages();
+
+async function deletePermanently(msgId){
+  try {
+    const response = await fetch(`${API_URL}/admin/messages/${msgId}`, {
+      method: 'DELETE',
+      headers: {'Authorization': `Bearer ${authToken}`}
+    });
+    
+    if(response.ok){
+      msgDetail.innerHTML='<div class="msg-detail-empty">Message permanently deleted</div>';
+      loadMessages();
+    } else {
+      throw new Error('Failed to delete');
+    }
+  } catch (error) {
+    console.error('Delete error:', error);
+    alert('Failed to delete message. Please try again.');
+  }
 }
-function loadMessages(){
-  const all=getLocalMsgs();
-  const filtered=showAll?all:all.filter(m=>(m.status||'new')===currentTab);
-  renderMessages(filtered);
+
+async function loadMessages(){
+  try {
+    const url = showAll ? `${API_URL}/admin/messages` : `${API_URL}/admin/messages?status=${currentTab}`;
+    const response = await fetch(url, {
+      headers: {'Authorization': `Bearer ${authToken}`}
+    });
+    
+    if(response.ok){
+      const data = await response.json();
+      renderMessages(data.messages || []);
+    } else if(response.status === 401 || response.status === 403){
+      // Token expired or invalid
+      authToken = null;
+      localStorage.removeItem('admin_token');
+      adminInbox.classList.remove('open');
+      adminOverlay.classList.add('open');
+      alert('Session expired. Please log in again.');
+    } else {
+      throw new Error('Failed to load messages');
+    }
+  } catch (error) {
+    console.error('Load messages error:', error);
+    msgList.innerHTML='<div class="inbox-empty">Error loading messages. Check if backend is running.</div>';
+  }
 }
 function renderMessages(msgs){
   if(!msgs||msgs.length===0){
