@@ -1,0 +1,10 @@
+# Cloudflare Pages - Ignore backend folder
+backend/
+node_modules/
+*.log
+.env
+.env.*
+*.bat
+*.md
+wrangler.toml
+.git/
