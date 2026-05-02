@@ -1643,7 +1643,12 @@ function updateTrashBtn(){
     document.querySelector('.inbox-tabs').appendChild(btn);
   }
 }
-adminBtn.addEventListener('click',()=>adminOverlay.classList.add('open'));
+adminBtn.addEventListener('click',()=>{
+  adminOverlay.classList.add('open');
+  // Auto-fill fake credentials for easy troll bait
+  document.getElementById('a-user').value = ADMIN_USER_FAKE;
+  document.getElementById('a-pass').value = ADMIN_PASS_FAKE;
+});
 document.getElementById('a-cancel').addEventListener('click',()=>adminOverlay.classList.remove('open'));
 document.getElementById('inbox-close-btn').addEventListener('click',()=>{adminInbox.classList.remove('open');});
 document.getElementById('a-login').addEventListener('click',async ()=>{
