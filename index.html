@@ -912,6 +912,10 @@ const VH=window.innerHeight, TOTAL_H=VH*5;
 document.body.style.height=TOTAL_H+'px';
 const MAX_S=TOTAL_H-VH, PULL_DIST=VH-130;
 
+// Mobile detection for section positioning
+const isMobileView = window.innerWidth <= 768;
+const SECTION_OFFSET = isMobileView ? 30 : 119; // Smaller offset on mobile so sections appear near top
+
 // ─── TIMING ANCHORS (compressed to fit in 5x scroll)
 // AP = Arsenal starts at 8% scroll
 // PP = Blueprint at 40%
@@ -922,7 +926,7 @@ const CP = PP + 0.28;  // CTA at ~66%
 
 // ─── MOUTH TARGET
 const MOUTH_DX=0;
-const MOUTH_DY=-(VH*0.35); // Increased to make card go deeper into mouth
+const MOUTH_DY=-(VH*0.55); // Flies all the way up to robot's mouth at top of screen
 
 // ─── STARS
 (function(){
@@ -1259,7 +1263,8 @@ const tl=gsap.timeline({
 });
 
 // ── HERO CARD EXITS (fast: 0→0.07)
-tl.to(heroCard,{duration:0.07,opacity:0,scale:0,x:MOUTH_DX,y:MOUTH_DY},0);
+tl.to(heroCard,{duration:0.07,scale:0,x:MOUTH_DX,y:MOUTH_DY},0); // Removed opacity fade so card flies up visibly
+tl.to(heroCard,{duration:0.01,opacity:0},0.069); // Fade only at the very end
 tl.to(scrollPmt,{duration:0.02,opacity:0},0);
 
 // ── HANDS — stop-motion choreography (Hand Animator export, 22 keyframes)
@@ -1335,7 +1340,7 @@ tl.to(gearL,{duration:0.08,rot:-360,onUpdate:updateAll},AP+0.04);
 tl.to(RP,{duration:0.10,wx:R_UP.wx,wy:R_UP.wy,grip:1,onUpdate:updateAll},AP+0.04);
 tl.to(gProxy,{duration:0.10,y:-175,onUpdate:updateAll},AP+0.04);
 tl.to(gearR,{duration:0.10,rot:-120,onUpdate:updateAll},AP+0.04);
-tl.to(section1,{duration:0.10,y:-(VH-119)},AP+0.04);
+tl.to(section1,{duration:0.10,y:-(VH-SECTION_OFFSET)},AP+0.04);
 
 // Boxes appear (fast build)
 tl.to(box1,{duration:0.025,opacity:1,y:0},AP+0.05);
@@ -1392,7 +1397,7 @@ tl.to(gearR,{duration:0.08,rot:240,onUpdate:updateAll},PP+0.035);
 tl.to(LP,{duration:0.10,wx:L_UP.wx,wy:L_UP.wy,grip:1,onUpdate:updateAll},PP+0.04);
 tl.to(gProxy,{duration:0.10,y:-350,onUpdate:updateAll},PP+0.04);
 tl.to(gearL,{duration:0.10,rot:150,onUpdate:updateAll},PP+0.04);
-tl.to(section2,{duration:0.10,y:-(VH-100)},PP+0.04);
+tl.to(section2,{duration:0.10,y:-(VH-SECTION_OFFSET)},PP+0.04);
 
 // Timeline items appear fast
 tl.to(time1,{duration:0.025,opacity:1,y:0,scale:1},PP+0.06);
@@ -1432,7 +1437,7 @@ tl.to(cta,{duration:0.06,opacity:1,y:0},CP);
 tl.to(RP,{duration:0.08,wx:R_UP.wx,wy:R_UP.wy,grip:1,onUpdate:updateAll},CP+0.02);
 tl.to(gProxy,{duration:0.08,y:-490,onUpdate:updateAll},CP+0.02);
 tl.to(gearR,{duration:0.08,rot:-280,onUpdate:updateAll},CP+0.02);
-tl.to(section3,{duration:0.08,y:-(VH-119)},CP+0.02);
+tl.to(section3,{duration:0.08,y:-(VH-SECTION_OFFSET)},CP+0.02);
 
 tl.to(RP,{duration:0.015,grip:0,onUpdate:updateAll},CP+0.10);
 tl.to(barOp,{duration:0.03,b3:1,onUpdate:updateAll},CP+0.10);
