@@ -260,8 +260,10 @@ p{line-height:1.6;color:var(--muted);}
 
   /* ── Content sections */
   .section{padding:15px 15px 60px;}
-  .feature-grid{grid-template-columns:1fr;gap:18px;}
-  .feature-box{padding:22px 18px;}
+  .feature-grid{grid-template-columns:1fr;gap:16px;}
+  .feature-box{padding:18px 15px;}
+  .feature-box p{font-size:.82rem;line-height:1.5;}
+  .feature-icon{font-size:2.2rem;margin-bottom:15px;}
 
   /* ── Timeline */
   .timeline-item{width:100%;left:0!important;padding:8px 16px 8px 44px;}
@@ -920,7 +922,7 @@ const CP = PP + 0.28;  // CTA at ~66%
 
 // ─── MOUTH TARGET
 const MOUTH_DX=0;
-const MOUTH_DY=-(VH*0.27);
+const MOUTH_DY=-(VH*0.35); // Increased to make card go deeper into mouth
 
 // ─── STARS
 (function(){
