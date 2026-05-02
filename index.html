@@ -228,6 +228,29 @@ p{line-height:1.6;color:var(--muted);}
 .ha-kf-del{background:transparent;border:none;color:rgba(255,96,96,.5);font-size:.9rem;cursor:pointer;padding:0 2px;line-height:1;}
 .ha-kf-del:hover{color:#ff6060;}
 .ha-hint{font-size:.6rem;color:rgba(0,255,204,.35);text-align:center;line-height:1.5;letter-spacing:.5px;}
+/* ─── INTRUSIONS BUTTON — GLITCHY NEON RED */
+#intrusions-btn{padding:7px 15px;background:rgba(255,32,32,.08);color:#ff6060;border:1px solid rgba(255,32,32,.5);border-radius:20px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;cursor:pointer;transition:all .2s;font-family:inherit;position:relative;overflow:hidden;animation:glitch-flicker 3s infinite;}
+#intrusions-btn:hover{background:rgba(255,32,32,.18);border-color:rgba(255,32,32,.8);box-shadow:0 0 15px rgba(255,32,32,.3);}
+#intrusions-btn.expanded{background:rgba(255,32,32,.15);border-color:rgba(255,32,32,.9);}
+@keyframes glitch-flicker{0%,100%{opacity:1;}2%{opacity:.85;}4%{opacity:1;}8%{opacity:.92;}10%{opacity:1;}94%{opacity:1;}96%{opacity:.88;}98%{opacity:1;}}
+.intrusion-count{display:inline-block;background:rgba(255,32,32,.25);border:1px solid rgba(255,32,32,.7);border-radius:10px;padding:1px 6px;margin-left:5px;font-size:.65rem;font-weight:900;color:#ff2020;box-shadow:0 0 8px rgba(255,32,32,.4);}
+#intrusions-panel{display:none;margin-top:10px;background:rgba(10,5,5,.96);border:1px solid rgba(255,32,32,.4);border-radius:12px;padding:12px 14px;max-height:320px;overflow-y:auto;box-shadow:0 0 20px rgba(255,32,32,.15);}
+#intrusions-panel.open{display:block;animation:unfold .35s cubic-bezier(.175,.885,.32,1.275);}
+@keyframes unfold{from{opacity:0;max-height:0;padding:0 14px;}to{opacity:1;max-height:320px;padding:12px 14px;}}
+.intrusion-item{padding:10px 12px;border-bottom:1px solid rgba(255,32,32,.15);font-size:.72rem;color:#e2e8f0;line-height:1.6;}
+.intrusion-item:last-child{border-bottom:none;}
+.intrusion-user{color:#ff6060;font-weight:700;font-family:monospace;}
+.intrusion-ip{color:rgba(255,160,64,.7);font-size:.68rem;font-family:monospace;}
+.intrusion-time{color:rgba(255,255,255,.4);font-size:.65rem;margin-top:2px;}
+.intrusion-clear{display:inline-block;margin-top:8px;padding:6px 14px;background:rgba(255,32,32,.1);color:#ff6060;border:1px solid rgba(255,32,32,.4);border-radius:15px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:all .2s;font-family:inherit;}
+.intrusion-clear:hover{background:rgba(255,32,32,.2);border-color:rgba(255,32,32,.7);}
+.intrusion-empty{text-align:center;color:rgba(255,96,96,.3);font-size:.7rem;padding:20px 0;}
+/* ─── LIVE INDICATOR — GLITCHES ON PING */
+#live-indicator{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:rgba(0,255,100,.05);border:1px solid rgba(0,255,100,.25);border-radius:15px;font-size:.65rem;color:rgba(0,255,100,.7);letter-spacing:1.5px;margin-left:8px;}
+.live-dot{width:6px;height:6px;background:#00ff64;border-radius:50%;box-shadow:0 0 8px #00ff64;animation:pulse-steady 2s infinite;}
+.live-dot.ping{animation:glitch-pulse .4s ease-out;}
+@keyframes pulse-steady{0%,100%{opacity:.7;}50%{opacity:1;}}
+@keyframes glitch-pulse{0%{transform:scale(1);opacity:1;}20%{transform:scale(1.8);opacity:.4;box-shadow:0 0 20px #00ff64;}40%{transform:scale(.8);opacity:.8;}60%{transform:scale(1.3);opacity:.5;}80%{transform:scale(.9);opacity:.9;}100%{transform:scale(1);opacity:1;}}
 /* ─── CONTROL POINT STYLES (in SVG) */
 .ctrl-elbow{cursor:grab;transition:r .15s;}
 .ctrl-elbow:hover{filter:drop-shadow(0 0 8px #0096ff);}
@@ -438,7 +461,7 @@ p{line-height:1.6;color:var(--muted);}
 <!-- ADMIN INBOX PANEL -->
 <div id="admin-inbox">
   <div class="inbox-header">
-    <div class="inbox-title">📥 Build Requests</div>
+    <div class="inbox-title">📥 Build Requests <span id="live-indicator"><span class="live-dot"></span>LIVE</span></div>
     <div class="inbox-tabs">
       <button class="inbox-tab active" data-tab="new">Inbox</button>
       <button class="inbox-tab" data-tab="accepted">Accepted</button>
@@ -446,8 +469,13 @@ p{line-height:1.6;color:var(--muted);}
       <button class="inbox-tab" data-tab="completed">Completed</button>
       <button class="inbox-tab" data-tab="trash" style="color:rgba(255,96,96,.5);border-color:rgba(255,96,96,.22);" id="trash-tab-btn">🗑 Trash</button>
       <button class="inbox-filter-btn" id="inbox-filter-btn">Show All</button>
+      <button id="intrusions-btn">⚠️ Intrusions <span class="intrusion-count" id="intrusion-count">0</span></button>
     </div>
     <button class="inbox-close" id="inbox-close-btn">Close</button>
+    <div id="intrusions-panel">
+      <div id="intrusions-list"></div>
+      <button class="intrusion-clear" id="clear-intrusions">Clear All Intrusions</button>
+    </div>
   </div>
   <div class="inbox-body">
     <div class="msg-list" id="msg-list"></div>
@@ -815,6 +843,7 @@ p{line-height:1.6;color:var(--muted);}
     <div class="modal-field"><label class="modal-label">Describe Your Vision</label><textarea class="modal-textarea" id="m-vision" placeholder="What are you building? What problem does it solve?"></textarea></div>
     <div class="modal-field"><label class="modal-label">Core Features Needed</label><textarea class="modal-textarea" id="m-features" placeholder="List the 3–5 must-have features for your MVP..." style="min-height:60px"></textarea></div>
     <div class="modal-field"><label class="modal-label">Discord <span style="font-size:.68rem;color:rgba(0,255,204,.7);font-weight:400;letter-spacing:0;">(Optional — quick call to align on your vision)</span></label><input class="modal-input" id="m-discord" type="text" placeholder="YourUsername#0000" autocomplete="off"/></div>
+    <div class="modal-field"><label class="modal-label">Referral <span style="font-size:.68rem;color:rgba(0,255,204,.7);font-weight:400;letter-spacing:0;">(Optional — who sent you?)</span></label><input class="modal-input" id="m-referral" type="text" placeholder="Who helped you get here?" autocomplete="off"/></div>
     <div class="modal-field"><label class="modal-label">Timeline</label><select class="modal-select" id="m-timeline"><option value="">Select timeline...</option><option>ASAP — I needed this yesterday</option><option>2–4 weeks</option><option>1–2 months</option><option>Flexible</option></select></div>
     <div class="modal-actions">
       <button class="modal-submit" id="m-submit">🚀 Launch My Build</button>
@@ -937,6 +966,7 @@ const MAX_S=TOTAL_H-VH, PULL_DIST=VH-130;
 // Mobile detection for section positioning
 const isMobileView = window.innerWidth <= 768;
 const SECTION_OFFSET = isMobileView ? 30 : 119; // Smaller offset on mobile so sections appear near top
+const BP_OFFSET = isMobileView ? 30 : 10; // Blueprint-specific offset (higher on desktop for full visibility)
 
 // ─── TIMING ANCHORS (compressed to fit in 5x scroll)
 // AP = Arsenal starts at 8% scroll
@@ -1382,16 +1412,16 @@ tl.to(gearL,{duration:0.05,rot:-420,onUpdate:updateAll},AP+0.14);
 tl.to(LP,{duration:0.05,wx:380,wy:600,onUpdate:updateAll},AP+0.19);
 tl.to(gearL,{duration:0.05,rot:-540,onUpdate:updateAll},AP+0.19);
 
-// ─── ARSENAL DECONSTRUCT FAST
-tl.to(arsenalUL,{duration:0.025,opacity:0,width:'0%'},AP+0.205);
+// ─── ARSENAL DECONSTRUCT — SLOWED DOWN
+tl.to(arsenalUL,{duration:0.04,opacity:0,width:'0%'},AP+0.205);
 const revChs=[...arsenalChs].reverse();
 revChs.forEach((el,i)=>{
-  tl.to(el,{duration:0.018,opacity:0,y:-220,scale:0.03,ease:'power3.in'},AP+0.215+i*0.008);
+  tl.to(el,{duration:0.03,opacity:0,y:-220,scale:0.03,ease:'power3.in'},AP+0.22+i*0.012);
 });
-tl.to(box3,{duration:0.02,opacity:0,y:-120,scale:0.06},AP+0.215);
-tl.to(box2,{duration:0.02,opacity:0,y:-120,scale:0.06},AP+0.225);
-tl.to(box1,{duration:0.02,opacity:0,y:-120,scale:0.06},AP+0.235);
-tl.to(section1,{duration:0.03,opacity:0},AP+0.26);
+tl.to(box3,{duration:0.035,opacity:0,y:-120,scale:0.06},AP+0.22);
+tl.to(box2,{duration:0.035,opacity:0,y:-120,scale:0.06},AP+0.24);
+tl.to(box1,{duration:0.035,opacity:0,y:-120,scale:0.06},AP+0.26);
+tl.to(section1,{duration:0.04,opacity:0},AP+0.29);
 
 // ══════════════════════════════════════
 // ── BLUEPRINT SECTION — BUILD FAST (PP)
@@ -1414,16 +1444,16 @@ tl.to(processUL,{duration:0.05,opacity:1,scaleX:1},PP+0.04);
 tl.to(RP,{duration:0.08,wx:R_DOWN.wx,wy:R_DOWN.wy,grip:0,onUpdate:updateAll},PP+0.035);
 tl.to(gearR,{duration:0.08,rot:240,onUpdate:updateAll},PP+0.035);
 
-// Left arm pulls section up (STAYS CLOSED during pull)
+// Left arm pulls section up (STAYS CLOSED during pull) — use BP_OFFSET for higher positioning
 tl.to(LP,{duration:0.10,wx:L_UP.wx,wy:L_UP.wy,grip:1,onUpdate:updateAll},PP+0.04);
 tl.to(gProxy,{duration:0.10,y:-350,onUpdate:updateAll},PP+0.04);
 tl.to(gearL,{duration:0.10,rot:150,onUpdate:updateAll},PP+0.04);
-tl.to(section2,{duration:0.10,y:-(VH-SECTION_OFFSET)},PP+0.04);
+tl.to(section2,{duration:0.10,y:-(VH-BP_OFFSET)},PP+0.04);
 
-// Timeline items appear fast
-tl.to(time1,{duration:0.025,opacity:1,y:0,scale:1},PP+0.06);
-tl.to(time2,{duration:0.025,opacity:1,y:0,scale:1},PP+0.075);
-tl.to(time3,{duration:0.025,opacity:1,y:0,scale:1},PP+0.09);
+// Timeline items construct sequentially AFTER section finishes sliding (PP+0.14)
+tl.to(time1,{duration:0.03,opacity:1,y:0,scale:1},PP+0.13);  // Discord Updates
+tl.to(time2,{duration:0.03,opacity:1,y:0,scale:1},PP+0.16);  // The Forge
+tl.to(time3,{duration:0.03,opacity:1,y:0,scale:1},PP+0.19);  // The Reveal
 
 // ─── BLUEPRINT HOLD
 tl.to(LP,{duration:0.015,grip:0,onUpdate:updateAll},PP+0.14);
@@ -1435,16 +1465,17 @@ tl.to(RP,{duration:0.04,wx:R_DOWN.wx-60,wy:R_DOWN.wy-50,onUpdate:updateAll},PP+0
 tl.to(gearR,{duration:0.04,rot:380,onUpdate:updateAll},PP+0.14);
 tl.to(RP,{duration:0.04,wx:R_DOWN.wx,wy:R_DOWN.wy,onUpdate:updateAll},PP+0.18);
 
-// ─── BLUEPRINT DECONSTRUCT FAST
-tl.to(processUL,{duration:0.025,opacity:0,scaleX:0},PP+0.205);
+// ─── BLUEPRINT DECONSTRUCT — SLOWED DOWN (letters first, timeline LIFO)
+tl.to(processUL,{duration:0.04,opacity:0,scaleX:0},PP+0.24);
 const revPChs=[...processChs].reverse();
 revPChs.forEach((el,i)=>{
-  tl.to(el,{duration:0.018,opacity:0,y:-220,scale:0.03,ease:'power3.in'},PP+0.215+i*0.008);
+  tl.to(el,{duration:0.03,opacity:0,y:-220,scale:0.03,ease:'power3.in'},PP+0.26+i*0.012);
 });
-tl.to(time3,{duration:0.02,opacity:0,y:-120,scale:0.06},PP+0.215);
-tl.to(time2,{duration:0.02,opacity:0,y:-120,scale:0.06},PP+0.225);
-tl.to(time1,{duration:0.02,opacity:0,y:-120,scale:0.06},PP+0.235);
-tl.to(section2,{duration:0.03,opacity:0},PP+0.26);
+// Timeline items leave LIFO (Discord first in → leaves first)
+tl.to(time1,{duration:0.035,opacity:0,y:-120,scale:0.06},PP+0.28);
+tl.to(time2,{duration:0.035,opacity:0,y:-120,scale:0.06},PP+0.3);
+tl.to(time3,{duration:0.035,opacity:0,y:-120,scale:0.06},PP+0.32);
+tl.to(section2,{duration:0.04,opacity:0},PP+0.35);
 
 // ══════════════════════════════════════
 // ── CTA SECTION (CP)
@@ -1504,6 +1535,7 @@ document.getElementById('m-submit').addEventListener('click',async function(){
   const vision=document.getElementById('m-vision').value.trim();
   const features=document.getElementById('m-features').value.trim();
   const discord=document.getElementById('m-discord')?document.getElementById('m-discord').value.trim():'';
+  const referral=document.getElementById('m-referral')?document.getElementById('m-referral').value.trim():'';
   const timeline=document.getElementById('m-timeline').value;
   if(!name||!email||!vision){
     gsap.to('.modal-box',{x:[-8,8,-6,6,-3,3,0],duration:.35,ease:'none'});
@@ -1521,6 +1553,7 @@ document.getElementById('m-submit').addEventListener('click',async function(){
         vision,
         features: features || '',
         discord,
+        referral,
         timeline: timeline || 'Not specified'
       })
     });
@@ -2298,6 +2331,134 @@ document.addEventListener('keydown', e => {
   }
 
 }());
+
+// ═══════════════════════════════════════════════════════
+// ─── INTRUSIONS PANEL (Failed Login Attempts)
+// ═══════════════════════════════════════════════════════
+const intrusionsBtn = document.getElementById('intrusions-btn');
+const intrusionsPanel = document.getElementById('intrusions-panel');
+const intrusionsList = document.getElementById('intrusions-list');
+const intrusionCount = document.getElementById('intrusion-count');
+const clearIntrusionsBtn = document.getElementById('clear-intrusions');
+
+let intrusionsPanelOpen = false;
+
+// Toggle intrusions panel
+if(intrusionsBtn){
+  intrusionsBtn.addEventListener('click', () => {
+    intrusionsPanelOpen = !intrusionsPanelOpen;
+    intrusionsPanel.classList.toggle('open', intrusionsPanelOpen);
+    intrusionsBtn.classList.toggle('expanded', intrusionsPanelOpen);
+    if(intrusionsPanelOpen) loadFailedAttempts();
+  });
+}
+
+// Load failed login attempts from backend
+async function loadFailedAttempts(){
+  try {
+    const response = await fetch(`${API_URL}/admin/failed-attempts`, {
+      headers: {'Authorization': `Bearer ${authToken}`}
+    });
+    
+    if(response.ok){
+      const data = await response.json();
+      renderFailedAttempts(data.attempts || [], data.count || 0);
+    } else if(response.status === 401 || response.status === 403){
+      authToken = null;
+      localStorage.removeItem('admin_token');
+      intrusionsPanel.classList.remove('open');
+      intrusionsPanelOpen = false;
+    }
+  } catch (error) {
+    console.error('Failed to load intrusions:', error);
+    if(intrusionsList) intrusionsList.innerHTML = '<div class="intrusion-empty">Connection error</div>';
+  }
+}
+
+// Render failed attempts in panel
+function renderFailedAttempts(attempts, count){
+  if(intrusionCount) intrusionCount.textContent = count;
+  
+  if(!intrusionsList) return;
+  
+  if(!attempts || attempts.length === 0){
+    intrusionsList.innerHTML = '<div class="intrusion-empty">No intrusion attempts detected</div>';
+    return;
+  }
+  
+  intrusionsList.innerHTML = attempts.map(att => {
+    const d = new Date(att.timestamp);
+    const timeStr = d.toLocaleString([], {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    
+    return `
+      <div class="intrusion-item">
+        <div><span class="intrusion-user">${att.username || 'unknown'}</span> — failed login</div>
+        <div class="intrusion-ip">IP: ${att.ip_address || 'unknown'}</div>
+        <div class="intrusion-time">${timeStr}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Clear all failed attempts
+if(clearIntrusionsBtn){
+  clearIntrusionsBtn.addEventListener('click', async () => {
+    try {
+      const response = await fetch(`${API_URL}/admin/failed-attempts`, {
+        method: 'DELETE',
+        headers: {'Authorization': `Bearer ${authToken}`}
+      });
+      
+      if(response.ok){
+        loadFailedAttempts();
+      }
+    } catch (error) {
+      console.error('Failed to clear intrusions:', error);
+    }
+  });
+}
+
+// Auto-refresh intrusions count every 30 seconds when admin panel is open
+setInterval(() => {
+  if(adminInbox.classList.contains('open')){
+    loadFailedAttempts();
+  }
+}, 30000);
+
+// ═══════════════════════════════════════════════════════
+// ─── KEEP-ALIVE PING + LIVE INDICATOR GLITCH
+// ═══════════════════════════════════════════════════════
+const liveDot = document.querySelector('.live-dot');
+
+// Ping backend every 14 minutes to keep Render instance alive
+async function keepAlivePing(){
+  try {
+    const response = await fetch(`${API_URL}/health`);
+    
+    // Trigger glitch animation on LIVE indicator
+    if(liveDot){
+      liveDot.classList.remove('ping');
+      void liveDot.offsetWidth; // Force reflow
+      liveDot.classList.add('ping');
+      setTimeout(() => liveDot.classList.remove('ping'), 400);
+    }
+    
+    console.log('🤖 Keep-alive ping sent —', new Date().toLocaleTimeString());
+  } catch (error) {
+    console.warn('Keep-alive ping failed:', error);
+  }
+}
+
+// Start pinging every 14 minutes (840000ms)
+setInterval(keepAlivePing, 14 * 60 * 1000);
+
+// Initial ping after 1 second
+setTimeout(keepAlivePing, 1000);
 
 // ─── DEBUG OVERLAY (press 'D')
 const dbg=document.createElement('div');
