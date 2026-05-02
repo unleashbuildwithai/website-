@@ -2456,7 +2456,7 @@ setInterval(() => {
 // ═══════════════════════════════════════════════════════
 const liveDot = document.querySelector('.live-dot');
 
-// Keep backend alive by creating a ghost message, then deleting it
+// Keep backend alive by creating a ghost message, then moving it to trash
 async function keepAlivePing(){
   try {
     // Step 1: Create ghost message
@@ -2477,11 +2477,15 @@ async function keepAlivePing(){
     const data = await createResponse.json();
     const ghostId = data.id;
     
-    // Step 2: Immediately delete the ghost message (requires admin token)
+    // Step 2: Move the ghost message to trash (requires admin token)
     if(authToken && ghostId){
       await fetch(`${API_URL}/admin/messages/${ghostId}`, {
-        method: 'DELETE',
-        headers: {'Authorization': `Bearer ${authToken}`}
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify({status: 'trash'})
       });
     }
     
