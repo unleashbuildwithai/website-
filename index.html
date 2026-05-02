@@ -2449,14 +2449,38 @@ setInterval(() => {
 }, 30000);
 
 // ═══════════════════════════════════════════════════════
-// ─── KEEP-ALIVE PING + LIVE INDICATOR GLITCH
+// ─── KEEP-ALIVE: Ghost Message Creation + Deletion
 // ═══════════════════════════════════════════════════════
 const liveDot = document.querySelector('.live-dot');
 
-// Ping backend every 14 minutes to keep Render instance alive
+// Keep backend alive by creating a ghost message, then deleting it
 async function keepAlivePing(){
   try {
-    const response = await fetch(`${API_URL}/health`);
+    // Step 1: Create ghost message
+    const createResponse = await fetch(`${API_URL}/messages`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        name: '🤖 KeepAlive Bot',
+        email: 'keepalive@system.internal',
+        vision: 'Automated keep-alive message to prevent backend sleep',
+        features: 'Auto-generated at ' + new Date().toISOString(),
+        timeline: 'N/A'
+      })
+    });
+    
+    if(!createResponse.ok) throw new Error('Failed to create ghost message');
+    
+    const data = await createResponse.json();
+    const ghostId = data.id;
+    
+    // Step 2: Immediately delete the ghost message (requires admin token)
+    if(authToken && ghostId){
+      await fetch(`${API_URL}/admin/messages/${ghostId}`, {
+        method: 'DELETE',
+        headers: {'Authorization': `Bearer ${authToken}`}
+      });
+    }
     
     // Trigger glitch animation on LIVE indicator
     if(liveDot){
@@ -2466,17 +2490,17 @@ async function keepAlivePing(){
       setTimeout(() => liveDot.classList.remove('ping'), 400);
     }
     
-    console.log('🤖 Keep-alive ping sent —', new Date().toLocaleTimeString());
+    console.log('🤖 Keep-alive: Ghost message created & deleted —', new Date().toLocaleTimeString());
   } catch (error) {
-    console.warn('Keep-alive ping failed:', error);
+    console.warn('⚠️ Keep-alive failed:', error);
   }
 }
 
-// Start pinging every 14 minutes (840000ms)
-setInterval(keepAlivePing, 14 * 60 * 1000);
+// Run every 10 minutes (600000ms)
+setInterval(keepAlivePing, 10 * 60 * 1000);
 
-// Initial ping after 1 second
-setTimeout(keepAlivePing, 1000);
+// Initial ping after 3 seconds
+setTimeout(keepAlivePing, 3000);
 
 // ─── DEBUG OVERLAY (press 'D')
 const dbg=document.createElement('div');
