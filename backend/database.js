@@ -1,203 +1,150 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const { Pool } = require('pg');
 
-// Initialize SQLite database
-const db = new sqlite3.Database(path.join(__dirname, 'messages.db'), (err) => {
-  if (err) {
-    console.error('Database connection error:', err);
-  }
+// ─── PostgreSQL connection pool ────────────────────────────
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production'
+    ? { rejectUnauthorized: false }
+    : false
 });
 
-// Create tables if they don't exist
-function initDatabase() {
-  return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      db.run(`
-        CREATE TABLE IF NOT EXISTS messages (
-          id TEXT PRIMARY KEY,
-          name TEXT NOT NULL,
-          email TEXT NOT NULL,
-          vision TEXT NOT NULL,
-          features TEXT,
-          discord TEXT,
-          timeline TEXT,
-          referral TEXT,
-          status TEXT DEFAULT 'new',
-          ts INTEGER NOT NULL,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-      `, (err) => {
-        if (err) return reject(err);
-      });
-      
-      db.run('CREATE INDEX IF NOT EXISTS idx_status ON messages(status)', (err) => {
-        if (err) return reject(err);
-      });
-      
-      db.run('CREATE INDEX IF NOT EXISTS idx_ts ON messages(ts DESC)', (err) => {
-        if (err) return reject(err);
-      });
-      
-      // Failed login attempts table
-      db.run(`
-        CREATE TABLE IF NOT EXISTS failed_logins (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          username TEXT NOT NULL,
-          ip_address TEXT,
-          user_agent TEXT,
-          ts INTEGER NOT NULL,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-      `, (err) => {
-        if (err) return reject(err);
-      });
-      
-      db.run('CREATE INDEX IF NOT EXISTS idx_failed_ts ON failed_logins(ts DESC)', (err) => {
-        if (err) return reject(err);
-        console.log('✅ Database initialized successfully');
-        resolve();
-      });
-    });
-  });
+// ─── Initialize tables and indexes ────────────────────────
+async function initDatabase() {
+  const client = await pool.connect();
+  try {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS messages (
+        id            TEXT        PRIMARY KEY,
+        name          TEXT        NOT NULL,
+        email         TEXT        NOT NULL,
+        vision        TEXT        NOT NULL,
+        features      TEXT        DEFAULT '',
+        discord       TEXT        DEFAULT '',
+        timeline      TEXT        DEFAULT '',
+        referral      TEXT        DEFAULT '',
+        status        TEXT        DEFAULT 'new',
+        ts            BIGINT      NOT NULL,
+        created_at    TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+        github_archived BOOLEAN   DEFAULT FALSE,
+        github_path   TEXT        DEFAULT NULL
+      )
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS failed_logins (
+        id          SERIAL      PRIMARY KEY,
+        username    TEXT        NOT NULL,
+        ip_address  TEXT,
+        user_agent  TEXT,
+        ts          BIGINT      NOT NULL,
+        created_at  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Indexes (IF NOT EXISTS is safe to re-run)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_status    ON messages(status)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_ts        ON messages(ts DESC)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_failed_ts ON failed_logins(ts DESC)`);
+
+    // ── add missing columns for existing databases ──────────
+    await client.query(`
+      ALTER TABLE messages
+        ADD COLUMN IF NOT EXISTS github_archived BOOLEAN DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS github_path     TEXT    DEFAULT NULL
+    `).catch(() => {}); // silently skip if already exists (older PG versions)
+
+    console.log('✅ Database initialized successfully');
+  } finally {
+    client.release();
+  }
 }
 
-// Message operations
+// ─── Message operations ────────────────────────────────────
 const messageDB = {
-  // Get all messages (optionally filtered by status)
-  getAll(status = null) {
-    return new Promise((resolve, reject) => {
-      if (status) {
-        db.all('SELECT * FROM messages WHERE status = ? ORDER BY ts DESC', [status], (err, rows) => {
-          if (err) reject(err);
-          else resolve(rows);
-        });
-      } else {
-        db.all('SELECT * FROM messages ORDER BY ts DESC', (err, rows) => {
-          if (err) reject(err);
-          else resolve(rows);
-        });
-      }
-    });
+
+  async getAll(status = null) {
+    const { rows } = status
+      ? await pool.query('SELECT * FROM messages WHERE status = $1 ORDER BY ts DESC', [status])
+      : await pool.query('SELECT * FROM messages ORDER BY ts DESC');
+    return rows;
   },
 
-  // Get single message by ID
-  getById(id) {
-    return new Promise((resolve, reject) => {
-      db.get('SELECT * FROM messages WHERE id = ?', [id], (err, row) => {
-        if (err) reject(err);
-        else resolve(row);
-      });
-    });
+  async getById(id) {
+    const { rows } = await pool.query('SELECT * FROM messages WHERE id = $1', [id]);
+    return rows[0] || null;
   },
 
-  // Create new message
-  create(message) {
-    return new Promise((resolve, reject) => {
-      const { id, name, email, vision, features, discord, timeline, referral, status, ts } = message;
-      db.run(
-        `INSERT INTO messages (id, name, email, vision, features, discord, timeline, referral, status, ts)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [id, name, email, vision, features || '', discord || '', timeline || '', referral || '', status || 'new', ts],
-        function(err) {
-          if (err) reject(err);
-          else resolve({ id, changes: this.changes });
-        }
-      );
-    });
+  async create(message) {
+    const { id, name, email, vision, features, discord, timeline, referral, status, ts } = message;
+    await pool.query(
+      `INSERT INTO messages (id, name, email, vision, features, discord, timeline, referral, status, ts)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+      [id, name, email, vision, features || '', discord || '', timeline || '', referral || '', status || 'new', ts]
+    );
+    return { id };
   },
 
-  // Update message status
-  updateStatus(id, status) {
-    return new Promise((resolve, reject) => {
-      db.run('UPDATE messages SET status = ? WHERE id = ?', [status, id], function(err) {
-        if (err) reject(err);
-        else resolve({ changes: this.changes });
-      });
-    });
+  async updateStatus(id, status) {
+    await pool.query('UPDATE messages SET status = $1 WHERE id = $2', [status, id]);
+    return { changes: 1 };
   },
 
-  // Delete message
-  delete(id) {
-    return new Promise((resolve, reject) => {
-      db.run('DELETE FROM messages WHERE id = ?', [id], function(err) {
-        if (err) reject(err);
-        else resolve({ changes: this.changes });
-      });
-    });
+  // Mark a message as backed up to GitHub
+  async markGithubArchived(id, path) {
+    await pool.query(
+      'UPDATE messages SET github_archived = TRUE, github_path = $1 WHERE id = $2',
+      [path, id]
+    );
+    return { changes: 1 };
   },
 
-  // Delete all messages with specific status (e.g., empty trash)
-  deleteByStatus(status) {
-    return new Promise((resolve, reject) => {
-      db.run('DELETE FROM messages WHERE status = ?', [status], function(err) {
-        if (err) reject(err);
-        else resolve({ changes: this.changes });
-      });
-    });
+  async delete(id) {
+    await pool.query('DELETE FROM messages WHERE id = $1', [id]);
+    return { changes: 1 };
   },
 
-  // Get message count by status
-  getCountByStatus(status) {
-    return new Promise((resolve, reject) => {
-      db.get('SELECT COUNT(*) as count FROM messages WHERE status = ?', [status], (err, row) => {
-        if (err) reject(err);
-        else resolve(row ? row.count : 0);
-      });
-    });
+  async deleteByStatus(status) {
+    const result = await pool.query('DELETE FROM messages WHERE status = $1', [status]);
+    return { changes: result.rowCount };
+  },
+
+  async getCountByStatus(status) {
+    const { rows } = await pool.query(
+      'SELECT COUNT(*) AS count FROM messages WHERE status = $1',
+      [status]
+    );
+    return parseInt(rows[0]?.count || 0, 10);
   }
 };
 
-// Failed login operations
+// ─── Failed login operations ───────────────────────────────
 const failedLoginDB = {
-  // Log a failed login attempt
-  log(username, ipAddress, userAgent) {
-    return new Promise((resolve, reject) => {
-      const ts = Date.now();
-      db.run(
-        `INSERT INTO failed_logins (username, ip_address, user_agent, ts)
-         VALUES (?, ?, ?, ?)`,
-        [username, ipAddress || 'unknown', userAgent || 'unknown', ts],
-        function(err) {
-          if (err) reject(err);
-          else resolve({ id: this.lastID, changes: this.changes });
-        }
-      );
-    });
+
+  async log(username, ipAddress, userAgent) {
+    const ts = Date.now();
+    await pool.query(
+      `INSERT INTO failed_logins (username, ip_address, user_agent, ts) VALUES ($1,$2,$3,$4)`,
+      [username, ipAddress || 'unknown', userAgent || 'unknown', ts]
+    );
+    return { changes: 1 };
   },
 
-  // Get all failed login attempts
-  getAll() {
-    return new Promise((resolve, reject) => {
-      db.all('SELECT * FROM failed_logins ORDER BY ts DESC LIMIT 100', (err, rows) => {
-        if (err) reject(err);
-        else resolve(rows);
-      });
-    });
+  async getAll() {
+    const { rows } = await pool.query(
+      'SELECT * FROM failed_logins ORDER BY ts DESC LIMIT 100'
+    );
+    return rows;
   },
 
-  // Get count of failed attempts
-  getCount() {
-    return new Promise((resolve, reject) => {
-      db.get('SELECT COUNT(*) as count FROM failed_logins', (err, row) => {
-        if (err) reject(err);
-        else resolve(row ? row.count : 0);
-      });
-    });
+  async getCount() {
+    const { rows } = await pool.query('SELECT COUNT(*) AS count FROM failed_logins');
+    return parseInt(rows[0]?.count || 0, 10);
   },
 
-  // Clear all failed login attempts
-  clearAll() {
-    return new Promise((resolve, reject) => {
-      db.run('DELETE FROM failed_logins', function(err) {
-        if (err) reject(err);
-        else resolve({ changes: this.changes });
-      });
-    });
+  async clearAll() {
+    const result = await pool.query('DELETE FROM failed_logins');
+    return { changes: result.rowCount };
   }
 };
 
-module.exports = {
-  initDatabase,
-  messageDB,
-  failedLoginDB
-};
+module.exports = { initDatabase, messageDB, failedLoginDB };

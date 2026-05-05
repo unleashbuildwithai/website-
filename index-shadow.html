@@ -5,24 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Ardy W | Genius Unleashed — No Road</title>
-<!-- ─── FONTSHARE: Clash Display (headings) + Satoshi (body) ─── -->
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<title>⚠️ SHADOW COPY | Ardy W | Genius Unleashed — No Road</title>
+<style>
+  #shadow-banner{
+    position:fixed;
+    top:0;left:0;right:0;
+    z-index:999999999;
+    background:rgba(255,80,0,0.92);
+    color:#fff;
+    font-family:monospace;
+    font-size:.72rem;
+    font-weight:900;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    text-align:center;
+    padding:6px 12px;
+    border-bottom:2px solid #ff3300;
+    pointer-events:none;
+    user-select:none;
+  }
+</style>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --bg:#080d1a;
-  --neon:#00ffcc;
-  --text:#fff;
-  --muted:#c8d4e8;
-  --glass-border:1px solid rgba(255,255,255,0.08);
-  --glass-border-neon:1px solid rgba(0,255,204,0.18);
-  --card-bg:rgba(8,14,28,0.88);
-}
-body{background:var(--bg);font-family:'Satoshi','Inter','Arial',sans-serif;color:var(--text);overflow-x:hidden;}
-h1,h2,h3{font-family:'Clash Display','Satoshi','Inter',sans-serif;text-transform:uppercase;letter-spacing:2px;}
+:root{--bg:#03050a;--neon:#00ffcc;--text:#fff;--muted:#e2e8f0;}
+body{background:var(--bg);font-family:'Inter','Arial',sans-serif;color:var(--text);overflow-x:hidden;}
+h1,h2,h3{text-transform:uppercase;letter-spacing:2px;}
 p{line-height:1.6;color:var(--muted);}
 .ver-nav{position:fixed;top:14px;right:14px;z-index:9999;display:flex;gap:8px;align-items:center;}
 .ver-nav a,.ver-nav span{padding:5px 13px;border-radius:20px;font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;transition:all .3s;cursor:pointer;}
@@ -43,7 +50,7 @@ p{line-height:1.6;color:var(--muted);}
 .flip-card{background-color:transparent;width:350px;height:480px;perspective:1000px;cursor:pointer;}
 .flip-card-inner{position:relative;width:100%;height:100%;text-align:center;transform-style:preserve-3d;}
 .flip-card-front,.flip-card-back{position:absolute;width:100%;height:100%;-webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:20px;overflow:hidden;}
-.flip-card-front{background:rgba(8,12,24,.94);backdrop-filter:blur(30px);border:1px solid rgba(0,255,204,.45);border-top:1px solid rgba(0,255,204,.85);border-left:1px solid rgba(0,255,204,.85);box-shadow:inset 0 0 50px rgba(0,255,204,.12),0 25px 60px rgba(0,5,20,.97),0 0 25px rgba(0,255,204,.2);display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;padding:35px 25px;text-align:left;}
+.flip-card-front{background:rgba(10,18,28,.92);backdrop-filter:blur(30px);border:1px solid rgba(0,255,204,.5);border-top:1px solid rgba(0,255,204,.9);border-left:1px solid rgba(0,255,204,.9);box-shadow:inset 0 0 50px rgba(0,255,204,.15),0 25px 60px rgba(0,0,0,.95),0 0 25px rgba(0,255,204,.25);display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;padding:35px 25px;text-align:left;}
 .pitch-section{z-index:2;display:flex;flex-direction:column;gap:12px;}
 .pitch-headline{color:#fff;font-size:1.15rem;font-weight:800;line-height:1.3;text-transform:uppercase;letter-spacing:1px;text-shadow:0 0 10px rgba(0,255,204,.4);}
 .pitch-body{color:#e2e8f0;font-size:.85rem;line-height:1.5;opacity:.9;}
@@ -53,7 +60,7 @@ p{line-height:1.6;color:var(--muted);}
 .info-group{display:flex;flex-direction:column;align-items:flex-start;gap:2px;}
 .label{font-size:.7rem;color:#00ffcc;text-transform:uppercase;letter-spacing:2px;font-weight:bold;opacity:.8;}
 .value{font-size:.95rem;color:#e2e8f0;font-weight:500;letter-spacing:1px;}
-.flip-card-back{background-color:#0c1424;transform:rotateY(180deg);display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 25px 50px rgba(0,3,18,.95),0 0 30px rgba(0,255,204,.15);border-radius:20px;border:1px solid rgba(255,255,255,0.06);}
+.flip-card-back{background-color:#1a2530;transform:rotateY(180deg);display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 25px 50px rgba(0,0,0,.8),0 0 30px rgba(0,255,204,.15);border-radius:20px;}
 .back-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;}
 .neon-text{font-size:3.5rem;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:4px;text-shadow:0 0 5px #fff,0 0 10px #fff,0 0 20px #00ffcc,0 0 40px #00ffcc,0 0 80px #00ffcc;margin-bottom:25px;display:flex;align-items:center;justify-content:center;}
 .letter-g{position:relative;display:inline-block;z-index:1;}
@@ -92,8 +99,8 @@ p{line-height:1.6;color:var(--muted);}
 .p-char{display:inline-block;opacity:0;transform:perspective(500px) translateY(70px) rotateX(38deg);transform-origin:50% 100%;will-change:opacity,transform;}.p-char.spacer{opacity:1;transform:none;width:.35em;}
 .process-underline{height:3px;width:60%;background:var(--neon);box-shadow:0 0 8px var(--neon);margin:6px auto 0;opacity:0;transform:scaleX(0);transform-origin:center center;}
 .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:30px;}
-.feature-box{padding:20px;border-radius:16px;border:1px solid rgba(0,255,204,0.14);border-top:1px solid rgba(255,255,255,0.09);background:rgba(8,14,30,.88);box-shadow:0 12px 40px rgba(0,3,18,.7),inset 0 1px 0 rgba(255,255,255,0.05);will-change:opacity,transform;opacity:0;transition:border-color .4s,box-shadow .4s,transform .4s;}
-.feature-box:hover{border-color:rgba(0,255,204,.4);box-shadow:0 16px 50px rgba(0,3,18,.85),0 0 25px rgba(0,255,204,.08);transform:translateY(-2px);}
+.feature-box{padding:16px;border-radius:15px;border:1px solid rgba(0,255,204,.2);background:rgba(26,37,48,.8);box-shadow:0 10px 30px rgba(0,0,0,.5);will-change:opacity,transform;opacity:0;transition:border-color .3s,box-shadow .3s;}
+.feature-box:hover{border-color:rgba(0,255,204,.5);box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 20px rgba(0,255,204,.1);}
 .feature-box p{font-size:.85rem;line-height:1.5;}
 .feature-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
 .feature-icon{font-size:1.6rem;color:var(--neon);flex-shrink:0;}
@@ -104,7 +111,7 @@ p{line-height:1.6;color:var(--muted);}
 .timeline-item.left{left:0;}.timeline-item.right{left:50%;}
 .timeline-item::after{content:'';position:absolute;width:20px;height:20px;right:-10px;background:var(--bg);border:3px solid var(--neon);top:18px;border-radius:50%;z-index:1;box-shadow:0 0 10px var(--neon);}
 .timeline-item.right::after{left:-10px;}
-.timeline-content{padding:14px 18px;background:rgba(8,14,30,.85);border-radius:12px;border:1px solid rgba(0,255,204,0.14);border-top:1px solid rgba(255,255,255,0.07);box-shadow:0 8px 28px rgba(0,3,18,.6),inset 0 1px 0 rgba(255,255,255,0.04);}
+.timeline-content{padding:12px 18px;background:rgba(26,37,48,.8);border-radius:10px;border:1px solid rgba(0,255,204,.2);}
 .timeline-content h3{margin-bottom:6px;color:var(--neon);font-size:.9rem;}
 .timeline-content p{font-size:.78rem;line-height:1.5;}
 .cta-section{text-align:center;padding:50px 20px 150px;background:linear-gradient(to top,rgba(0,255,204,.05),transparent);will-change:opacity,transform;pointer-events:auto;}
@@ -441,6 +448,9 @@ p{line-height:1.6;color:var(--muted);}
 </style>
 </head>
 <body>
+
+<!-- ⚠️ SHADOW BANNER — this is the frozen reference copy, do not edit -->
+<div id="shadow-banner">⚠️ SHADOW COPY — Original Reference — DO NOT EDIT — Compare against index.html ⚠️</div>
 
 <nav class="ver-nav">
   <span>🌍 ARDY W | COSMIC</span>

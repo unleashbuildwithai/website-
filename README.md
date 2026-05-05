@@ -1,353 +1,376 @@
-# 🤖 Ardy W | Portfolio Website - Full-Stack System
+# 🤖 Ardy W - Genius Unleashed
 
-**Advanced portfolio with 3D robot animations, hand-grab scroll mechanics, and complete backend messaging system**
+A futuristic, interactive portfolio website featuring an animated robot, scroll-driven animations, and a full-stack contact/build request system.
+
+**Live Site:** https://geniusunleashed.pages.dev  
+**GitHub:** https://github.com/unleashbuildwithai/website-
+
+---
+
+## 🌟 Features
+
+### Frontend
+- **Animated Robot Character** - IK-powered robotic arms with 5-finger hands
+- **Scroll-Driven Animations** - GSAP-powered choreography
+- **3D Card Flip Effect** - Interactive business card
+- **Responsive Design** - Works on desktop, tablet, and mobile
+- **Admin Panel** - Secure message management system
+
+### Backend
+- **Express.js API** - RESTful API for message handling
+- **SQLite Database** - Persistent storage for build requests
+- **JWT Authentication** - Secure admin access
+- **Rate Limiting** - Protection against spam and abuse
+- **Failed Login Tracking** - Security monitoring
+
+---
+
+## 🏗️ Architecture
+
+```
+Frontend (Cloudflare Pages)     Backend (Render)
+├── index.html                   ├── server.js
+├── GSAP animations              ├── database.js
+└── Admin UI                     ├── .env (secrets)
+                                 └── SQLite DB
+         │                              │
+         └──── API Calls (fetch) ───────┘
+              http://localhost:3000/api (local)
+              https://website-5nvl.onrender.com/api (production)
+```
 
 ---
 
 ## 🚀 Quick Start
 
-### **1. Set Up Backend**
+### Local Development
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/unleashbuildwithai/website-.git
+   cd website-
+   ```
+
+2. **Start the backend server**
+   
+   **Windows:**
+   ```bash
+   # Double-click start-backend.bat
+   # OR run manually:
+   cd backend
+   npm install
+   node server.js
+   ```
+
+   **Mac/Linux:**
+   ```bash
+   cd backend
+   npm install
+   node server.js
+   ```
+
+3. **Open the website**
+   - Option A: Open `index.html` directly in browser
+   - Option B: Use Live Server in VS Code
+
+4. **Access admin panel**
+   - Click the 🔐 button (top left)
+   - Credentials are in `backend/.env`
+
+---
+
+## 🔐 Admin Login - Works Everywhere!
+
+**Yes, the Cloudflare site WILL let you log in!**
+
+The admin panel works on:
+- ✅ **Local development** (localhost)
+- ✅ **GitHub Pages** (if deployed there)
+- ✅ **Cloudflare Pages** (https://geniusunleashed.pages.dev)
+- ✅ **Any hosted version**
+
+**Why?** The backend API is hosted separately on Render and accessible from anywhere. The HTML automatically detects whether you're on localhost or production and uses the correct API endpoint.
+
+### How to Access Admin Panel
+
+1. **On ANY site** (local or live), click the 🔐 button in the top-left
+2. **Enter credentials** from `backend/.env`:
+   ```
+   Username: Admin (or your custom username)
+   Password: Your password (set via hash-password.js)
+   ```
+3. **Manage messages** - View, accept, archive, or delete build requests
+
+**Security:** Your password is hashed and never stored in plain text. JWT tokens expire after 24 hours.
+
+---
+
+## 📁 Project Structure
+
+```
+html/
+├── index.html              # Main website (single page)
+├── wrangler.toml          # Cloudflare Pages config
+├── .cfignore              # Cloudflare deployment exclusions
+├── .gitignore             # Git exclusions
+├── start-backend.bat      # Windows backend launcher
+├── BACKEND_SETUP.md       # Backend troubleshooting guide
+├── CLOUDFLARE_DEPLOY.md   # Deployment instructions
+│
+├── archive/               # Previous versions
+│   ├── index-v1-rail.html
+│   ├── index-v2-ik-arms.html
+│   └── index3.html
+│
+└── backend/               # Node.js API server
+    ├── server.js          # Express API endpoints
+    ├── database.js        # SQLite database wrapper
+    ├── hash-password.js   # Password hashing utility
+    ├── package.json       # Dependencies
+    ├── .env.example       # Environment template
+    ├── .env               # Secrets (git-ignored)
+    └── .gitignore         # Backend exclusions
+```
+
+---
+
+## 🔧 Configuration
+
+### Backend Environment Variables
+
+Create `backend/.env` with:
+
+```env
+# JWT Secret (generate a random string)
+JWT_SECRET=your-super-secret-jwt-key-here
+
+# Admin Credentials
+ADMIN_USERNAME=Admin
+ADMIN_PASSWORD_HASH=<generate using hash-password.js>
+
+# CORS (optional - defaults to *)
+ALLOWED_ORIGINS=http://localhost:5500,https://geniusunleashed.pages.dev
+
+# Server Port (optional - defaults to 3000)
+PORT=3000
+
+# Node Environment
+NODE_ENV=development
+```
+
+### Generate Password Hash
 
 ```bash
 cd backend
-npm install
-node hash-password.js
+node hash-password.js YourSecurePassword123
 ```
 
-Copy the output and create a `.env` file:
+Copy the hash output to `ADMIN_PASSWORD_HASH` in `.env`
 
+---
+
+## 📡 API Endpoints
+
+### Public Endpoints
+
+**POST** `/api/messages`
+- Submit a build request
+- Body: `{ name, email, vision, features, timeline, discord, referral }`
+
+**GET** `/api/health`
+- Health check
+- Returns: `{ status: 'OK', message: '🤖 Ardy W API is running' }`
+
+### Admin Endpoints (Requires JWT)
+
+**POST** `/api/auth/login`
+- Admin login
+- Body: `{ username, password }`
+- Returns: `{ success: true, token: 'jwt-token' }`
+
+**GET** `/api/admin/messages?status=new`
+- Get filtered messages
+- Query: `status` (optional) - new, accepted, archived, completed, trash
+
+**PUT** `/api/admin/messages/:id`
+- Update message status
+- Body: `{ status: 'accepted' }`
+
+**DELETE** `/api/admin/messages/:id`
+- Permanently delete message
+
+**GET** `/api/admin/failed-attempts`
+- View failed login attempts
+
+**DELETE** `/api/admin/failed-attempts`
+- Clear intrusion log
+
+---
+
+## 🎨 Tech Stack
+
+### Frontend
+- **HTML5** - Semantic markup
+- **CSS3** - Custom animations, responsive design
+- **JavaScript (ES6+)** - Modern vanilla JS
+- **GSAP 3.12** - Animation library
+- **ScrollTrigger** - Scroll-based animations
+
+### Backend
+- **Node.js 18+** - Runtime
+- **Express 4.x** - Web framework
+- **SQLite3** - Database
+- **JWT** - Authentication
+- **bcryptjs** - Password hashing
+- **helmet** - Security headers
+- **cors** - Cross-origin requests
+- **express-rate-limit** - Rate limiting
+
+### Deployment
+- **Cloudflare Pages** - Frontend hosting
+- **Render** - Backend hosting
+- **GitHub** - Version control & CI/CD
+
+---
+
+## 🚢 Deployment
+
+### Frontend (Cloudflare Pages)
+
+**Automatic deployment via GitHub:**
+
+1. Push to `main` branch
+2. Cloudflare auto-deploys within 1-2 minutes
+3. Live at: https://geniusunleashed.pages.dev
+
+**Manual deployment:**
 ```bash
-# backend/.env
-PORT=3000
-NODE_ENV=development
-ALLOWED_ORIGINS=http://localhost:5500,http://127.0.0.1:5500
-JWT_SECRET=<paste JWT secret from hash-password.js>
-ADMIN_USERNAME=Admin
-ADMIN_PASSWORD_HASH=<paste password hash from hash-password.js>
+npx wrangler login
+npx wrangler pages deploy . --project-name=geniusunleashed
 ```
 
-Start the backend server:
+### Backend (Render)
 
-```bash
-npm start
-```
+Already deployed at: https://website-5nvl.onrender.com/api
 
-The API will be running at `http://localhost:3000`
+**To update:**
+1. Push backend changes to GitHub
+2. Render auto-deploys from `backend/` folder
 
-### **2. Update Frontend API URL**
-
-Open `index.html` and find line ~1479:
-
-```javascript
-const API_URL = 'http://localhost:3000/api'; // Change to your deployed backend URL
-```
-
-For production, change this to your deployed backend URL (e.g., `https://your-backend.railway.app/api`)
-
-### **3. Open the Website**
-
-Open `index.html` in your browser or use a local server:
-
-```bash
-# Using Python
-python -m http.server 5500
-
-# Using Node
-npx http-server -p 5500
-
-# Using Live Server in VS Code
-Right-click index.html → Open with Live Server
-```
-
----
-
-## 📂 Project Structure
-
-```
-/
-├── index.html                  # Main website (frontend)
-├── backend/
-│   ├── server.js              # Express API server
-│   ├── database.js            # SQLite database operations
-│   ├── package.json           # Node dependencies
-│   ├── hash-password.js       # Password hash generator
-│   ├── .env.example           # Environment variables template
-│   ├── .gitignore            # Git ignore rules
-│   └── messages.db           # SQLite database (created automatically)
-├── archive/                   # Previous versions
-└── README.md                  # This file
-```
-
----
-
-## 🔐 Security Features
-
-### **Password Protection**
-- ✅ **Admin password changed to `420admin`** (as requested)
-- ✅ **Bcrypt hashing** - Password is never stored in plain text
-- ✅ **JWT authentication** - Secure session management
-- ✅ **Fake credentials in source code** - Trolls snoopers who view-source
-
-### **What Snoopers See (Fake)**
-```javascript
-const ADMIN_USER_FAKE='SuperAdmin';
-const ADMIN_PASS_FAKE='admin123'; // This doesn't work!
-```
-
-### **Real Authentication**
-- Server-side validation with bcrypt
-- JWT tokens with 24-hour expiration
-- Rate limiting (5 login attempts per 15 minutes)
-
----
-
-## 📱 Mobile Optimizations
-
-### **Issues Fixed**
-1. ✅ Better viewport handling for iOS/Android
-2. ✅ Tap-to-flip card on mobile
-3. ✅ Scrollable modals
-4. ✅ Responsive layout for all screen sizes
-5. ✅ Touch-friendly UI elements
-
-### **Still TODO (See Implementation Plan)**
-- Adjust viewport scroll height for mobile (currently 5x viewport height)
-- Add platform-specific CSS for iOS Safari 3D transform bugs
-- Add dev console trolling messages
-
----
-
-## 💬 Messaging System
-
-### **Current Setup (LocalStorage)**
-Messages are still saved to browser localStorage for development. This means:
-- ❌ Messages only visible on the device they were sent from
-- ❌ Admin can't see messages from other devices
-
-### **Backend Ready - Needs Frontend Integration**
-The backend API is **fully functional** and ready to use. To complete the integration:
-
-**API Endpoints Available:**
-- `POST /api/messages` - Submit new message (public)
-- `POST /api/auth/login` - Admin login
-- `GET /api/admin/messages` - Get all messages (protected)
-- `PUT /api/admin/messages/:id` - Update message status (protected)
-- `DELETE /api/admin/messages/:id` - Delete message (protected)
-- `DELETE /api/admin/trash` - Empty trash (protected)
-
-**What Still Needs to Be Done:**
-Replace the localStorage functions in `index.html` with API fetch() calls. See "Implementation Plan" below.
-
----
-
-## 🎨 Features
-
-### **Scroll-Driven Animations**
-- Hero card spins with scroll velocity, flips on hover
-- Robot arms grab and pull sections into view
-- Stop-motion hand choreography (22 keyframes)
-- Gear rotations sync with scroll
-- 3D transforms with perspective
-
-### **Admin Panel**
-- Secure JWT authentication
-- Message inbox with status management (New/Accepted/Archived/Completed/Trash)
-- Filter messages by status
-- Reply via email (mailto links)
-- Trash system with confirmation
-
-### **Hand Animator Tool (Press 'H')**
-- Live position editing
-- Keyframe recording
-- GSAP code export
-- Hidden on mobile
-
----
-
-## 🌐 Deployment
-
-### **Option 1: Railway (Recommended)**
-
-1. **Create Railway account** at [railway.app](https://railway.app)
-
-2. **Deploy backend:**
-   ```bash
-   cd backend
-   git init
-   git add .
-   git commit -m "Initial commit"
-   ```
-
-3. **Push to Railway:**
-   - Create new project in Railway
-   - Connect GitHub repo or use Railway CLI
-   - Railway will auto-detect Node.js
-   - Add environment variables in Railway dashboard:
-     - `ADMIN_USERNAME=Admin`
-     - `ADMIN_PASSWORD_HASH=<your hash>`
-     - `JWT_SECRET=<your secret>`
-     - `ALLOWED_ORIGINS=https://yourdomain.com`
-
-4. **Get your Railway URL** (e.g., `https://your-app.railway.app`)
-
-5. **Update frontend:** Change `API_URL` in `index.html` to your Railway URL
-
-6. **Deploy frontend:**
-   - Use **Vercel**, **Netlify**, or **GitHub Pages** for the HTML file
-   - Or commit to your GitHub repo and enable GitHub Pages
-
-### **Option 2: Render**
-Same process as Railway, free tier available at [render.com](https://render.com)
-
-### **Option 3: Local Network Only**
-Keep backend running on `localhost:3000` and access from your phone via local IP:
-```javascript
-const API_URL = 'http://192.168.1.XXX:3000/api'; // Your computer's local IP
-```
-
----
-
-## 🛠️ Implementation Plan (Remaining Work)
-
-### **To complete the full-stack integration, you need to:**
-
-### 1. **Replace LocalStorage with API Calls**
-
-**Current functions to replace:**
-- `saveLocalMsg()` → Call `POST /api/messages`
-- `getLocalMsgs()` → Call `GET /api/admin/messages`
-- `updateMsgStatus()` → Call `PUT /api/admin/messages/:id`
-- `deletePermanently()` → Call `DELETE /api/admin/messages/:id`
-- Admin login → Call `POST /api/auth/login`
-
-**Example API integration:**
-```javascript
-// Instead of localStorage
-async function saveMsg(msg) {
-  const res = await fetch(`${API_URL}/messages`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(msg)
-  });
-  return await res.json();
-}
-
-// Admin login
-async function adminLogin(username, password) {
-  const res = await fetch(`${API_URL}/auth/login`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({username, password})
-  });
-  const data = await res.json();
-  if(data.token) {
-    authToken = data.token;
-    localStorage.setItem('admin_token', data.token);
-  }
-  return data;
-}
-```
-
-### 2. **Add Dev Console Trolling**
-
-Add this after the `<script>` tag opens:
-
-```javascript
-// ═══ DEV CONSOLE TROLL ═══
-console.log('%c🤖 Nice Try, Hacker!', 'color:#00ffcc;font-size:24px;font-weight:bold;');
-console.log('%cLooking for secrets? Good luck with that...', 'color:#ff8c42;font-size:14px;');
-console.log('%c⚠️ WARNING: Accessing this console may trigger SKYNET protocols', 'color:#ff6060;font-size:12px;');
-console.log({
-  fake_api_key: 'sk_live_51NotRealHahaGotYou123456789',
-  admin_secret: 'You really thought it would be here?',
-  database_password: 'hunter2',
-  crypto_wallet: '0xFAKE1234567890ABCDEF',
-  nuclear_codes: 'Nice try, NSA'
-});
-```
-
-### 3. **Fix Mobile Scroll Height**
-
-Change line ~886 to detect mobile:
-
-```javascript
-const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-const VIEWPORT_MULTIPLIER = isMobileDevice ? 3.5 : 5;
-const VH = window.innerHeight;
-const TOTAL_H = VH * VIEWPORT_MULTIPLIER;
-```
-
-### 4. **Add iOS 3D Transform Fix**
-
-In the CSS `<style>` section, add:
-
-```css
-/* iOS Safari 3D transform fix */
-.flip-card-inner {
-  -webkit-transform-style: preserve-3d;
-  transform-style: preserve-3d;
-}
-
-.flip-card-front, .flip-card-back {
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-```
-
----
-
-## 📝 Admin Credentials
-
-**Username:** `Admin`  
-**Password:** `420admin`
-
-(These are validated server-side with bcrypt hashing)
+See `CLOUDFLARE_DEPLOY.md` for detailed instructions.
 
 ---
 
 ## 🐛 Troubleshooting
 
-### **Messages not appearing in admin panel**
-- Make sure backend is running (`npm start` in `/backend`)
-- Check browser console for API errors
-- Verify `API_URL` in index.html matches your backend URL
-- Check CORS settings in backend `.env` → `ALLOWED_ORIGINS`
+### "Connection error - is backend running?"
 
-### **Admin login fails**
-- Run `node hash-password.js` again
-- Copy the exact hash to `.env` → `ADMIN_PASSWORD_HASH`
-- Restart backend server
-- Clear browser localStorage and try again
+**Problem:** Frontend can't reach the backend API
 
-### **Mobile card not loading**
-- Check browser console for 3D transform errors
-- Try adding `-webkit-` prefixes to transform properties
-- Test on actual device (not just Chrome dev tools)
+**Solution:**
+- **Local:** Start backend with `start-backend.bat` or `node server.js`
+- **Production:** Check Render dashboard - ensure backend is running
 
-### **CORS errors**
-- Add your frontend domain to `ALLOWED_ORIGINS` in `.env`
-- Restart backend after changing `.env`
+See `BACKEND_SETUP.md` for complete troubleshooting guide.
 
----
+### "Port 3000 already in use"
 
-## 📧 Contact
+**Problem:** Another process is using port 3000
 
-**Ardy W**  
-Email: unleashbuildwithai@gmail.com
+**Solution:**
+- Stop the other process, OR
+- Change port in `backend/server.js` and `index.html` (line ~1595)
 
----
+### Admin Login Not Working
 
-## 🎯 Next Steps
+**Problem:** Invalid credentials or token expired
 
-1. ✅ Install backend dependencies: `cd backend && npm install`
-2. ✅ Generate password hash: `node hash-password.js`
-3. ✅ Create `.env` file with your credentials
-4. ✅ Start backend: `npm start`
-5. ⏳ Toggle to **ACT MODE** and ask me to complete the API integration
-6. ⏳ Deploy to Railway/Render
-7. ⏳ Update `API_URL` to production backend
-8. ✅ Launch! 🚀
+**Solution:**
+1. Check credentials in `backend/.env`
+2. Regenerate password hash with `hash-password.js`
+3. Ensure backend is running
+4. Clear browser cache and try again
 
 ---
 
-**Built with:** HTML5, CSS3, JavaScript, GSAP, Node.js, Express, SQLite, JWT, Bcrypt
+## 📝 Features in Detail
+
+### Hand Animator Tool
+
+Press **H** on desktop to open the hand animator:
+- Drag elbow/wrist control points
+- Click wrist to toggle hand open/closed
+- Save keyframes at specific scroll positions
+- Export GSAP animation code
+
+### Admin Panel Features
+
+- **Message Management** - Accept, archive, complete, or trash requests
+- **Threading** - Automatically groups messages by email
+- **Status Filtering** - View messages by status
+- **Pagination** - Handles large message lists
+- **Email Reply** - Quick reply links to build requests
+- **Intrusion Monitoring** - Track failed login attempts
+- **Live Updates** - Real-time message count
+
+### Security Features
+
+- Password hashing (bcrypt, 10 rounds)
+- JWT token authentication (24hr expiration)
+- Rate limiting (100 req/15min general, 5 login/15min)
+- Failed login tracking with IP logging
+- XSS protection (HTML entity escaping)
+- CORS configuration
+- Helmet security headers
+- Input validation
+
+---
+
+## 🤝 Contributing
+
+This is a personal portfolio project, but suggestions are welcome!
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+---
+
+## 📄 License
+
+© 2026 Ardy W - All Rights Reserved
+
+---
+
+## � Contact
+
+**Email:** unleashbuildwithai@gmail.com  
+**Website:** https://geniusunleashed.pages.dev  
+**GitHub:** https://github.com/unleashbuildwithai
+
+---
+
+## 🎯 Quick Commands
+
+```bash
+# Start backend (Windows)
+start-backend.bat
+
+# Start backend (Manual)
+cd backend && node server.js
+
+# Generate password hash
+cd backend && node hash-password.js YourPassword
+
+# Deploy to Cloudflare
+npx wrangler pages deploy . --project-name=geniusunleashed
+
+# Push to GitHub (auto-deploys to Cloudflare)
+git add -A && git commit -m "Your message" && git push
+```
+
+---
+
+**Built with ❤️ and 🤖 by Ardy W**
