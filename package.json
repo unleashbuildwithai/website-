@@ -1,0 +1,9 @@
+{
+  "name": "geniusunleashed",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Genius Unleashed - static production build",
+  "scripts": {
+    "build": "echo 'Pre-built static site - no build step needed'"
+  }
+}
