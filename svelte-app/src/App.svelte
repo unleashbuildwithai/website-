@@ -14,6 +14,9 @@
   import InitiateModal   from './components/InitiateModal.svelte';
   import AdminInbox      from './components/AdminInbox.svelte';
 
+  // ── Phase 6: Puzzle Assembly System
+  import { generatePuzzlePieces, buildFragments, PUZZLE_CONFIG } from './lib/puzzleGenerator.js';
+
   // ── Page geometry
   const VH      = window.innerHeight;
   const TOTAL_H = VH * 5;
@@ -87,6 +90,128 @@
     grabBar1Op = barOp.b1;
     grabBar2Op = barOp.b2;
     grabBar3Op = barOp.b3;
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // Phase 6-C: Launch puzzle fragment fall-apart for a set of boxes.
+  // Each fragment gets a tiny momentum jolt (overshoot) then gravity.
+  // boxEls  — array of HTMLElements to fragment
+  // boxIds  — matching PUZZLE_CONFIG keys  e.g. ['box4','box3',...]
+  // ─────────────────────────────────────────────────────────────────
+  function launchPuzzleFall(boxEls, boxIds) {
+    const isMobile = window.innerWidth <= 768;
+    boxEls.forEach((boxEl, i) => {
+      if (!boxEl) return;
+      const id  = boxIds[i];
+      const cfg = PUZZLE_CONFIG[id];
+      if (!cfg) return;
+
+      const cols = isMobile ? 2 : cfg.cols;
+      const rows = isMobile ? 2 : cfg.rows;
+      const w    = boxEl.offsetWidth;
+      const h    = boxEl.offsetHeight;
+      if (!w || !h) return;
+
+      const pieces = generatePuzzlePieces(w, h, cols, rows, cfg.seed);
+      const frags  = buildFragments(boxEl, id, pieces);
+      gsap.set(frags, { opacity: 1 });
+
+      frags.forEach((frag, j) => {
+        // Pre-compute random fall target for this piece
+        const tY = 170 + Math.random() * 220;          // gravity fall distance
+        const tX = (Math.random() - 0.5) * 90;         // slight horizontal drift
+        const tR = (Math.random() - 0.5) * 160;        // tumble rotation
+        const delay = i * 0.07 + j * 0.055 + Math.random() * 0.04;
+
+        // 6-C: Two-stage animation: ① momentum jolt → ② slow gravity fall
+        const fragTl = gsap.timeline({ delay });
+        fragTl
+          .to(frag, {                                   // ① tiny overshoot kick
+            y:        (Math.random() - 0.5) * 14,
+            x:        (Math.random() - 0.5) * 8,
+            rotation: (Math.random() - 0.5) * 9,
+            duration: 0.18,
+            ease:     'power2.out',
+          })
+          .to(frag, {                                   // ② gravity (slow fall)
+            y:        tY,
+            x:        tX,
+            rotation: tR,
+            opacity:  0,
+            duration: 1.1 + Math.random() * 0.55,
+            ease:     'power1.in',
+            onComplete: () => frag.remove(),
+          });
+      });
+    });
+  }
+
+  // ── Clean up all puzzle fragments belonging to a section ──────────────
+  function cleanupSectionFrags(ids) {
+    document.querySelectorAll('.puzz-frag').forEach(f => {
+      if (ids.includes(f.dataset.fragBox)) {
+        gsap.killTweensOf(f);
+        f.remove();
+      }
+    });
+  }
+
+  // ── Reassembly: scattered fragments fly back together into their boxes ─
+  function launchPuzzleReassemble(boxEls, boxIds, onDone) {
+    const isMobile = window.innerWidth <= 768;
+    let totalFrags    = 0;
+    let completedFrags = 0;
+
+    // ⚠️ Strip puzz-hidden BEFORE cloneNode so fragment visuals are correct.
+    // cloneNode(true) copies classes — if puzz-hidden is present the clone's
+    // inner content becomes opacity:0 !important and the fragment is invisible.
+    // We re-add puzz-hidden right after building so boxes stay hidden while
+    // fragments are in flight. onDone removes it permanently.
+    boxEls.forEach(b => b && b.classList.remove('puzz-hidden'));
+
+    boxEls.forEach((boxEl, i) => {
+      if (!boxEl) return;
+      const id  = boxIds[i];
+      const cfg = PUZZLE_CONFIG[id];
+      if (!cfg) return;
+
+      const cols = isMobile ? 2 : cfg.cols;
+      const rows = isMobile ? 2 : cfg.rows;
+      const w    = boxEl.offsetWidth;
+      const h    = boxEl.offsetHeight;
+      if (!w || !h) return;
+
+      const pieces = generatePuzzlePieces(w, h, cols, rows, cfg.seed);
+      const frags  = buildFragments(boxEl, id, pieces); // clone is now class-clean
+      totalFrags  += frags.length;
+
+      frags.forEach((frag, j) => {
+        // Start each piece from a scattered / fallen position below the box
+        const startY = 140 + Math.random() * 180;
+        const startX = (Math.random() - 0.5) * 85;
+        const startR = (Math.random() - 0.5) * 130;
+        gsap.set(frag, { opacity: 0, y: startY, x: startX, rotation: startR });
+
+        const delay = i * 0.05 + j * 0.04 + Math.random() * 0.025;
+        gsap.to(frag, {
+          y: 0, x: 0, rotation: 0, opacity: 1,
+          duration: 0.6 + Math.random() * 0.35,
+          ease: 'power2.out',
+          delay,
+          onComplete: () => {
+            completedFrags++;
+            frag.remove();
+            if (completedFrags >= totalFrags && onDone) onDone();
+          },
+        });
+      });
+    });
+
+    // Re-hide boxes now that fragments are built — they'll be revealed by onDone
+    boxEls.forEach(b => b && b.classList.add('puzz-hidden'));
+
+    // Safety: if nothing was built (zero-dim boxes) still fire onDone
+    if (totalFrags === 0 && onDone) onDone();
   }
 
   onMount(() => {
@@ -179,6 +304,10 @@
     const arsenalChs = Array.from(document.querySelectorAll('.a-char:not(.spacer)'));
     const arsenalUL  = document.getElementById('arsenal-underline');
     const boxes      = ['box1','box2','box3','box4'].map(id => document.getElementById(id));
+    // ── 6-A: wireframe rect SVG elements for each Arsenal box ──────────
+    const wireRects  = ['wire1','wire2','wire3','wire4'].map(id =>
+      document.querySelector(`#${id} .wire-rect`)
+    );
 
     if (s1) {
       gsap.set(s1, { opacity: 0, y: 0 });
@@ -206,6 +335,10 @@
     tl.to(boxes[1], { duration: 0.03, opacity: 1, y: 0 }, AP + 0.065);
     tl.to(boxes[2], { duration: 0.03, opacity: 1, y: 0 }, AP + 0.08);
     tl.to(boxes[3], { duration: 0.025, opacity: 1, y: 0 }, AP + 0.09);
+    // ── 6-A: Draw wireframe borders (staggered slightly after box fade-in)
+    wireRects.forEach((wr, i) => {
+      if (wr) tl.to(wr, { strokeDashoffset: 0, duration: 0.04, ease: 'power2.inOut' }, AP + 0.053 + i * 0.014);
+    });
     tl.to(LP, { duration: 0.02, wx: 380, wy: 600, grip: 0, onUpdate: UA }, 0.138);
     tl.to(RP, { duration: 0.02, wx: 953, wy: 699, grip: 0, onUpdate: UA }, 0.138);
     // Hold
@@ -217,15 +350,122 @@
     tl.to(gearL, { duration: 0.05, rot: -420, onUpdate: UA }, AP + 0.14);
     tl.to(LP,    { duration: 0.05, wx: 380, wy: 600, onUpdate: UA }, AP + 0.19);
     tl.to(gearL, { duration: 0.05, rot: -540, onUpdate: UA }, AP + 0.19);
-    // Deconstruct
+    // ── 6-A: Wireframe undraw — borders "run away" just before sequential falls
+    wireRects.forEach((wr, i) => {
+      if (wr) tl.to(wr, { strokeDashoffset: -1, duration: 0.025, ease: 'power2.in' }, AP + 0.222 + i * 0.007);
+    });
+    // Deconstruct header
     tl.to(arsenalUL, { duration: 0.04, opacity: 0, width: '0%' }, AP + 0.205);
     [...arsenalChs].reverse().forEach((el, i) => {
       tl.to(el, { duration: 0.03, opacity: 0, y: -220, scale: 0.03, ease: 'power3.in' }, AP + 0.22 + i * 0.012);
     });
-    [boxes[3], boxes[2], boxes[1], boxes[0]].forEach((b, i) => {
-      if (b) tl.to(b, { duration: 0.035, opacity: 0, y: -120, scale: 0.06 }, AP + 0.22 + i * 0.02);
+    // ── 6-B/6-C: Each box snaps invisible in sync with its individual fall trigger
+    // $1K→AP+0.24  Risk→AP+0.255  FullStack→AP+0.27  Reality→AP+0.285
+    if (boxes[3]) tl.to(boxes[3], { duration: 0.018, opacity: 0 }, AP + 0.24);
+    if (boxes[2]) tl.to(boxes[2], { duration: 0.018, opacity: 0 }, AP + 0.255);
+    if (boxes[1]) tl.to(boxes[1], { duration: 0.018, opacity: 0 }, AP + 0.27);
+    if (boxes[0]) tl.to(boxes[0], { duration: 0.018, opacity: 0 }, AP + 0.285);
+    tl.to(s1, { duration: 0.04, opacity: 0 }, AP + 0.32);
+
+    // ── 6-B/6-C: Arsenal sequential puzzle fall ──────────────────────────
+    // Boxes break one at a time with ~2 overscrolls between each.
+    // Order: $1K (box4) → Risk Model (box3) → Full-Stack (box2) → Reality (box1)
+    let box4Fallen = false, box3Fallen = false, box2Fallen = false, box1Fallen = false;
+
+    // ── $1K stat — first to break
+    ScrollTrigger.create({
+      trigger: 'body',
+      start:   `${Math.round(MAX_S * (AP + 0.24))} top`,
+      onEnter: () => {
+        if (!box4Fallen) {
+          box4Fallen = true;
+          cleanupSectionFrags(['box4']);
+          launchPuzzleFall([boxes[3]], ['box4']);
+          boxes[3] && boxes[3].classList.add('puzz-hidden');
+        }
+      },
+      onLeaveBack: () => {
+        if (box4Fallen) {
+          box4Fallen = false;
+          cleanupSectionFrags(['box4']);
+          launchPuzzleReassemble([boxes[3]], ['box4'],
+            () => { boxes[3] && boxes[3].classList.remove('puzz-hidden'); });
+        }
+      },
     });
-    tl.to(s1, { duration: 0.04, opacity: 0 }, AP + 0.29);
+    // ── Risk Model — second to break
+    ScrollTrigger.create({
+      trigger: 'body',
+      start:   `${Math.round(MAX_S * (AP + 0.255))} top`,
+      onEnter: () => {
+        if (!box3Fallen) {
+          box3Fallen = true;
+          cleanupSectionFrags(['box3']);
+          launchPuzzleFall([boxes[2]], ['box3']);
+          boxes[2] && boxes[2].classList.add('puzz-hidden');
+        }
+      },
+      onLeaveBack: () => {
+        if (box3Fallen) {
+          box3Fallen = false;
+          cleanupSectionFrags(['box3']);
+          launchPuzzleReassemble([boxes[2]], ['box3'],
+            () => { boxes[2] && boxes[2].classList.remove('puzz-hidden'); });
+        }
+      },
+    });
+    // ── Full-Stack Architecture — third to break
+    ScrollTrigger.create({
+      trigger: 'body',
+      start:   `${Math.round(MAX_S * (AP + 0.27))} top`,
+      onEnter: () => {
+        if (!box2Fallen) {
+          box2Fallen = true;
+          cleanupSectionFrags(['box2']);
+          launchPuzzleFall([boxes[1]], ['box2']);
+          boxes[1] && boxes[1].classList.add('puzz-hidden');
+        }
+      },
+      onLeaveBack: () => {
+        if (box2Fallen) {
+          box2Fallen = false;
+          cleanupSectionFrags(['box2']);
+          launchPuzzleReassemble([boxes[1]], ['box2'],
+            () => { boxes[1] && boxes[1].classList.remove('puzz-hidden'); });
+        }
+      },
+    });
+    // ── Reality — last to break
+    ScrollTrigger.create({
+      trigger: 'body',
+      start:   `${Math.round(MAX_S * (AP + 0.285))} top`,
+      onEnter: () => {
+        if (!box1Fallen) {
+          box1Fallen = true;
+          cleanupSectionFrags(['box1']);
+          launchPuzzleFall([boxes[0]], ['box1']);
+          boxes[0] && boxes[0].classList.add('puzz-hidden');
+        }
+      },
+      onLeaveBack: () => {
+        if (box1Fallen) {
+          box1Fallen = false;
+          cleanupSectionFrags(['box1']);
+          launchPuzzleReassemble([boxes[0]], ['box1'],
+            () => { boxes[0] && boxes[0].classList.remove('puzz-hidden'); });
+        }
+      },
+    });
+    // Reset all Arsenal boxes when section scrolls fully out of view
+    ScrollTrigger.create({
+      trigger: 'body',
+      start:   `${Math.round(MAX_S * (AP + 0.04))} top`,
+      onLeaveBack: () => {
+        box4Fallen = box3Fallen = box2Fallen = box1Fallen = false;
+        cleanupSectionFrags(['box1','box2','box3','box4']);
+        boxes.forEach(b => b && b.classList.remove('puzz-hidden'));
+      },
+    });
 
     // ─────────────────────────────────────────────────────
     // BLUEPRINT SECTION (PP)
@@ -234,6 +474,10 @@
     const processChs = Array.from(document.querySelectorAll('.p-char:not(.spacer)'));
     const processUL  = document.getElementById('process-underline');
     const times = [1,2,3].map(n => document.getElementById(`time${n}`));
+    // ── 6-A: wireframe rect SVG elements for Blueprint timeline items ──
+    const wireTimeRects = ['wire-t1','wire-t2','wire-t3'].map(id =>
+      document.querySelector(`#${id} .wire-rect`)
+    );
 
     if (s2) {
       gsap.set(s2, { opacity: 0, y: 0 });
@@ -260,6 +504,10 @@
     times.forEach((t, i) => {
       if (t) tl.to(t, { duration: 0.03, opacity: 1, y: 0, scale: 1 }, PP + 0.13 + i * 0.03);
     });
+    // ── 6-A: Draw wireframe borders on timeline items (staggered)
+    wireTimeRects.forEach((wr, i) => {
+      if (wr) tl.to(wr, { strokeDashoffset: 0, duration: 0.04, ease: 'power2.inOut' }, PP + 0.136 + i * 0.02);
+    });
     // Hold
     tl.to(LP,    { duration: 0.015, grip: 0, onUpdate: UA }, PP + 0.14);
     tl.to(barOp, { duration: 0.015, b2: 1, onUpdate: syncBarOp }, PP + 0.14);
@@ -268,16 +516,83 @@
     tl.to(RP,    { duration: 0.04, wx: R_DOWN.wx - 60, wy: R_DOWN.wy - 50, onUpdate: UA }, PP + 0.14);
     tl.to(gearR, { duration: 0.04, rot: 380, onUpdate: UA }, PP + 0.14);
     tl.to(RP,    { duration: 0.04, wx: R_DOWN.wx, wy: R_DOWN.wy, onUpdate: UA }, PP + 0.18);
-    // Deconstruct
+    // ── 6-A: Wireframe undraw — moved further for extra display time
+    wireTimeRects.forEach((wr, i) => {
+      if (wr) tl.to(wr, { strokeDashoffset: -1, duration: 0.025, ease: 'power2.in' }, PP + 0.335 + i * 0.008);
+    });
+    // Deconstruct header
     tl.to(processUL, { duration: 0.04, opacity: 0, scaleX: 0 }, PP + 0.24);
     [...processChs].reverse().forEach((el, i) => {
       tl.to(el, { duration: 0.03, opacity: 0, y: -220, scale: 0.03, ease: 'power3.in' }, PP + 0.26 + i * 0.012);
     });
+    // ── 6-B/6-C: Timeline items snap invisible — synced with new fall trigger (PP+0.35)
     [...times].reverse().forEach((t, i) => {
-      if (t) tl.to(t, { duration: 0.035, opacity: 0, y: -120, scale: 0.06 }, PP + 0.28 + i * 0.02);
+      if (t) tl.to(t, { duration: 0.018, opacity: 0 }, PP + 0.35 + i * 0.012);
     });
-    tl.to('.p-char', { duration: 0.03, opacity: 0, force3D: true }, PP + 0.34);
-    tl.to(s2, { duration: 0.04, opacity: 0 }, PP + 0.36);
+    tl.to('.p-char', { duration: 0.03, opacity: 0, force3D: true }, PP + 0.375);
+    tl.to(s2, { duration: 0.04, opacity: 0 }, PP + 0.39);
+
+    // ── 6-B/6-C: Blueprint puzzle fall — accident-proof + repeatable + reversible ──
+    // A 350ms scroll lock starts when Blueprint items fully appear (PP+0.20).
+    // Fast / accidental scrollers can't break the section before the lock expires.
+    let blueprintFallen = false;
+    let blueprintScrollLocked = true;
+    let blueprintLockTimer = null;
+
+    // Lock trigger — fires once items are all in view
+    ScrollTrigger.create({
+      trigger: 'body',
+      start:   `${Math.round(MAX_S * (PP + 0.22))} top`,
+      onEnter: () => {
+        blueprintScrollLocked = true;
+        clearTimeout(blueprintLockTimer);
+        blueprintLockTimer = setTimeout(() => { blueprintScrollLocked = false; }, 350);
+      },
+      onLeaveBack: () => {
+        blueprintScrollLocked = true;
+        clearTimeout(blueprintLockTimer);
+      },
+    });
+
+    // Fall trigger — PP+0.35 for extra display time (was PP+0.31)
+    ScrollTrigger.create({
+      trigger: 'body',
+      start:   `${Math.round(MAX_S * (PP + 0.35))} top`,
+      onEnter: () => {
+        if (!blueprintFallen && !blueprintScrollLocked) {
+          blueprintFallen = true;
+          cleanupSectionFrags(['time1','time2','time3']);
+          launchPuzzleFall(
+            [...times].reverse(),
+            ['time3', 'time2', 'time1']
+          );
+          times.forEach(t => t && t.classList.add('puzz-hidden'));
+        }
+      },
+      onLeaveBack: () => {
+        if (blueprintFallen) {
+          blueprintFallen = false;
+          cleanupSectionFrags(['time1','time2','time3']);
+          launchPuzzleReassemble(
+            [...times],
+            ['time1', 'time2', 'time3'],
+            () => { times.forEach(t => t && t.classList.remove('puzz-hidden')); }
+          );
+        }
+      },
+    });
+    // Reset Blueprint when section scrolls fully out of view
+    ScrollTrigger.create({
+      trigger: 'body',
+      start:   `${Math.round(MAX_S * (PP + 0.04))} top`,
+      onLeaveBack: () => {
+        blueprintFallen = false;
+        blueprintScrollLocked = true;
+        clearTimeout(blueprintLockTimer);
+        cleanupSectionFrags(['time1','time2','time3']);
+        times.forEach(t => t && t.classList.remove('puzz-hidden'));
+      },
+    });
 
     // ─────────────────────────────────────────────────────
     // CTA SECTION (CP)

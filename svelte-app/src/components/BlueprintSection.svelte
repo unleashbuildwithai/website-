@@ -35,6 +35,13 @@
       <!-- Step 1 -->
       <li class="timeline-item left" id="time1">
         <article class="timeline-content">
+          <!-- Phase 6-A: SVG wireframe border draw animation -->
+          <svg class="box-wire" id="wire-t1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+            <rect class="wire-rect" pathLength="1"
+                  x="1.5" y="1.5" width="99%" height="97%" rx="11"
+                  fill="none" stroke="#00ffcc" stroke-width="1.2"
+                  style="stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 4px #00ffcc)"/>
+          </svg>
           <h3>01. Discord Updates</h3>
           <p>Want to be extra specific? A quick Discord call to walk through your vision and make sure we're aligned — so I build exactly what you need.</p>
         </article>
@@ -43,6 +50,13 @@
       <!-- Step 2 -->
       <li class="timeline-item right" id="time2">
         <article class="timeline-content">
+          <!-- Phase 6-A: SVG wireframe border draw animation -->
+          <svg class="box-wire" id="wire-t2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+            <rect class="wire-rect" pathLength="1"
+                  x="1.5" y="1.5" width="99%" height="97%" rx="11"
+                  fill="none" stroke="#00ffcc" stroke-width="1.2"
+                  style="stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 4px #00ffcc)"/>
+          </svg>
           <h3>02. The Forge</h3>
           <p>After I accept your message via email, I get straight to work. If no data inquiry is needed — product is <em class="neon-em">immediately underway.</em></p>
         </article>
@@ -51,6 +65,13 @@
       <!-- Step 3 -->
       <li class="timeline-item left" id="time3">
         <article class="timeline-content">
+          <!-- Phase 6-A: SVG wireframe border draw animation -->
+          <svg class="box-wire" id="wire-t3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+            <rect class="wire-rect" pathLength="1"
+                  x="1.5" y="1.5" width="99%" height="97%" rx="11"
+                  fill="none" stroke="#00ffcc" stroke-width="1.2"
+                  style="stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 4px #00ffcc)"/>
+          </svg>
           <h3>03. The Reveal</h3>
           <p>We meet up so you have live access to the app and see it work in real-time. After payment, I'll distribute it with a USB of your providing.</p>
         </article>
@@ -110,6 +131,19 @@
   border: 1px solid rgba(0, 255, 204, 0.14);
   border-top: 1px solid rgba(255, 255, 255, 0.07);
   box-shadow: 0 8px 28px rgba(0, 3, 18, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  position: relative; /* needed for .box-wire absolute positioning */
+  overflow: hidden;
+}
+
+/* Phase 6-A: wireframe SVG */
+:global(.timeline-content .box-wire) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  overflow: visible;
 }
 .timeline-content h3 {
   margin-bottom: 6px;

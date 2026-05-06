@@ -11,7 +11,7 @@
     <div class="grab-handle right"></div>
   </div>
 
-  <section class="section" aria-labelledby="arsenal-heading">
+  <section class="section arsenal-section" aria-labelledby="arsenal-heading">
 
     <!-- ── Animated header ─────────────────────────────────── -->
     <header class="arsenal-header-wrap">
@@ -33,23 +33,24 @@
     </header>
 
     <!-- ── Elite Bento Grid ────────────────────────────────── -->
-    <!-- Layout (3-col, 3-row grid):
-         [ HERO 2×2    ] [ TALL 1×2 ]
-         [ HERO 2×2    ] [ TALL 1×2 ]
-         [ WIDE 2×1    ] [ STAT 1×1 ]
-    -->
     <div class="bento-grid" role="list">
 
       <!-- Card 1: HERO — Build Speed (2 col × 2 row) -->
       <article class="feature-box bento-hero" id="box1" role="listitem">
+        <!-- Phase 6-A: SVG wireframe border draw animation -->
+        <svg class="box-wire" id="wire1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <rect class="wire-rect" pathLength="1"
+                x="1.5" y="1.5" width="99%" height="98%" rx="16"
+                fill="none" stroke="#00ffcc" stroke-width="1.5"
+                style="stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 5px #00ffcc)"/>
+        </svg>
         <div class="feature-header">
           <div class="feature-icon" aria-hidden="true">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
             </svg>
           </div>
           <h3 class="feature-title">
-            <!-- Each char pre-rendered for GSAP typewriter -->
             {#each 'Reality'.split('') as ch}<span class="tw-char">{ch === ' ' ? '\u00a0' : ch}</span>{/each}
           </h3>
         </div>
@@ -62,9 +63,16 @@
 
       <!-- Card 2: TALL — Architecture (1 col × 2 row) -->
       <article class="feature-box bento-tall" id="box2" role="listitem">
+        <!-- Phase 6-A: SVG wireframe border draw animation -->
+        <svg class="box-wire" id="wire2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <rect class="wire-rect" pathLength="1"
+                x="1.5" y="1.5" width="99%" height="98%" rx="16"
+                fill="none" stroke="#00ffcc" stroke-width="1.5"
+                style="stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 5px #00ffcc)"/>
+        </svg>
         <div class="feature-header">
           <div class="feature-icon" aria-hidden="true">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
             </svg>
           </div>
@@ -85,9 +93,16 @@
 
       <!-- Card 3: WIDE — Risk Model (2 col × 1 row) -->
       <article class="feature-box bento-wide" id="box3" role="listitem">
+        <!-- Phase 6-A: SVG wireframe border draw animation -->
+        <svg class="box-wire" id="wire3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <rect class="wire-rect" pathLength="1"
+                x="1.5" y="1.5" width="99%" height="97%" rx="16"
+                fill="none" stroke="#00ffcc" stroke-width="1.5"
+                style="stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 5px #00ffcc)"/>
+        </svg>
         <div class="feature-header">
           <div class="feature-icon" aria-hidden="true">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
@@ -101,6 +116,13 @@
 
       <!-- Card 4: STAT accent (1 col × 1 row) -->
       <article class="feature-box bento-stat" id="box4" role="listitem" aria-label="Flat fee: $1,000">
+        <!-- Phase 6-A: SVG wireframe border draw animation -->
+        <svg class="box-wire" id="wire4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <rect class="wire-rect" pathLength="1"
+                x="1.5" y="1.5" width="99%" height="97%" rx="16"
+                fill="none" stroke="#00f3ff" stroke-width="1.5"
+                style="stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 5px #00f3ff)"/>
+        </svg>
         <div class="stat-accent">
           <span class="big-number">$1K</span>
           <span class="stat-desc">Flat fee.<br/>Only on delivery.</span>
@@ -113,23 +135,26 @@
 </div>
 
 <style>
+/* Arsenal section: tighter top padding (scoped > global) */
+.arsenal-section { padding-top: 10px; padding-bottom: 30px; }
+
 /* ─── Bento grid ─────────────────────────────────────────── */
 .bento-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 240px 240px 180px;
-  gap: 16px;
+  grid-template-rows: 140px 140px 84px;
+  gap: 12px;
 }
 
-/* Span definitions — the "secret sauce" */
-.bento-hero { grid-column: 1 / 3; grid-row: 1 / 3; }  /* 2×2 hero */
-.bento-tall { grid-column: 3 / 4; grid-row: 1 / 3; }  /* 1×2 tall */
-.bento-wide { grid-column: 1 / 3; grid-row: 3 / 4; }  /* 2×1 wide */
-.bento-stat { grid-column: 3 / 4; grid-row: 3 / 4; }  /* 1×1 accent */
+/* Span definitions */
+.bento-hero { grid-column: 1 / 3; grid-row: 1 / 3; }
+.bento-tall { grid-column: 3 / 4; grid-row: 1 / 3; }
+.bento-wide { grid-column: 1 / 3; grid-row: 3 / 4; }
+.bento-stat { grid-column: 3 / 4; grid-row: 3 / 4; }
 
 /* ─── Base card ──────────────────────────────────────────── */
 .feature-box {
-  padding: 24px;
+  padding: 18px 20px;
   border-radius: 18px;
   border: 1px solid rgba(0, 255, 204, 0.14);
   border-top: 1px solid rgba(255, 255, 255, 0.09);
@@ -141,7 +166,7 @@
   opacity: 0;                /* GSAP reveals */
   transition: border-color 0.4s var(--ease-spring), box-shadow 0.4s, transform 0.4s var(--ease-spring);
   overflow: hidden;
-  position: relative;
+  position: relative;       /* needed for .box-wire absolute positioning */
 }
 .feature-box:hover {
   border-color: rgba(0, 255, 204, 0.4);
@@ -149,6 +174,18 @@
     0 16px 50px rgba(0, 3, 18, 0.85),
     0 0 25px rgba(0, 255, 204, 0.08);
   transform: translateY(-3px);
+}
+
+/* ─── Phase 6-A: Wireframe border SVG ───────────────────── */
+.box-wire {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  overflow: visible;
+  /* starts invisible — GSAP animates stroke-dashoffset → 0 */
 }
 
 /* ─── Hero card extras ───────────────────────────────────── */
@@ -161,38 +198,38 @@
 .hero-stat {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: 8px;
   margin-top: auto;
-  padding-top: 20px;
+  padding-top: 10px;
   border-top: 1px solid rgba(0, 255, 204, 0.12);
 }
 .stat-number {
   font-family: 'Clash Display', sans-serif;
-  font-size: 2.8rem;
+  font-size: 2.2rem;
   font-weight: 700;
   color: #00ffcc;
   text-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
   line-height: 1;
 }
-.stat-label { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.5px; }
+.stat-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.5px; }
 
 /* ─── Tall card extras ───────────────────────────────────── */
 .bento-tall {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 }
 .stack-list {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
   margin-top: auto;
 }
 .stack-list li {
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   color: var(--muted);
-  padding: 6px 12px;
+  padding: 4px 10px;
   background: rgba(0, 255, 204, 0.04);
   border: 1px solid rgba(0, 255, 204, 0.1);
   border-radius: 8px;
@@ -206,85 +243,90 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 24px;
-  padding: 20px 28px;
+  gap: 20px;
+  padding: 16px 22px;
 }
 .bento-wide .feature-header { flex-shrink: 0; flex-direction: column; align-items: flex-start; }
-.bento-wide p { margin: 0; font-size: 0.82rem; }
+.bento-wide p { margin: 0; font-size: 0.74rem; }
 
 /* ─── Stat accent card ───────────────────────────────────── */
 .bento-stat {
   background: rgba(0, 255, 204, 0.04);
   border: 1px solid rgba(0, 255, 204, 0.2);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 12px;
+  gap: 10px;
+  padding: 10px 14px;
 }
 .stat-accent {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 2px;
 }
 .big-number {
   font-family: 'Clash Display', sans-serif;
-  font-size: 3.2rem;
+  font-size: 2rem;
   font-weight: 700;
   color: #00ffcc;
   text-shadow: 0 0 25px rgba(0, 255, 204, 0.6), 0 0 50px rgba(0, 255, 204, 0.3);
   line-height: 1;
 }
 .stat-desc {
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   color: var(--muted);
-  letter-spacing: 0.5px;
-  line-height: 1.5;
+  letter-spacing: 0.3px;
+  line-height: 1.4;
+  text-align: left;
 }
 .zero-risk-badge {
-  font-size: 0.6rem;
+  font-size: 0.52rem;
   font-weight: 700;
-  letter-spacing: 3px;
-  color: rgba(0, 255, 204, 0.6);
-  border: 1px solid rgba(0, 255, 204, 0.25);
-  padding: 3px 8px;
-  border-radius: 10px;
+  letter-spacing: 2px;
+  color: rgba(0, 255, 204, 0.7);
+  border: 1px solid rgba(0, 255, 204, 0.3);
+  padding: 2px 7px;
+  border-radius: 8px;
   text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* ─── Feature header shared ──────────────────────────────── */
 .feature-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 8px;
 }
 .feature-icon { color: var(--neon); flex-shrink: 0; }
 .feature-title {
-  font-size: 0.95rem;
+  font-size: 0.72rem;
+  font-weight: 700;
   margin: 0;
   color: #fff;
   text-transform: uppercase;
   letter-spacing: 1px;
-  min-height: 1.5em;
+  line-height: 1.3;
 }
-.feature-box p { font-size: 0.85rem; line-height: 1.6; }
+.feature-box p { font-size: 0.76rem; line-height: 1.5; }
 
 /* ─── Mobile stacking ────────────────────────────────────── */
 @media (max-width: 768px) {
   .bento-grid {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
-    gap: 14px;
+    gap: 12px;
   }
   .bento-hero,
   .bento-tall,
   .bento-wide,
   .bento-stat { grid-column: 1; grid-row: auto; }
   .bento-wide { flex-direction: column; }
-  .stat-number { font-size: 2rem; }
-  .big-number  { font-size: 2.4rem; }
+  .stat-number { font-size: 1.8rem; }
+  .big-number  { font-size: 2rem; }
 }
 </style>

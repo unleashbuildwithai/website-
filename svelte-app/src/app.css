@@ -1,3 +1,8 @@
+/* ─── Puzzle fragment hidden state ──────────────────────────
+   Overrides GSAP inline opacity so boxes stay invisible
+   while reassembly or fall animations are running.        */
+.puzz-hidden { opacity: 0 !important; }
+
 /* ─── GLOBAL RESET & TOKENS ─────────────────────────────── */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -171,7 +176,7 @@ img, svg { display: block; }
   max-width: 800px;
   height: 6px;
   background: linear-gradient(90deg, transparent, var(--neon), transparent);
-  margin: 0 auto 50px;
+  margin: 0 auto 18px;
   border-radius: 5px;
   box-shadow: 0 0 20px rgba(0, 255, 204, 0.8), 0 0 40px rgba(0, 255, 204, 0.4);
   position: relative;
@@ -191,7 +196,7 @@ img, svg { display: block; }
 
 /* ─── SECTION HEADERS ────────────────────────────────────── */
 .arsenal-header-wrap {
-  margin-bottom: 45px;
+  margin-bottom: 18px;
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
@@ -438,6 +443,22 @@ img, svg { display: block; }
   font-family: inherit;
 }
 .modal-close-btn:hover { border-color: rgba(0, 255, 204, 0.5); color: #00ffcc; }
+
+/* ─── Phase 6: Puzzle Fragment overlay ───────────────────── */
+/* Fragments are fixed-position divs injected by puzzleGenerator.js */
+/* clip-path: path() clips each div to its jigsaw shape            */
+.puzz-frag {
+  /* Ensure stacking above content layer (z-index:300 set inline)  */
+  /* Isolate fragment so mix-blend effects don't leak               */
+  isolation: isolate;
+  /* Prevent any pointer events during fall animation               */
+  pointer-events: none !important;
+}
+/* Prevent fragment inner clones from affecting layout              */
+.puzz-frag > * {
+  pointer-events: none;
+  user-select: none;
+}
 
 /* ─── TYPEWRITER ─────────────────────────────────────────── */
 .tw-char { display: inline-block; opacity: 0; will-change: opacity; }
