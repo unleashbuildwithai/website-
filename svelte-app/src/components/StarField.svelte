@@ -18,9 +18,13 @@
   // DRIFT STATE
   // Stars ALWAYS drift. Scroll changes direction + speed.
   // ─────────────────────────────────────────────────────────
-  const BASE_DRIFT    = 0.18;   // idle drift speed (px/frame) — always rolling
-  const VELOCITY_DEAD = 0.6;    // below this = "no active scroll input"
-  const WARP_THRESHOLD = 40;    // px/frame → warp colour mode
+  const BASE_DRIFT      = 0.18; // idle drift speed (px/frame) — always rolling
+  const VELOCITY_DEAD   = 0.6;  // below this = "no active scroll input"
+  const WARP_THRESHOLD  = 40;   // px/frame → warp colour mode
+  // Minimum velocity needed to REVERSE star drift direction.
+  // Prevents a light touch (or tiny scroll bounce) from flickering direction
+  // before an intentional swipe begins — especially important on mobile.
+  const DIR_FLIP_MIN    = 3.0;  // px/frame
 
   let driftVelocity = BASE_DRIFT;  // starts drifting upward by default
 
@@ -115,10 +119,21 @@
     const scrollActive = absV > VELOCITY_DEAD;
 
     if (scrollActive) {
-      // Active scroll: INSTANTLY set direction, amplify speed
-      const dir = Math.sign(velocity);             // -1 or +1
-      const mag = Math.min(absV, 80);              // cap at 80px/frame
-      driftVelocity = dir * (BASE_DRIFT + mag * 0.22);
+      const dir       = Math.sign(velocity);
+      const mag       = Math.min(absV, 80);
+      const targetVel = dir * (BASE_DRIFT + mag * 0.22);
+
+      // Direction-flip guard: only reverse if the scroll signal is strong enough
+      // to be intentional. Weak opposite signal (e.g. finger touching screen,
+      // elastic bounce) keeps the current direction and just coasts a bit.
+      const isFlip = Math.sign(targetVel) !== Math.sign(driftVelocity);
+      if (isFlip && absV < DIR_FLIP_MIN) {
+        // Coast: maintain direction, let speed bleed off slightly
+        driftVelocity = Math.sign(driftVelocity) * Math.max(BASE_DRIFT, Math.abs(driftVelocity) * 0.96);
+      } else {
+        // Strong or same-direction signal — set immediately
+        driftVelocity = targetVel;
+      }
     } else {
       // No scroll input: decay back toward base drift
       // Preserves current direction — always keeps rolling

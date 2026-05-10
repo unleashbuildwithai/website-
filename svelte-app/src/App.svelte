@@ -701,8 +701,69 @@
       }
     }
 
+    // ── Drag guard ────────────────────────────────────────────────────────────
+    // Prevents a button/link click from firing when the user was DRAGGING to
+    // select text and released the pointer over an interactive element.
+    // Fix: "highlighting my name → releasing over INITIATE button opens modal"
+    let _pdX = 0, _pdY = 0;
+    const _onPD = e => { _pdX = e.clientX; _pdY = e.clientY; };
+    const _onCL = e => {
+      if (Math.hypot(e.clientX - _pdX, e.clientY - _pdY) > 8) {
+        // Pointer moved >8px — this was a drag/select, NOT an intentional click
+        const t = e.target.closest('button, a');
+        if (t) { e.preventDefault(); e.stopPropagation(); }
+      }
+    };
+    document.addEventListener('pointerdown', _onPD, true);
+    document.addEventListener('click',       _onCL, true);
+
+    // ── Boundary scroll: stars keep reacting at top/bottom of page ───────────
+    // At scroll boundaries (scrollY = 0 or MAX_S) the page can't scroll further
+    // but wheel events and touch swipes still fire — forward them to the star
+    // velocity store so the starfield keeps animating even at page ends.
+    let _bwTimer = null;
+    const _onWheel = e => {
+      if (window.scrollY <= 4 || window.scrollY >= MAX_S - 4) {
+        clearTimeout(_bwTimer);
+        scrollVelocity.set(-(e.deltaY || 0) * 0.22);
+        _bwTimer = setTimeout(() => scrollVelocity.set(0), 90);
+      }
+    };
+    let _btY = 0, _btT = 0;
+    const _onTS = e => {
+      if (e.touches.length > 0) { _btY = e.touches[0].clientY; _btT = performance.now(); }
+    };
+    const _onTM = e => {
+      if (e.touches.length > 0) {
+        const now = performance.now();
+        const dy  = _btY - e.touches[0].clientY;
+        const dt  = Math.max(1, now - _btT);
+        if (window.scrollY <= 4 || window.scrollY >= MAX_S - 4) {
+          scrollVelocity.set(dy / dt * 16);
+        }
+        _btY = e.touches[0].clientY;
+        _btT = now;
+      }
+    };
+    const _onTE = () => {
+      if (window.scrollY <= 4 || window.scrollY >= MAX_S - 4) {
+        setTimeout(() => scrollVelocity.set(0), 150);
+      }
+    };
+    window.addEventListener('wheel',      _onWheel, { passive: true });
+    window.addEventListener('touchstart', _onTS,    { passive: true });
+    window.addEventListener('touchmove',  _onTM,    { passive: true });
+    window.addEventListener('touchend',   _onTE,    { passive: true });
+
     return () => {
       ScrollTrigger.getAll().forEach(t => t.kill());
+      document.removeEventListener('pointerdown', _onPD, true);
+      document.removeEventListener('click',       _onCL, true);
+      window.removeEventListener('wheel',      _onWheel);
+      window.removeEventListener('touchstart', _onTS);
+      window.removeEventListener('touchmove',  _onTM);
+      window.removeEventListener('touchend',   _onTE);
+      clearTimeout(_bwTimer);
     };
   });
 
