@@ -314,19 +314,37 @@
 }
 .feature-box p { font-size: 0.76rem; line-height: 1.5; }
 
-/* ─── Mobile stacking ────────────────────────────────────── */
+/* ─── Mobile: Reality + Full-Stack side by side ──────────── */
 @media (max-width: 768px) {
   .bento-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-    gap: 12px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 10px;
   }
-  .bento-hero,
-  .bento-tall,
-  .bento-wide,
-  .bento-stat { grid-column: 1; grid-row: auto; }
-  .bento-wide { flex-direction: column; }
-  .stat-number { font-size: 1.8rem; }
-  .big-number  { font-size: 2rem; }
+  /* Reality + Full-Stack: side by side in row 1 */
+  .bento-hero { grid-column: 1; grid-row: 1; }
+  .bento-tall { grid-column: 2; grid-row: 1; }
+  /* Risk Model: full width in row 2 */
+  .bento-wide { grid-column: 1 / 3; grid-row: 2; flex-direction: column; align-items: flex-start; gap: 8px; }
+  /* $1K stat: full width in row 3 */
+  .bento-stat { grid-column: 1 / 3; grid-row: 3; }
+
+  /* Compact text for side-by-side cards */
+  .bento-hero p, .bento-tall p { font-size: 0.68rem; }
+  .stat-number { font-size: 1.6rem; }
+  .big-number  { font-size: 1.8rem; }
+  .stack-list li { font-size: 0.62rem; padding: 3px 8px; }
+  .feature-title { font-size: 0.65rem; }
+  .bento-wide p  { font-size: 0.72rem; }
+}
+
+/* ─── Short-screen desktop fix ───────────────────────────── */
+@media (min-width: 769px) and (max-height: 700px) {
+  .bento-grid {
+    grid-template-rows: 110px 110px 70px;
+    gap: 8px;
+  }
+  .arsenal-section { padding-top: 5px; padding-bottom: 15px; }
+  .feature-box { padding: 12px 14px; }
 }
 </style>

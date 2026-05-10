@@ -24,8 +24,8 @@
 
   // ── Section offsets
   const isMobileView   = window.innerWidth <= 768;
-  const SECTION_OFFSET = isMobileView ? 30 : 119;
-  const BP_OFFSET      = isMobileView ? 30 : 10;
+  const SECTION_OFFSET = isMobileView ? 30 : 15;
+  const BP_OFFSET      = isMobileView ? 30 : 8;
 
   // ── GSAP timing anchors (0–1 progress)
   const AP = 0.08;           // Arsenal
