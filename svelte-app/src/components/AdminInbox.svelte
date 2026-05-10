@@ -219,11 +219,14 @@
 
 <!-- ─── ADMIN LOGIN OVERLAY ──────────────────────────────── -->
 {#if $adminOpen}
+  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
   <div class="overlay admin-overlay open"
     on:click|self={() => adminOpen.set(false)}
-    on:keydown={e => e.key === 'Escape' && adminOpen.set(false)}
-    role="dialog" aria-modal="true" aria-label="Admin Login" tabindex="-1">
-    <div class="admin-login-box" bind:this={loginBoxEl}>
+    on:keydown={e => e.key === 'Escape' && adminOpen.set(false)}>
+    <!-- role="dialog" belongs on the actual dialog box, not the backdrop wrapper -->
+    <div class="admin-login-box"
+      role="dialog" aria-modal="true" aria-label="Admin Login" tabindex="-1"
+      bind:this={loginBoxEl}>
       <div class="admin-login-title">Admin Access</div>
 
       <div class="modal-field">
