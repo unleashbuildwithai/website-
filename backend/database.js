@@ -47,7 +47,7 @@ async function initDatabase() {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_failed_ts ON failed_logins(ts DESC)`);
 
     // ── MIGRATION: If you need to force-reset the table because it was created wrong:
-    await client.query('DROP TABLE IF EXISTS messages CASCADE'); // Uncomment this, deploy once, then comment it back out.
+    // await client.query('DROP TABLE IF EXISTS messages CASCADE'); // Uncomment this, deploy once, then comment it back out.
 
     // ── add missing columns for existing databases ──────────
     await client.query(`
