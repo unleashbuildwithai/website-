@@ -1,0 +1,18 @@
+/*
+  # Prevent clickjacking — disallow embedding in iframes
+  X-Frame-Options: DENY
+
+  # Prevent MIME-type sniffing
+  X-Content-Type-Options: nosniff
+
+  # Only send origin in Referer header, strip path
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # Disable legacy XSS filter (CSP is the real protection)
+  X-XSS-Protection: 0
+
+  # Restrict browser APIs that are unnecessary for this site
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=()
+
+  # Only send cookies over HTTPS
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload

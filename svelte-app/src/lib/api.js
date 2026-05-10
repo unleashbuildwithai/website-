@@ -23,13 +23,27 @@ export function esc(str) {
 
 // ─── POST a new build request message ─────────────────────
 export async function submitMessage({ name, email, vision, features, discord, referral, timeline }) {
+  // Client-side validation (server validates too — defence in depth)
+  if (!name?.trim() || !email?.trim() || !vision?.trim()) {
+    throw new Error('Name, email, and vision are required');
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    throw new Error('Please enter a valid email address');
+  }
+  const LIMITS = { name: 100, email: 254, vision: 3000, features: 2000, discord: 100, referral: 200 };
+  for (const [field, max] of Object.entries(LIMITS)) {
+    const val = { name, email, vision, features, discord, referral }[field];
+    if (val && val.length > max) throw new Error(`${field} is too long (max ${max} chars)`);
+  }
+
   const res = await fetch(`${API_URL}/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      name, email, vision,
-      features: features || '',
-      discord, referral,
+      name: name.trim(), email: email.trim(), vision: vision.trim(),
+      features: features?.trim() || '',
+      discord: discord?.trim() || '',
+      referral: referral?.trim() || '',
       timeline: timeline || 'Not specified'
     }),
   });
@@ -140,24 +154,13 @@ export async function clearFailedAttempts(token) {
   return res.json();
 }
 
-// ─── Keep-alive: ghost ping to prevent backend sleep ──────
-export async function keepAlivePing(token) {
-  const res = await fetch(`${API_URL}/messages`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      name:     '🤖 KeepAlive Bot',
-      email:    'keepalive@system.internal',
-      vision:   'Automated keep-alive ping',
-      features: `Generated at ${new Date().toISOString()}`,
-      timeline: 'N/A',
-    }),
-  });
-  if (!res.ok) return;
-  const data = await res.json();
-  if (token && data.id) {
-    // Move ghost to trash immediately so it doesn't clutter inbox
-    await updateMessageStatus(token, data.id, 'trash').catch(() => {});
+// ─── Keep-alive: ping the health endpoint to prevent backend sleep ──
+// Uses GET /health — does NOT create fake DB entries
+export async function keepAlivePing() {
+  try {
+    await fetch(`${API_URL}/health`, { method: 'GET' });
+  } catch {
+    // silently ignore — keep-alive is best-effort
   }
 }
 

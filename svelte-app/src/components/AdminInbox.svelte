@@ -63,7 +63,7 @@
         await loadMessages();
         await loadIntrusions();
         // Start keep-alive timer ONLY — no immediate ping on login
-        keepAliveInterval = setInterval(() => keepAlivePing(token), 10 * 60 * 1000);
+        keepAliveInterval = setInterval(() => keepAlivePing(), 10 * 60 * 1000);
       } else {
         loginError = data.error || 'Invalid credentials';
         if (loginBoxEl) gsap.to(loginBoxEl, { x: [-6, 6, -4, 4, -2, 2, 0], duration: 0.3, ease: 'none' });
