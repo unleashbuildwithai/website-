@@ -2,6 +2,9 @@
   import { onMount, onDestroy } from 'svelte';
   import { scrollVelocity } from '../lib/stores.js';
 
+  // ── 7% star shower prop (set by App.svelte on load)
+  export let showStarShower = false;
+
   // ── Canvas ref
   let canvas;
   let ctx;
@@ -69,6 +72,25 @@
       s.x = Math.random() * canvas.width;
       s.y = Math.random() * canvas.height;
     }
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // STAR SHOWER STATE (active on 7% of page loads)
+  // ─────────────────────────────────────────────────────────
+  const SHOWER_COUNT  = 90;
+  const showerStars   = [];
+
+  function createShowerStar(w) {
+    return {
+      x:    Math.random() * w,
+      y:    -15 - Math.random() * 300,  // stagger start heights above viewport
+      vy:   3.5 + Math.random() * 5,    // fast downward velocity (px/frame)
+      vx:   0.4 + Math.random() * 1.2,  // slight rightward drift
+      size: 1.5 + Math.random() * 2.8,
+      alpha: 0.75 + Math.random() * 0.25,
+      neon: Math.random() > 0.45,        // ~55% neon cyan for drama
+      trail: 2.8 + Math.random() * 4.5, // trail length multiplier
+    };
   }
 
   // ─────────────────────────────────────────────────────────
@@ -206,7 +228,50 @@
         ctx.shadowBlur = 0;
       }
 
-      ctx.restore();
+    ctx.restore();
+    }
+
+    // ── SHOWER STARS ─────────────────────────────────────────────
+    // Only rendered when showStarShower is true (7% of loads).
+    // They fall from above the viewport and are removed once off-screen.
+    if (showerStars.length > 0) {
+      let si = showerStars.length;
+      while (si--) {
+        const ss = showerStars[si];
+        ss.x += ss.vx;
+        ss.y += ss.vy;
+
+        // Remove once past bottom of viewport
+        if (ss.y > H + 40) {
+          showerStars.splice(si, 1);
+          continue;
+        }
+
+        // Fade in as star enters viewport from the top
+        const fadeIn  = Math.min(1, Math.max(0, (ss.y + 40) / 120));
+        // Fade out as star approaches the bottom
+        const fadeOut = Math.min(1, Math.max(0, (H + 40 - ss.y) / 100));
+        const alphaFinal = ss.alpha * fadeIn * fadeOut;
+
+        const trailLen = ss.trail * ss.vy * 1.4;
+        const colour   = ss.neon
+          ? `rgba(0, 243, 255, ${alphaFinal})`
+          : `rgba(255, 255, 255, ${alphaFinal})`;
+
+        ctx.save();
+        ctx.translate(ss.x, ss.y);
+
+        // Elongated ellipse pointing in direction of travel
+        ctx.beginPath();
+        ctx.ellipse(0, -trailLen / 2, ss.size * 0.38, (trailLen + ss.size) / 2, 0, 0, Math.PI * 2);
+        ctx.fillStyle = colour;
+        ctx.shadowColor = ss.neon ? '#00f3ff' : '#aad8ff';
+        ctx.shadowBlur  = ss.neon ? 14 : 8;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.restore();
+      }
     }
   }
 
@@ -215,9 +280,16 @@
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Seed stars with randomized positions + personalities
+    // Seed regular stars
     for (let i = 0; i < STAR_COUNT; i++) {
       stars.push(createStar(canvas.width, canvas.height));
+    }
+
+    // Seed shower stars (only on 7% of loads)
+    if (showStarShower) {
+      for (let i = 0; i < SHOWER_COUNT; i++) {
+        showerStars.push(createShowerStar(canvas.width));
+      }
     }
 
     window.addEventListener('resize', resize, { passive: true });

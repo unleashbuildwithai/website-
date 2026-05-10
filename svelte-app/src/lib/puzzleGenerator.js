@@ -192,6 +192,10 @@ export function buildFragments(boxEl, boxId, pieces) {
 
     // Clone the box content (full visual replica)
     const clone = boxEl.cloneNode(true);
+    // ── Glitch-fix: strip puzz-hidden from the CLONE so the box itself never
+    //    flashes visible during reassembly. buildFragments is called while the
+    //    box still carries puzz-hidden; we reveal the clone, not the original.
+    clone.classList.remove('puzz-hidden');
     // Clear GSAP inline styles and IDs so clones don't conflict
     clone.removeAttribute('id');
     clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
@@ -221,4 +225,83 @@ export function buildFragments(boxEl, boxId, pieces) {
 export function cleanupFragments(boxId) {
   document.querySelectorAll(`.puzz-frag[data-frag-box="${boxId}"]`)
     .forEach(el => el.remove());
+}
+
+/**
+ * Shatter an existing fragment into a fine grid of micro-fragments.
+ *
+ * Call this while the fragment is STILL IN THE DOM (getBoundingClientRect
+ * needs the GSAP transform applied to get the post-jolt screen position).
+ * Remove the original fragment AFTER calling this function.
+ *
+ * @param {HTMLElement} fragEl   the original fragment div (still in DOM)
+ * @param {number}      cols     horizontal grid count (default 7)
+ * @param {number}      rows     vertical grid count   (default 5)
+ * @returns {HTMLElement[]}      micro-fragment elements appended to <body>
+ */
+export function shatterFragment(fragEl, cols = 7, rows = 5) {
+  // getBoundingClientRect accounts for GSAP CSS transforms ✓
+  const rect = fragEl.getBoundingClientRect();
+  if (!rect.width || !rect.height) return [];
+
+  const innerClone = fragEl.firstElementChild;
+  if (!innerClone) return [];
+
+  // Original (pre-transform) dimensions from inline style
+  const origW = parseFloat(fragEl.style.width)  || rect.width;
+  const origH = parseFloat(fragEl.style.height) || rect.height;
+
+  const microW = rect.width  / cols;
+  const microH = rect.height / rows;
+  const micros = [];
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const micro = document.createElement('div');
+      micro.className = 'puzz-micro';
+
+      // Place micro at the exact screen position of this grid cell
+      // (rect accounts for GSAP jolt transform applied to fragEl)
+      const sx = rect.left + c * microW;
+      const sy = rect.top  + r * microH;
+
+      micro.style.cssText = [
+        'position:fixed',
+        `left:${sx.toFixed(1)}px`,
+        `top:${sy.toFixed(1)}px`,
+        `width:${microW.toFixed(1)}px`,
+        `height:${microH.toFixed(1)}px`,
+        'overflow:hidden',
+        'will-change:transform,opacity',
+        'pointer-events:none',
+        'opacity:1',
+        'z-index:302',
+      ].join(';');
+
+      // Clone the full-box content and offset it so only this cell is visible
+      // through the micro's overflow:hidden viewport.
+      // offset = -(c * microW, r * microH) aligns the cell to the micro's top-left.
+      const miniContent = innerClone.cloneNode(true);
+      miniContent.classList.remove('puzz-hidden');
+      Object.assign(miniContent.style, {
+        position:      'absolute',
+        left:          `${(-c * microW).toFixed(1)}px`,
+        top:           `${(-r * microH).toFixed(1)}px`,
+        width:         `${origW.toFixed(1)}px`,
+        height:        `${origH.toFixed(1)}px`,
+        margin:        '0',
+        opacity:       '1',
+        transform:     'none',
+        clipPath:      'none',
+        pointerEvents: 'none',
+        willChange:    'auto',
+      });
+
+      micro.appendChild(miniContent);
+      document.body.appendChild(micro);
+      micros.push(micro);
+    }
+  }
+
+  return micros;
 }

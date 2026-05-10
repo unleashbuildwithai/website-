@@ -460,6 +460,19 @@ img, svg { display: block; }
   user-select: none;
 }
 
+/* ─── Phase 6 shatter: micro-fragment grid pieces ────────── */
+/* Created by shatterFragment() — each one is a tiny overflow:hidden */
+/* cell that shows a portion of the jigsaw piece visual.             */
+.puzz-micro {
+  isolation: isolate;
+  pointer-events: none !important;
+  border-radius: 1px; /* subtle rounding on micro-piece corners */
+}
+.puzz-micro > * {
+  pointer-events: none;
+  user-select: none;
+}
+
 /* ─── TYPEWRITER ─────────────────────────────────────────── */
 .tw-char { display: inline-block; opacity: 0; will-change: opacity; }
 .feature-title { min-height: 1.5em; letter-spacing: 1px; }

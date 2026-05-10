@@ -15,7 +15,10 @@
   import AdminInbox      from './components/AdminInbox.svelte';
 
   // ── Phase 6: Puzzle Assembly System
-  import { generatePuzzlePieces, buildFragments, PUZZLE_CONFIG } from './lib/puzzleGenerator.js';
+  import { generatePuzzlePieces, buildFragments, shatterFragment, PUZZLE_CONFIG } from './lib/puzzleGenerator.js';
+
+  // ── Phase 4 / Phase 8: 7% chance of star shower on load
+  const showStarShower = Math.random() < 0.07;
 
   // ── Page geometry
   const VH      = window.innerHeight;
@@ -117,36 +120,50 @@
       gsap.set(frags, { opacity: 1 });
 
       frags.forEach((frag, j) => {
-        // Pre-compute random fall target for this piece
-        const tY = 170 + Math.random() * 220;          // gravity fall distance
-        const tX = (Math.random() - 0.5) * 90;         // slight horizontal drift
-        const tR = (Math.random() - 0.5) * 160;        // tumble rotation
-        const delay = i * 0.07 + j * 0.055 + Math.random() * 0.04;
+        // Pre-jolt values (captured once so onComplete closure is stable)
+        const joltY  = (Math.random() - 0.5) * 14;
+        const joltX  = (Math.random() - 0.5) * 8;
+        const joltR  = (Math.random() - 0.5) * 9;
+        const delay  = i * 0.07 + j * 0.055 + Math.random() * 0.04;
 
-        // 6-C: Two-stage animation: ① momentum jolt → ② slow gravity fall
-        const fragTl = gsap.timeline({ delay });
-        fragTl
-          .to(frag, {                                   // ① tiny overshoot kick
-            y:        (Math.random() - 0.5) * 14,
-            x:        (Math.random() - 0.5) * 8,
-            rotation: (Math.random() - 0.5) * 9,
+        // 6-C two-stage → shatter:
+        //   ① momentum jolt (0.18s) — small overshoot nudge
+        //   ② onComplete: shatter into 7×5 micro-fragments that explode outward
+        gsap.timeline({ delay })
+          .to(frag, {
+            y:        joltY,
+            x:        joltX,
+            rotation: joltR,
             duration: 0.18,
             ease:     'power2.out',
-          })
-          .to(frag, {                                   // ② gravity (slow fall)
-            y:        tY,
-            x:        tX,
-            rotation: tR,
-            opacity:  0,
-            duration: 1.1 + Math.random() * 0.55,
-            ease:     'power1.in',
-            onComplete: () => frag.remove(),
+            onComplete() {
+              // Build micro-grid WHILE frag is still in the DOM
+              // (getBoundingClientRect needs the GSAP transform applied)
+              const micros = shatterFragment(frag, 7, 5); // 35 micro-pieces per jigsaw frag
+              frag.remove(); // remove original after capturing screen position
+
+              micros.forEach(micro => {
+                const angle = Math.random() * Math.PI * 2; // explosive scatter direction
+                const dist  = 25 + Math.random() * 95;    // scatter radius
+                gsap.to(micro, {
+                  x:        Math.cos(angle) * dist,
+                  y:        Math.sin(angle) * dist + 18,   // slight downward gravity bias
+                  rotation: (Math.random() - 0.5) * 540,  // wild spin
+                  opacity:  0,
+                  scale:    0.1 + Math.random() * 0.55,
+                  duration: 0.28 + Math.random() * 0.48,
+                  ease:     'power2.in',
+                  delay:    Math.random() * 0.09,
+                  onComplete: () => micro.remove(),
+                });
+              });
+            },
           });
       });
     });
   }
 
-  // ── Clean up all puzzle fragments belonging to a section ──────────────
+  // ── Clean up all puzzle fragments (and any in-flight micro-fragments) ──
   function cleanupSectionFrags(ids) {
     document.querySelectorAll('.puzz-frag').forEach(f => {
       if (ids.includes(f.dataset.fragBox)) {
@@ -154,20 +171,22 @@
         f.remove();
       }
     });
+    // Also kill micro-fragments that might still be flying
+    // (very short-lived ~0.3-0.8s, but guard against fast scroll-back)
+    document.querySelectorAll('.puzz-micro').forEach(m => {
+      gsap.killTweensOf(m);
+      m.remove();
+    });
   }
 
   // ── Reassembly: scattered fragments fly back together into their boxes ─
+  // Glitch-fix: puzz-hidden is NO LONGER stripped from the box before cloneNode.
+  // buildFragments now strips it from the CLONE instead (puzzleGenerator.js).
+  // This means the original box stays opacity:0 the whole time — zero flash.
   function launchPuzzleReassemble(boxEls, boxIds, onDone) {
     const isMobile = window.innerWidth <= 768;
     let totalFrags    = 0;
     let completedFrags = 0;
-
-    // ⚠️ Strip puzz-hidden BEFORE cloneNode so fragment visuals are correct.
-    // cloneNode(true) copies classes — if puzz-hidden is present the clone's
-    // inner content becomes opacity:0 !important and the fragment is invisible.
-    // We re-add puzz-hidden right after building so boxes stay hidden while
-    // fragments are in flight. onDone removes it permanently.
-    boxEls.forEach(b => b && b.classList.remove('puzz-hidden'));
 
     boxEls.forEach((boxEl, i) => {
       if (!boxEl) return;
@@ -182,7 +201,8 @@
       if (!w || !h) return;
 
       const pieces = generatePuzzlePieces(w, h, cols, rows, cfg.seed);
-      const frags  = buildFragments(boxEl, id, pieces); // clone is now class-clean
+      // buildFragments strips puzz-hidden from clone internally — no box flash
+      const frags  = buildFragments(boxEl, id, pieces);
       totalFrags  += frags.length;
 
       frags.forEach((frag, j) => {
@@ -206,9 +226,6 @@
         });
       });
     });
-
-    // Re-hide boxes now that fragments are built — they'll be revealed by onDone
-    boxEls.forEach(b => b && b.classList.add('puzz-hidden'));
 
     // Safety: if nothing was built (zero-dim boxes) still fire onDone
     if (totalFrags === 0 && onDone) onDone();
@@ -721,7 +738,7 @@
 </button>
 
 <!-- ─── STAR FIELD (canvas, physics-driven) ──────────────────── -->
-<StarField />
+<StarField {showStarShower} />
 
 <!-- ─── ROBOT + ARMS (IK system) ─────────────────────────────── -->
 <RobotBackground
