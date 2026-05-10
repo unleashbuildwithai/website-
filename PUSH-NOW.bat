@@ -1,6 +1,9 @@
 @echo off
 cd /d "c:\Users\Owner\Desktop\html"
 echo.
+echo === STEP 0: Syncing Dependencies ===
+call npm install
+echo.
 echo === STEP 1: Git Status ===
 git status
 echo.
