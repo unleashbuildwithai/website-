@@ -4,6 +4,10 @@
   "private": true,
   "description": "Genius Unleashed - static production build",
   "scripts": {
-    "build": "echo 'Pre-built static site - no build step needed'"
+    "build": "echo 'Pre-built static site - no build step needed'",
+    "deploy": "npx wrangler pages deploy . --project-name=geniusunleashed --branch=main"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
   }
 }

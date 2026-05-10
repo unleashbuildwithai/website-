@@ -3,14 +3,3 @@ compatibility_date = "2024-09-23"
 
 [assets]
 directory = "."
-
-# ─── Cloudflare Pages / GitHub auto-deploy ────────────────
-# Pre-built static files live at the repo root:
-#   index.html    ← Vite production build entry
-#   assets/       ← Compiled JS + CSS
-#
-# Build command in Cloudflare dashboard: (leave empty)
-# Output directory: .  (or /)
-#
-# For manual wrangler deploy (after running npm run build in svelte-app/):
-#   npx wrangler pages deploy svelte-app/dist --project-name=geniusunleashed --branch=main
