@@ -12,19 +12,35 @@ const { archiveMessage, listArchives, restoreFromGitHub } = require('./github-ar
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
-// ─── Initialize database + restore from GitHub ────────────
-async function startup() {
-  await initDatabase();
-  // After DB is ready, pull in any archived messages from GitHub
-  // that aren't already in the DB (handles cold-start data loss).
-  restoreFromGitHub(messageDB).catch(err =>
-    console.warn('⚠️  GitHub restore on startup failed:', err.message)
-  );
-}
-startup().catch(err => {
-  console.error('Startup failed:', err);
+// ─── Guard: DATABASE_URL must be set ──────────────────────
+if (!process.env.DATABASE_URL) {
+  console.error('❌ DATABASE_URL is not set!');
+  console.error('   Go to Render → your service → Environment → add DATABASE_URL');
   process.exit(1);
-});
+}
+
+// ─── Initialize database + restore from GitHub ────────────
+// Retries up to 5 times with 3-second gaps so a cold Render
+// PostgreSQL instance has time to wake up before we give up.
+async function startup(retriesLeft = 5) {
+  try {
+    await initDatabase();
+    restoreFromGitHub(messageDB).catch(err =>
+      console.warn('⚠️  GitHub restore on startup failed:', err.message)
+    );
+    console.log('✅ Startup complete');
+  } catch (err) {
+    console.error(`⚠️  DB connection failed (${6 - retriesLeft}/5):`, err.message);
+    if (retriesLeft > 1) {
+      console.log('   Retrying in 3 s…');
+      await new Promise(r => setTimeout(r, 3000));
+      return startup(retriesLeft - 1);
+    }
+    console.error('❌ Could not connect to DB after 5 attempts — exiting');
+    process.exit(1);
+  }
+}
+startup();
 
 // ─── Middleware ────────────────────────────────────────────
 // Trust proxy — required for correct client IP behind Cloudflare / Render
