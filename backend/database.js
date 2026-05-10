@@ -23,7 +23,7 @@ async function initDatabase() {
         timeline      TEXT        DEFAULT '',
         referral      TEXT        DEFAULT '',
         status        TEXT        DEFAULT 'new',
-        ts            BIGINT      NOT NULL,
+        ts            BIGINT      DEFAULT (EXTRACT(EPOCH FROM NOW()) * 1000),
         created_at    TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
         github_archived BOOLEAN   DEFAULT FALSE,
         github_path   TEXT        DEFAULT NULL
@@ -45,6 +45,9 @@ async function initDatabase() {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_status    ON messages(status)`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_ts        ON messages(ts DESC)`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_failed_ts ON failed_logins(ts DESC)`);
+
+    // ── MIGRATION: If you need to force-reset the table because it was created wrong:
+    // await client.query('DROP TABLE IF EXISTS messages CASCADE'); // Uncomment this, deploy once, then comment it back out.
 
     // ── add missing columns for existing databases ──────────
     await client.query(`
@@ -79,7 +82,7 @@ const messageDB = {
     await pool.query(
       `INSERT INTO messages (id, name, email, vision, features, discord, timeline, referral, status, ts)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-      [id, name, email, vision, features || '', discord || '', timeline || '', referral || '', status || 'new', ts]
+      [id, name, email, vision, features || '', discord || '', timeline || '', referral || '', status || 'new', ts || Date.now()]
     );
     return { id };
   },
