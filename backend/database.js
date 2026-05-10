@@ -14,7 +14,7 @@ async function initDatabase() {
   try {
     await client.query(`
       CREATE TABLE IF NOT EXISTS messages (
-        id            TEXT        PRIMARY KEY,
+        id            SERIAL      PRIMARY KEY,
         name          TEXT        NOT NULL,
         email         TEXT        NOT NULL,
         vision        TEXT        NOT NULL,
@@ -47,7 +47,7 @@ async function initDatabase() {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_failed_ts ON failed_logins(ts DESC)`);
 
     // ── MIGRATION: If you need to force-reset the table because it was created wrong:
-    // await client.query('DROP TABLE IF EXISTS messages CASCADE'); // Uncomment this, deploy once, then comment it back out.
+    await client.query('DROP TABLE IF EXISTS messages CASCADE'); // Uncomment this, deploy once, then comment it back out.
 
     // ── add missing columns for existing databases ──────────
     await client.query(`
@@ -78,13 +78,14 @@ const messageDB = {
   },
 
   async create(message) {
-    const { id, name, email, vision, features, discord, timeline, referral, status, ts } = message;
-    await pool.query(
-      `INSERT INTO messages (id, name, email, vision, features, discord, timeline, referral, status, ts)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-      [id, name, email, vision, features || '', discord || '', timeline || '', referral || '', status || 'new', ts || Date.now()]
+    const { name, email, vision, features, discord, timeline, referral, status, ts } = message;
+    const { rows } = await pool.query(
+      `INSERT INTO messages (name, email, vision, features, discord, timeline, referral, status, ts)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+       RETURNING id`,
+      [name, email, vision, features || '', discord || '', timeline || '', referral || '', status || 'new', ts || Date.now()]
     );
-    return { id };
+    return { id: rows[0].id };
   },
 
   async updateStatus(id, status) {

@@ -221,6 +221,7 @@
 {#if $adminOpen}
   <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
   <div class="overlay admin-overlay open"
+    role="none"
     on:click|self={() => adminOpen.set(false)}
     on:keydown={e => e.key === 'Escape' && adminOpen.set(false)}>
     <!-- role="dialog" belongs on the actual dialog box, not the backdrop wrapper -->
@@ -532,12 +533,12 @@
 <!-- ─── TRASH CONFIRM DIALOG ─────────────────────────────── -->
 {#if trashConfirmOpen}
   <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-  <div class="overlay"
+  <div class="overlay" role="none"
     on:click|self={() => trashConfirmOpen = false}
     on:keydown={e => e.key === 'Escape' && (trashConfirmOpen = false)}
-    role="dialog" aria-modal="true" aria-label="Confirm empty trash" tabindex="-1"
     style="display:flex;">
-    <div class="trash-confirm-box">
+    <div class="trash-confirm-box"
+      role="dialog" aria-modal="true" aria-label="Confirm empty trash" tabindex="-1">
       <div class="trash-confirm-icon" aria-hidden="true">🗑</div>
       <div class="trash-confirm-title">Empty Trash</div>
       <p class="trash-confirm-sub">
