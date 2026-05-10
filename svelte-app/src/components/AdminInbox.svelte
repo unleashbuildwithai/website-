@@ -528,6 +528,7 @@
 
 <!-- ─── TRASH CONFIRM DIALOG ─────────────────────────────── -->
 {#if trashConfirmOpen}
+  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
   <div class="overlay"
     on:click|self={() => trashConfirmOpen = false}
     on:keydown={e => e.key === 'Escape' && (trashConfirmOpen = false)}
