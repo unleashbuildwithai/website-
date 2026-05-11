@@ -22,7 +22,7 @@
 
   // ── Page geometry
   const VH      = window.innerHeight;
-  const TOTAL_H = VH * 5;
+  const TOTAL_H = VH * 8;   // 7× viewport — enough room for sequential 1-click breaks
   const MAX_S   = TOTAL_H - VH;
 
   // ── Section offsets
@@ -31,9 +31,9 @@
   const BP_OFFSET      = isMobileView ? 30 : 8;
 
   // ── GSAP timing anchors (0–1 progress)
-  const AP = 0.08;           // Arsenal
-  const PP = AP + 0.30;      // Blueprint
-  const CP = PP + 0.28;      // CTA
+  const AP = 0.05;           // Arsenal
+  const PP = AP + 0.50;      // Blueprint (0.55)
+  const CP = PP + 0.37;      // CTA (0.92)
   const MOUTH_DY = -(VH * 0.55);
 
   // ── Arm physics state (objects mutated by GSAP)
@@ -385,13 +385,13 @@
     [...arsenalChs].reverse().forEach((el, i) => {
       tl.to(el, { duration: 0.03, opacity: 0, y: -220, scale: 0.03, ease: 'power3.in' }, AP + 0.22 + i * 0.012);
     });
-    // ── 6-B/6-C: Each box snaps invisible in sync with its individual fall trigger
-    // $1K→AP+0.24  Risk→AP+0.255  FullStack→AP+0.27  Reality→AP+0.285
+    // ── 6-B/6-C: Each box snaps invisible — 0.06 apart = 1 scroll click each
+    // $1K→AP+0.24  Risk→AP+0.30  FullStack→AP+0.36  Reality→AP+0.42
     if (boxes[3]) tl.to(boxes[3], { duration: 0.018, opacity: 0 }, AP + 0.24);
-    if (boxes[2]) tl.to(boxes[2], { duration: 0.018, opacity: 0 }, AP + 0.255);
-    if (boxes[1]) tl.to(boxes[1], { duration: 0.018, opacity: 0 }, AP + 0.27);
-    if (boxes[0]) tl.to(boxes[0], { duration: 0.018, opacity: 0 }, AP + 0.285);
-    tl.to(s1, { duration: 0.04, opacity: 0 }, AP + 0.32);
+    if (boxes[2]) tl.to(boxes[2], { duration: 0.018, opacity: 0 }, AP + 0.30);
+    if (boxes[1]) tl.to(boxes[1], { duration: 0.018, opacity: 0 }, AP + 0.36);
+    if (boxes[0]) tl.to(boxes[0], { duration: 0.018, opacity: 0 }, AP + 0.42);
+    tl.to(s1, { duration: 0.04, opacity: 0 }, AP + 0.47);
 
     // ── 6-B/6-C: Arsenal sequential puzzle fall ──────────────────────────
     // Boxes break one at a time with ~2 overscrolls between each.
@@ -433,10 +433,10 @@
         }
       },
     });
-    // ── Risk Model — second to break
+    // ── Risk Model — second to break (AP+0.30)
     ScrollTrigger.create({
       trigger: 'body',
-      start:   `${Math.round(MAX_S * (AP + 0.255))} top`,
+      start:   `${Math.round(MAX_S * (AP + 0.30))} top`,
       onEnter: () => {
         if (!box3Fallen) {
           box3Fallen = true;
@@ -456,10 +456,10 @@
         }
       },
     });
-    // ── Full-Stack Architecture — third to break
+    // ── Full-Stack Architecture — third to break (AP+0.36)
     ScrollTrigger.create({
       trigger: 'body',
-      start:   `${Math.round(MAX_S * (AP + 0.27))} top`,
+      start:   `${Math.round(MAX_S * (AP + 0.36))} top`,
       onEnter: () => {
         if (!box2Fallen) {
           box2Fallen = true;
@@ -479,10 +479,10 @@
         }
       },
     });
-    // ── Reality — last to break
+    // ── Reality — last to break (AP+0.42)
     ScrollTrigger.create({
       trigger: 'body',
-      start:   `${Math.round(MAX_S * (AP + 0.285))} top`,
+      start:   `${Math.round(MAX_S * (AP + 0.42))} top`,
       onEnter: () => {
         if (!box1Fallen) {
           box1Fallen = true;
@@ -571,21 +571,20 @@
     [...processChs].reverse().forEach((el, i) => {
       tl.to(el, { duration: 0.03, opacity: 0, y: -220, scale: 0.03, ease: 'power3.in' }, PP + 0.26 + i * 0.012);
     });
-    // ── 6-B/6-C: Timeline items snap invisible — synced with new fall trigger (PP+0.35)
-    [...times].reverse().forEach((t, i) => {
-      if (t) tl.to(t, { duration: 0.018, opacity: 0 }, PP + 0.35 + i * 0.012);
-    });
-    tl.to('.p-char', { duration: 0.03, opacity: 0, force3D: true }, PP + 0.375);
+    // ── 6-B/6-C: Each timeline tab snaps invisible — 0.05 apart = 1 click each
+    // time3→PP+0.25  time2→PP+0.30  time1→PP+0.35
+    if (times[2]) tl.to(times[2], { duration: 0.018, opacity: 0 }, PP + 0.25);
+    if (times[1]) tl.to(times[1], { duration: 0.018, opacity: 0 }, PP + 0.30);
+    if (times[0]) tl.to(times[0], { duration: 0.018, opacity: 0 }, PP + 0.35);
+    tl.to('.p-char', { duration: 0.03, opacity: 0, force3D: true }, PP + 0.37);
     tl.to(s2, { duration: 0.04, opacity: 0 }, PP + 0.39);
 
-    // ── 6-B/6-C: Blueprint puzzle fall — accident-proof + repeatable + reversible ──
-    // A 350ms scroll lock starts when Blueprint items fully appear (PP+0.20).
-    // Fast / accidental scrollers can't break the section before the lock expires.
-    let blueprintFallen = false;
+    // ── 6-B/6-C: Blueprint — 3 SEPARATE falls, one per scroll click ──────────
+    let time3Fallen = false, time2Fallen = false, time1Fallen = false;
     let blueprintScrollLocked = true;
     let blueprintLockTimer = null;
 
-    // Lock trigger — fires once items are all in view
+    // Lock trigger — 350ms safety lock when items first appear
     ScrollTrigger.create({
       trigger: 'body',
       start:   `${Math.round(MAX_S * (PP + 0.22))} top`,
@@ -600,41 +599,84 @@
       },
     });
 
-    // Fall trigger — PP+0.35 for extra display time (was PP+0.31)
+    // time3 falls first (PP+0.25, 1 click after lock expires)
     ScrollTrigger.create({
       trigger: 'body',
-      start:   `${Math.round(MAX_S * (PP + 0.35))} top`,
+      start:   `${Math.round(MAX_S * (PP + 0.25))} top`,
       onEnter: () => {
-        if (!blueprintFallen && !blueprintScrollLocked) {
-          blueprintFallen = true;
-          collideThenBreak(times[1] || times[0], () => {
-            cleanupSectionFrags(['time1','time2','time3']);
-            launchPuzzleFall(
-              [...times].reverse(),
-              ['time3', 'time2', 'time1']
-            );
-            times.forEach(t => t && t.classList.add('puzz-hidden'));
+        if (!time3Fallen && !blueprintScrollLocked) {
+          time3Fallen = true;
+          collideThenBreak(times[2], () => {
+            cleanupSectionFrags(['time3']);
+            launchPuzzleFall([times[2]], ['time3']);
+            times[2] && times[2].classList.add('puzz-hidden');
           });
         }
       },
       onLeaveBack: () => {
-        if (blueprintFallen) {
-          blueprintFallen = false;
-          cleanupSectionFrags(['time1','time2','time3']);
-          launchPuzzleReassemble(
-            [...times],
-            ['time1', 'time2', 'time3'],
-            () => { times.forEach(t => t && t.classList.remove('puzz-hidden')); }
-          );
+        if (time3Fallen) {
+          time3Fallen = false;
+          cleanupSectionFrags(['time3']);
+          launchPuzzleReassemble([times[2]], ['time3'],
+            () => { times[2] && times[2].classList.remove('puzz-hidden'); });
         }
       },
     });
-    // Reset Blueprint when section scrolls fully out of view
+
+    // time2 falls second (PP+0.30)
+    ScrollTrigger.create({
+      trigger: 'body',
+      start:   `${Math.round(MAX_S * (PP + 0.30))} top`,
+      onEnter: () => {
+        if (!time2Fallen && !blueprintScrollLocked) {
+          time2Fallen = true;
+          collideThenBreak(times[1], () => {
+            cleanupSectionFrags(['time2']);
+            launchPuzzleFall([times[1]], ['time2']);
+            times[1] && times[1].classList.add('puzz-hidden');
+          });
+        }
+      },
+      onLeaveBack: () => {
+        if (time2Fallen) {
+          time2Fallen = false;
+          cleanupSectionFrags(['time2']);
+          launchPuzzleReassemble([times[1]], ['time2'],
+            () => { times[1] && times[1].classList.remove('puzz-hidden'); });
+        }
+      },
+    });
+
+    // time1 falls last (PP+0.35)
+    ScrollTrigger.create({
+      trigger: 'body',
+      start:   `${Math.round(MAX_S * (PP + 0.35))} top`,
+      onEnter: () => {
+        if (!time1Fallen && !blueprintScrollLocked) {
+          time1Fallen = true;
+          collideThenBreak(times[0], () => {
+            cleanupSectionFrags(['time1']);
+            launchPuzzleFall([times[0]], ['time1']);
+            times[0] && times[0].classList.add('puzz-hidden');
+          });
+        }
+      },
+      onLeaveBack: () => {
+        if (time1Fallen) {
+          time1Fallen = false;
+          cleanupSectionFrags(['time1']);
+          launchPuzzleReassemble([times[0]], ['time1'],
+            () => { times[0] && times[0].classList.remove('puzz-hidden'); });
+        }
+      },
+    });
+
+    // Reset ALL Blueprint when section scrolls fully out of view
     ScrollTrigger.create({
       trigger: 'body',
       start:   `${Math.round(MAX_S * (PP + 0.04))} top`,
       onLeaveBack: () => {
-        blueprintFallen = false;
+        time3Fallen = time2Fallen = time1Fallen = false;
         blueprintScrollLocked = true;
         clearTimeout(blueprintLockTimer);
         cleanupSectionFrags(['time1','time2','time3']);
