@@ -1,0 +1,42 @@
+
+=== Setting up gh-pages redirect ===
+Temp dir: C:\Users\Owner\AppData\Local\Temp\gh-pages-redirect-1778508474082
+
+$ git init
+Initialized empty Git repository in C:/Users/Owner/AppData/Local/Temp/gh-pages-redirect-1778508474082/.git/
+
+
+$ git remote add origin https://github.com/unleashbuildwithai/website-.git
+
+
+$ git fetch origin gh-pages --depth=1
+fatal: couldn't find remote ref gh-pages
+
+
+gh-pages branch does not exist, creating orphan branch...
+
+$ git checkout --orphan gh-pages
+
+
+Wrote redirect index.html
+
+$ git config user.email "deploy@geniusunleashed.pages.dev"
+
+
+$ git config user.name "Genius Unleashed Deploy"
+
+
+$ git add index.html
+
+
+$ git commit -m "Redirect: GitHub Pages → geniusunleashed.pages.dev"
+[gh-pages (root-commit) 8d7804c] Redirect: GitHub Pages → geniusunleashed.pages.dev
+ 1 file changed, 17 insertions(+)
+ create mode 100644 index.html
+
+
+$ git push origin gh-pages --force
+
+
+=== DONE! gh-pages redirect pushed successfully ===
+Old URL will redirect to: https://geniusunleashed.pages.dev
