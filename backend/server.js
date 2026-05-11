@@ -305,7 +305,7 @@ app.post('/api/admin/messages/:id/archive-to-github', authenticateToken, async (
     });
   } catch (error) {
     console.error('GitHub archive error:', error);
-    res.status(500).json({ error: 'Failed to archive to GitHub' });
+    res.status(500).json({ error: error.message || 'Failed to archive to GitHub' });
   }
 });
 
