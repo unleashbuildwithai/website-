@@ -2,7 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { scrollVelocity } from '../lib/stores.js';
 
-  // ── 7% star shower prop (set by App.svelte on load)
+  // ── 10% star shower prop (set by App.svelte on load)
   export let showStarShower = false;
 
   // ── Canvas ref
@@ -15,55 +15,32 @@
   const unsubVel = scrollVelocity.subscribe(v => { velocity = v; });
 
   // ─────────────────────────────────────────────────────────
-  // DRIFT STATE
-  // Stars ALWAYS drift. Scroll changes direction + speed.
+  // DRIFT STATE — regular background stars always drift
   // ─────────────────────────────────────────────────────────
-  const BASE_DRIFT      = 0.18; // idle drift speed (px/frame) — always rolling
-  const VELOCITY_DEAD   = 0.6;  // below this = "no active scroll input"
-  const WARP_THRESHOLD  = 40;   // px/frame → warp colour mode
-  // Minimum velocity needed to REVERSE star drift direction.
-  // Prevents a light touch (or tiny scroll bounce) from flickering direction
-  // before an intentional swipe begins — especially important on mobile.
-  const DIR_FLIP_MIN    = 3.0;  // px/frame
+  const BASE_DRIFT     = 0.18;
+  const VELOCITY_DEAD  = 0.6;
+  const WARP_THRESHOLD = 40;
+  const DIR_FLIP_MIN   = 3.0;
+  let driftVelocity    = BASE_DRIFT;
 
-  let driftVelocity = BASE_DRIFT;  // starts drifting upward by default
-
-  // ── Star count + array
+  // ── Background star array
   const STAR_COUNT = 220;
   const stars      = [];
 
-  // ─────────────────────────────────────────────────────────
-  // STAR FACTORY
-  // Each star gets:
-  //  - Random position
-  //  - Depth layer (driftMult) → different speeds → NO straight lines
-  //  - Twinkle personality
-  // ─────────────────────────────────────────────────────────
   function createStar(w, h) {
     const twinkleType = Math.floor(Math.random() * 4);
     const speeds = [0.005, 0.026, 0.008, 0.003];
     const depths = [0.50,  0.85,  0.90,  0.15 ];
-
     return {
-      // Random scatter — NO grid, NO lines
       x: Math.random() * w,
       y: Math.random() * h,
-
-      // Size & base brightness
-      size:        Math.random() * 1.8 + 0.2,
-      baseOpacity: Math.random() * 0.6 + 0.2,
-
-      // Depth layer: 0.5 (far/slow) → 1.6 (close/fast)
-      // This creates parallax so stars never appear in sync straight lines
-      driftMult: 0.5 + Math.random() * Math.random() * 1.1,
-
-      // Twinkle personality
+      size:         Math.random() * 1.8 + 0.2,
+      baseOpacity:  Math.random() * 0.6 + 0.2,
+      driftMult:    0.5 + Math.random() * Math.random() * 1.1,
       twinkleType,
       twinkleSpeed: speeds[twinkleType] * (0.6 + Math.random() * 0.7),
       twinkleDepth: depths[twinkleType],
       twinklePhase: Math.random() * Math.PI * 2,
-
-      // ~20% neon blue accents
       neon: Math.random() > 0.8,
     };
   }
@@ -79,26 +56,125 @@
   }
 
   // ─────────────────────────────────────────────────────────
-  // STAR SHOWER STATE (active on 7% of page loads)
+  // COSMIC SHOOTING STAR SYSTEM
   // ─────────────────────────────────────────────────────────
-  const SHOWER_COUNT  = 90;
   const showerStars   = [];
+  const impactFlashes = []; // shockwave rings when a star hits a box
 
-  function createShowerStar(w) {
+  const COSMIC_COLOURS = [
+    { r: 0,   g: 243, b: 255 },  // neon cyan
+    { r: 120, g: 80,  b: 255 },  // electric violet
+    { r: 255, g: 60,  b: 180 },  // hot pink
+    { r: 255, g: 200, b: 80  },  // gold
+    { r: 180, g: 220, b: 255 },  // ice blue
+    { r: 255, g: 255, b: 255 },  // pure white
+  ];
+
+  function randomColour() {
+    return COSMIC_COLOURS[Math.floor(Math.random() * COSMIC_COLOURS.length)];
+  }
+
+  function spawnShootingStar(w, h) {
+    const edge = Math.random();
+    let x, y, angle;
+
+    if (edge < 0.55) {
+      x     = Math.random() * w * 1.3 - w * 0.15;
+      y     = -20 - Math.random() * 150;
+      angle = (Math.PI * 0.28) + (Math.random() - 0.5) * 0.55;
+    } else if (edge < 0.8) {
+      x     = -20 - Math.random() * 80;
+      y     = Math.random() * h * 0.45;
+      angle = (Math.PI * 0.12) + (Math.random() - 0.5) * 0.3;
+    } else {
+      x     = w + 20 + Math.random() * 80;
+      y     = Math.random() * h * 0.35;
+      angle = (Math.PI * 0.65) + (Math.random() - 0.5) * 0.3;
+    }
+
+    const speed    = 5 + Math.random() * 9;
+    const colour   = randomColour();
+    const trailLen = 55 + Math.random() * 120;
+
     return {
-      x:    Math.random() * w,
-      y:    -15 - Math.random() * 300,  // stagger start heights above viewport
-      vy:   3.5 + Math.random() * 5,    // fast downward velocity (px/frame)
-      vx:   0.4 + Math.random() * 1.2,  // slight rightward drift
-      size: 1.5 + Math.random() * 2.8,
-      alpha: 0.75 + Math.random() * 0.25,
-      neon: Math.random() > 0.45,        // ~55% neon cyan for drama
-      trail: 2.8 + Math.random() * 4.5, // trail length multiplier
+      x, y,
+      vx:          Math.cos(angle) * speed,
+      vy:          Math.sin(angle) * speed,
+      size:        1.2 + Math.random() * 2.6,
+      alpha:       0.7 + Math.random() * 0.3,
+      colour,
+      trailLen,
+      glowRadius:  6 + Math.random() * 18,
+      wobble:      (Math.random() - 0.5) * 0.012,
+      angle,
+      isColliding: false,
+      collisionTarget: null,
+      onImpact:    null,
     };
   }
 
+  // ── Spawn cooldown
+  let spawnCooldown         = 0;
+  const SPAWN_INTERVAL_MIN  = 4;
+  const SPAWN_INTERVAL_MAX  = 18;
+  const MAX_SHOWER_STARS    = 40;
+
   // ─────────────────────────────────────────────────────────
-  // STRETCH STATE (for trail effect)
+  // PUBLIC API — called by App.svelte to redirect a live star
+  // toward a breaking box. The star causes the break.
+  // onImpact() callback fires the actual launchPuzzleFall.
+  // ─────────────────────────────────────────────────────────
+  export function fireCollisionStar(targetX, targetY, onImpact) {
+    if (!canvas) { if (onImpact) onImpact(); return; }
+
+    // Pick a non-colliding star closest to target, or spawn fresh
+    let star = null;
+    let minDist = Infinity;
+    for (const s of showerStars) {
+      if (s.isColliding) continue;
+      const d = Math.hypot(s.x - targetX, s.y - targetY);
+      if (d < minDist) { minDist = d; star = s; }
+    }
+
+    if (!star) {
+      // No free star → spawn one above the box
+      star = {
+        x:           targetX + (Math.random() - 0.5) * 320,
+        y:           -80 - Math.random() * 60,
+        vx:          0,
+        vy:          0,
+        size:        2.2 + Math.random() * 1.6,
+        alpha:       1.0,
+        colour:      randomColour(),
+        trailLen:    90 + Math.random() * 70,
+        glowRadius:  14 + Math.random() * 10,
+        wobble:      0,
+        angle:       0,
+        isColliding: false,
+        collisionTarget: null,
+        onImpact:    null,
+      };
+      showerStars.push(star);
+    }
+
+    // Redirect star toward target at high speed
+    const dx    = targetX - star.x;
+    const dy    = targetY - star.y;
+    const dist  = Math.hypot(dx, dy) || 1;
+    const speed = 18 + Math.random() * 8; // fast & purposeful
+    star.vx     = (dx / dist) * speed;
+    star.vy     = (dy / dist) * speed;
+    star.angle  = Math.atan2(dy, dx);
+    star.wobble = 0;   // no drift — committed to target
+    star.trailLen = Math.max(star.trailLen, 100); // extend trail for drama
+
+    star.isColliding    = true;
+    star.collisionTarget = { x: targetX, y: targetY };
+    star.onImpact        = onImpact || null;
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // STRETCH STATE (scroll trail on regular stars)
   // ─────────────────────────────────────────────────────────
   let stretch       = 1;
   let stretchTarget = 1;
@@ -110,54 +186,39 @@
     animId = requestAnimationFrame(loop);
     if (!ctx || !canvas) return;
 
-    const W    = canvas.width;
-    const H    = canvas.height;
-    const absV = Math.abs(velocity);
+    const W      = canvas.width;
+    const H      = canvas.height;
+    const absV   = Math.abs(velocity);
     const isWarp = absV > WARP_THRESHOLD;
 
     // ── DRIFT VELOCITY UPDATE ─────────────────────────────
     const scrollActive = absV > VELOCITY_DEAD;
-
     if (scrollActive) {
       const dir       = Math.sign(velocity);
       const mag       = Math.min(absV, 80);
       const targetVel = dir * (BASE_DRIFT + mag * 0.22);
-
-      // Direction-flip guard: only reverse if the scroll signal is strong enough
-      // to be intentional. Weak opposite signal (e.g. finger touching screen,
-      // elastic bounce) keeps the current direction and just coasts a bit.
-      const isFlip = Math.sign(targetVel) !== Math.sign(driftVelocity);
+      const isFlip    = Math.sign(targetVel) !== Math.sign(driftVelocity);
       if (isFlip && absV < DIR_FLIP_MIN) {
-        // Coast: maintain direction, let speed bleed off slightly
         driftVelocity = Math.sign(driftVelocity) * Math.max(BASE_DRIFT, Math.abs(driftVelocity) * 0.96);
       } else {
-        // Strong or same-direction signal — set immediately
         driftVelocity = targetVel;
       }
     } else {
-      // No scroll input: decay back toward base drift
-      // Preserves current direction — always keeps rolling
       const targetBase = Math.sign(driftVelocity) * BASE_DRIFT;
-      driftVelocity += (targetBase - driftVelocity) * 0.04;
-      // Floor to base speed so it never fully stops
-      if (Math.abs(driftVelocity) < BASE_DRIFT * 0.95) {
+      driftVelocity   += (targetBase - driftVelocity) * 0.04;
+      if (Math.abs(driftVelocity) < BASE_DRIFT * 0.95)
         driftVelocity = Math.sign(driftVelocity) * BASE_DRIFT;
-      }
     }
 
-    // ── STRETCH (trail physics) ───────────────────────────
+    // ── STRETCH ───────────────────────────────────────────
     if (!scrollActive) {
-      // Snap back fast when not scrolling
       stretch = 1 + (stretch - 1) * 0.70;
       if (stretch < 1.015) stretch = 1;
       stretchTarget = 1;
     } else {
-      let target;
-      if (absV < WARP_THRESHOLD) {
-        target = 1 + absV * 0.065;
-      } else {
-        target = 1 + WARP_THRESHOLD * 0.065 + (absV - WARP_THRESHOLD) * 0.10;
-      }
+      let target = absV < WARP_THRESHOLD
+        ? 1 + absV * 0.065
+        : 1 + WARP_THRESHOLD * 0.065 + (absV - WARP_THRESHOLD) * 0.10;
       stretchTarget = Math.min(target, 7);
       stretch += (stretchTarget - stretch) * 0.50;
     }
@@ -165,52 +226,36 @@
     // ── CLEAR ─────────────────────────────────────────────
     ctx.clearRect(0, 0, W, H);
 
-    // ── DRAW EACH STAR ────────────────────────────────────
+    // ── BACKGROUND STARS ──────────────────────────────────
     for (const s of stars) {
-
-      // ── DRIFT — each star moves at its own depth rate ────
-      // driftMult breaks up any straight-line synchronization
       s.y += driftVelocity * s.driftMult;
-
-      // Seamless vertical wrap
       if (s.y > H + 20) s.y = -20;
       if (s.y < -20)    s.y = H + 20;
 
-      // ── TWINKLE ───────────────────────────────────────────
       s.twinklePhase += s.twinkleSpeed;
-      const rawTwinkle = 0.5 + 0.5 * Math.sin(s.twinklePhase); // 0→1
+      const rawTwinkle = 0.5 + 0.5 * Math.sin(s.twinklePhase);
 
       let alpha;
       if (!scrollActive) {
-        // IDLE: amplify each star's personality
         const depthMix = s.twinkleDepth * rawTwinkle + (1 - s.twinkleDepth) * 0.4;
         alpha = s.baseOpacity * (0.25 + 0.75 * depthMix);
       } else {
-        // SCROLLING: suppress twinkle — trails dominate
         alpha = s.baseOpacity * (0.85 + 0.15 * rawTwinkle);
       }
 
-      // ── COLOUR ────────────────────────────────────────────
       let colour;
-      if (isWarp && s.neon) {
-        colour = `rgba(0, 243, 255, ${alpha})`;
-      } else if (isWarp) {
-        colour = `rgba(180, 220, 255, ${alpha})`;
-      } else if (s.neon) {
-        colour = `rgba(0, 243, 255, ${alpha * 0.6})`;
-      } else {
-        colour = `rgba(255, 255, 255, ${alpha})`;
-      }
+      if      (isWarp && s.neon)  colour = `rgba(0,243,255,${alpha})`;
+      else if (isWarp)            colour = `rgba(180,220,255,${alpha})`;
+      else if (s.neon)            colour = `rgba(0,243,255,${alpha * 0.6})`;
+      else                        colour = `rgba(255,255,255,${alpha})`;
 
-      // ── DRAW ──────────────────────────────────────────────
       ctx.save();
       ctx.translate(s.x, s.y);
 
       if (stretch > 1.05) {
-        // TRAIL MODE: vertical ellipse, length scaled by depth
-        const trailStretch = 1 + (stretch - 1) * s.driftMult;
+        const ts = 1 + (stretch - 1) * s.driftMult;
         ctx.beginPath();
-        ctx.ellipse(0, 0, s.size * 0.5, s.size * trailStretch * 0.5, 0, 0, Math.PI * 2);
+        ctx.ellipse(0, 0, s.size * 0.5, s.size * ts * 0.5, 0, 0, Math.PI * 2);
         ctx.fillStyle = colour;
         if (absV > 15) {
           ctx.shadowColor = s.neon ? '#00f3ff' : '#ffffff';
@@ -218,15 +263,11 @@
         }
         ctx.fill();
         ctx.shadowBlur = 0;
-
       } else {
-        // DOT MODE: crisp point with twinkle glow
         ctx.beginPath();
         ctx.arc(0, 0, s.size * 0.5, 0, Math.PI * 2);
         ctx.fillStyle = colour;
-
         if (!scrollActive) {
-          // Enhanced glow cycles with twinkle
           if (s.neon) {
             ctx.shadowColor = '#00f3ff';
             ctx.shadowBlur  = 3 + rawTwinkle * 10;
@@ -238,52 +279,176 @@
           ctx.shadowColor = '#00f3ff';
           ctx.shadowBlur  = 4;
         }
-
         ctx.fill();
         ctx.shadowBlur = 0;
       }
-
-    ctx.restore();
+      ctx.restore();
     }
 
-    // ── SHOWER STARS ─────────────────────────────────────────────
-    // Only rendered when showStarShower is true (7% of loads).
-    // They fall from above the viewport and are removed once off-screen.
-    if (showerStars.length > 0) {
+    // ── IMPACT FLASHES (shockwave rings) ──────────────────
+    for (let fi = impactFlashes.length - 1; fi >= 0; fi--) {
+      const f = impactFlashes[fi];
+      f.r1    = Math.min(f.r1 + 7, f.maxR);
+      f.r2    = Math.min(f.r2 + 4, f.maxR * 0.55);
+      f.alpha *= 0.80;
+      if (f.alpha < 0.01) { impactFlashes.splice(fi, 1); continue; }
+
+      const { r, g, b } = f.colour;
+
+      // Outer shockwave
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r1, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(${r},${g},${b},${f.alpha * 0.75})`;
+      ctx.lineWidth   = 2.5;
+      ctx.stroke();
+
+      // Inner white ring
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r2, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(255,255,255,${f.alpha * 0.55})`;
+      ctx.lineWidth   = 1.5;
+      ctx.stroke();
+
+      // Center flash burst (fades early)
+      if (f.alpha > 0.35) {
+        const bg = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r2);
+        bg.addColorStop(0,   `rgba(255,255,255,${f.alpha * 0.7})`);
+        bg.addColorStop(0.4, `rgba(${r},${g},${b},${f.alpha * 0.4})`);
+        bg.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r2, 0, Math.PI * 2);
+        ctx.fillStyle = bg;
+        ctx.fill();
+      }
+    }
+
+    // ── COSMIC SHOOTING STARS ─────────────────────────────
+    if (showStarShower) {
+      // Spawn new stars on cooldown
+      spawnCooldown--;
+      if (spawnCooldown <= 0 && showerStars.length < MAX_SHOWER_STARS) {
+        const count = Math.random() < 0.25 ? 2 : 1;
+        for (let i = 0; i < count; i++) showerStars.push(spawnShootingStar(W, H));
+        spawnCooldown = SPAWN_INTERVAL_MIN +
+          Math.floor(Math.random() * (SPAWN_INTERVAL_MAX - SPAWN_INTERVAL_MIN));
+      }
+
       let si = showerStars.length;
       while (si--) {
         const ss = showerStars[si];
+
+        if (ss.isColliding && ss.collisionTarget) {
+          // ── COLLISION PATH: home in on target ────────────
+          const dx   = ss.collisionTarget.x - ss.x;
+          const dy   = ss.collisionTarget.y - ss.y;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist < 55) {
+            // IMPACT — fire shockwave flash
+            impactFlashes.push({
+              x: ss.collisionTarget.x,
+              y: ss.collisionTarget.y,
+              r1: 0, r2: 0, maxR: 105,
+              alpha: 1.0,
+              colour: ss.colour,
+            });
+            if (ss.onImpact) ss.onImpact(); // ← triggers launchPuzzleFall
+            showerStars.splice(si, 1);
+            continue;
+          }
+
+          // Steer toward target each frame (smooth homing)
+          const speed = Math.hypot(ss.vx, ss.vy);
+          ss.vx = (dx / dist) * speed;
+          ss.vy = (dy / dist) * speed;
+          ss.angle = Math.atan2(ss.vy, ss.vx);
+
+        } else {
+          // ── FREE PATH: natural wobble ─────────────────────
+          ss.angle += ss.wobble;
+          ss.vx = Math.cos(ss.angle) * Math.hypot(ss.vx, ss.vy);
+          ss.vy = Math.sin(ss.angle) * Math.hypot(ss.vx, ss.vy);
+        }
+
         ss.x += ss.vx;
         ss.y += ss.vy;
 
-        // Remove once past bottom of viewport
-        if (ss.y > H + 40) {
+        // Remove off-screen non-colliding stars
+        if (
+          !ss.isColliding && (
+            ss.y > H + ss.trailLen + 60 ||
+            ss.x < -ss.trailLen - 60 ||
+            ss.x > W + ss.trailLen + 60
+          )
+        ) {
           showerStars.splice(si, 1);
           continue;
         }
 
-        // Fade in as star enters viewport from the top
-        const fadeIn  = Math.min(1, Math.max(0, (ss.y + 40) / 120));
-        // Fade out as star approaches the bottom
-        const fadeOut = Math.min(1, Math.max(0, (H + 40 - ss.y) / 100));
-        const alphaFinal = ss.alpha * fadeIn * fadeOut;
+        // ── Fade in/out at edges ──────────────────────────
+        const fadeInY    = Math.min(1, Math.max(0, (ss.y + 80) / 100));
+        const fadeOutX   = Math.min(1, Math.max(0, Math.min(ss.x / 60, (W - ss.x) / 60)));
+        const fadeOutB   = Math.min(1, Math.max(0, (H + 60 - ss.y) / 80));
+        const finalAlpha = ss.isColliding
+          ? ss.alpha  // colliding stars stay bright all the way
+          : ss.alpha * fadeInY * fadeOutX * fadeOutB;
 
-        const trailLen = ss.trail * ss.vy * 1.4;
-        const colour   = ss.neon
-          ? `rgba(0, 243, 255, ${alphaFinal})`
-          : `rgba(255, 255, 255, ${alphaFinal})`;
+        const { r, g, b } = ss.colour;
 
         ctx.save();
         ctx.translate(ss.x, ss.y);
+        ctx.rotate(ss.angle - Math.PI / 2);
 
-        // Elongated ellipse pointing in direction of travel
+        // Outer glow halo
+        const haloGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, ss.glowRadius * 2.2);
+        haloGrad.addColorStop(0,   `rgba(${r},${g},${b},${finalAlpha * 0.35})`);
+        haloGrad.addColorStop(0.5, `rgba(${r},${g},${b},${finalAlpha * 0.12})`);
+        haloGrad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
         ctx.beginPath();
-        ctx.ellipse(0, -trailLen / 2, ss.size * 0.38, (trailLen + ss.size) / 2, 0, 0, Math.PI * 2);
-        ctx.fillStyle = colour;
-        ctx.shadowColor = ss.neon ? '#00f3ff' : '#aad8ff';
-        ctx.shadowBlur  = ss.neon ? 14 : 8;
+        ctx.arc(0, 0, ss.glowRadius * 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = haloGrad;
+        ctx.fill();
+
+        // Trail
+        const trailGrad = ctx.createLinearGradient(0, 0, 0, -ss.trailLen);
+        trailGrad.addColorStop(0,    `rgba(${r},${g},${b},${finalAlpha})`);
+        trailGrad.addColorStop(0.2,  `rgba(${r},${g},${b},${finalAlpha * 0.65})`);
+        trailGrad.addColorStop(0.55, `rgba(${r},${g},${b},${finalAlpha * 0.25})`);
+        trailGrad.addColorStop(1,    `rgba(${r},${g},${b},0)`);
+        const hw = ss.size, tw = ss.size * 0.18;
+        ctx.beginPath();
+        ctx.moveTo(-hw * 0.5, 0);
+        ctx.lineTo(-tw * 0.5, -ss.trailLen);
+        ctx.lineTo( tw * 0.5, -ss.trailLen);
+        ctx.lineTo( hw * 0.5, 0);
+        ctx.closePath();
+        ctx.fillStyle = trailGrad;
+        ctx.fill();
+
+        // Bright core
+        const coreGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, ss.size * 1.6);
+        coreGrad.addColorStop(0,   `rgba(255,255,255,${finalAlpha})`);
+        coreGrad.addColorStop(0.3, `rgba(${r},${g},${b},${finalAlpha * 0.9})`);
+        coreGrad.addColorStop(0.7, `rgba(${r},${g},${b},${finalAlpha * 0.4})`);
+        coreGrad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+        ctx.beginPath();
+        ctx.arc(0, 0, ss.size * 1.6, 0, Math.PI * 2);
+        ctx.fillStyle    = coreGrad;
+        ctx.shadowColor  = `rgb(${r},${g},${b})`;
+        ctx.shadowBlur   = ss.isColliding ? ss.glowRadius * 1.8 : ss.glowRadius;
         ctx.fill();
         ctx.shadowBlur = 0;
+
+        // Lens-flare cross on big stars
+        if (ss.size > 2.8) {
+          ctx.strokeStyle = `rgba(255,255,255,${finalAlpha * 0.6})`;
+          ctx.lineWidth   = 0.8;
+          const arm = ss.size * 4.5;
+          ctx.beginPath();
+          ctx.moveTo(-arm, 0); ctx.lineTo(arm, 0);
+          ctx.moveTo(0, -arm); ctx.lineTo(0, arm);
+          ctx.stroke();
+        }
 
         ctx.restore();
       }
@@ -295,15 +460,16 @@
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Seed regular stars
     for (let i = 0; i < STAR_COUNT; i++) {
       stars.push(createStar(canvas.width, canvas.height));
     }
 
-    // Seed shower stars (only on 7% of loads)
+    // Pre-seed shooting stars immediately on load
     if (showStarShower) {
-      for (let i = 0; i < SHOWER_COUNT; i++) {
-        showerStars.push(createShowerStar(canvas.width));
+      for (let i = 0; i < 8; i++) {
+        const ss = spawnShootingStar(canvas.width, canvas.height);
+        ss.y = Math.random() * canvas.height * 0.6;
+        showerStars.push(ss);
       }
     }
 

@@ -201,7 +201,14 @@
     clearInterval(keepAliveInterval);
   }
 
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy, onMount, tick } from 'svelte';
+
+  // Auto-focus the login box when it opens
+  $: if ($adminOpen && loginBoxEl) {
+    tick().then(() => {
+      loginBoxEl.focus();
+    });
+  }
 
   onMount(() => {
     const id = setInterval(() => {
@@ -221,7 +228,7 @@
 {#if $adminOpen}
   <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
   <div class="overlay admin-overlay open"
-    role="none"
+    role="presentation"
     on:click|self={() => adminOpen.set(false)}
     on:keydown={e => e.key === 'Escape' && adminOpen.set(false)}>
     <!-- role="dialog" belongs on the actual dialog box, not the backdrop wrapper -->

@@ -17,8 +17,8 @@
   // ── Phase 6: Puzzle Assembly System
   import { generatePuzzlePieces, buildFragments, shatterFragment, PUZZLE_CONFIG } from './lib/puzzleGenerator.js';
 
-  // ── Phase 4 / Phase 8: 7% chance of star shower on load
-  const showStarShower = Math.random() < 0.07;
+  // ── Phase 4 / Phase 8: 10% chance of cosmic star shower on load
+  const showStarShower = Math.random() < 0.10;
 
   // ── Page geometry
   const VH      = window.innerHeight;
@@ -56,6 +56,7 @@
 
   // ── Component refs
   let robotBg;       // RobotBackground — exposes updateAll()
+  let starFieldRef;  // StarField — exposes fireCollisionStar()
 
   // ── Scroll velocity tracking (feeds StarField physics)
   let lastScrollY = 0;
@@ -161,6 +162,14 @@
           });
       });
     });
+  }
+
+  // ── Get the screen-center of an element (for collision targeting) ──
+  function getBoxCenter(el) {
+    if (!el) return null;
+    const rect = el.getBoundingClientRect();
+    if (!rect.width && !rect.height) return null;
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
   }
 
   // ── Clean up all puzzle fragments (and any in-flight micro-fragments) ──
@@ -389,6 +398,18 @@
     // Order: $1K (box4) → Risk Model (box3) → Full-Stack (box2) → Reality (box1)
     let box4Fallen = false, box3Fallen = false, box2Fallen = false, box1Fallen = false;
 
+    // ── Helper: fire collision star or fallback to immediate break ──────────
+    function collideThenBreak(boxEl, breakFn) {
+      if (showStarShower && starFieldRef) {
+        const center = getBoxCenter(boxEl);
+        if (center) {
+          starFieldRef.fireCollisionStar(center.x, center.y, breakFn);
+          return;
+        }
+      }
+      breakFn(); // no shower active → break immediately as normal
+    }
+
     // ── $1K stat — first to break
     ScrollTrigger.create({
       trigger: 'body',
@@ -396,9 +417,11 @@
       onEnter: () => {
         if (!box4Fallen) {
           box4Fallen = true;
-          cleanupSectionFrags(['box4']);
-          launchPuzzleFall([boxes[3]], ['box4']);
-          boxes[3] && boxes[3].classList.add('puzz-hidden');
+          collideThenBreak(boxes[3], () => {
+            cleanupSectionFrags(['box4']);
+            launchPuzzleFall([boxes[3]], ['box4']);
+            boxes[3] && boxes[3].classList.add('puzz-hidden');
+          });
         }
       },
       onLeaveBack: () => {
@@ -417,9 +440,11 @@
       onEnter: () => {
         if (!box3Fallen) {
           box3Fallen = true;
-          cleanupSectionFrags(['box3']);
-          launchPuzzleFall([boxes[2]], ['box3']);
-          boxes[2] && boxes[2].classList.add('puzz-hidden');
+          collideThenBreak(boxes[2], () => {
+            cleanupSectionFrags(['box3']);
+            launchPuzzleFall([boxes[2]], ['box3']);
+            boxes[2] && boxes[2].classList.add('puzz-hidden');
+          });
         }
       },
       onLeaveBack: () => {
@@ -438,9 +463,11 @@
       onEnter: () => {
         if (!box2Fallen) {
           box2Fallen = true;
-          cleanupSectionFrags(['box2']);
-          launchPuzzleFall([boxes[1]], ['box2']);
-          boxes[1] && boxes[1].classList.add('puzz-hidden');
+          collideThenBreak(boxes[1], () => {
+            cleanupSectionFrags(['box2']);
+            launchPuzzleFall([boxes[1]], ['box2']);
+            boxes[1] && boxes[1].classList.add('puzz-hidden');
+          });
         }
       },
       onLeaveBack: () => {
@@ -459,9 +486,11 @@
       onEnter: () => {
         if (!box1Fallen) {
           box1Fallen = true;
-          cleanupSectionFrags(['box1']);
-          launchPuzzleFall([boxes[0]], ['box1']);
-          boxes[0] && boxes[0].classList.add('puzz-hidden');
+          collideThenBreak(boxes[0], () => {
+            cleanupSectionFrags(['box1']);
+            launchPuzzleFall([boxes[0]], ['box1']);
+            boxes[0] && boxes[0].classList.add('puzz-hidden');
+          });
         }
       },
       onLeaveBack: () => {
@@ -578,12 +607,14 @@
       onEnter: () => {
         if (!blueprintFallen && !blueprintScrollLocked) {
           blueprintFallen = true;
-          cleanupSectionFrags(['time1','time2','time3']);
-          launchPuzzleFall(
-            [...times].reverse(),
-            ['time3', 'time2', 'time1']
-          );
-          times.forEach(t => t && t.classList.add('puzz-hidden'));
+          collideThenBreak(times[1] || times[0], () => {
+            cleanupSectionFrags(['time1','time2','time3']);
+            launchPuzzleFall(
+              [...times].reverse(),
+              ['time3', 'time2', 'time1']
+            );
+            times.forEach(t => t && t.classList.add('puzz-hidden'));
+          });
         }
       },
       onLeaveBack: () => {
@@ -799,7 +830,7 @@
 </button>
 
 <!-- ─── STAR FIELD (canvas, physics-driven) ──────────────────── -->
-<StarField {showStarShower} />
+<StarField {showStarShower} bind:this={starFieldRef} />
 
 <!-- ─── ROBOT + ARMS (IK system) ─────────────────────────────── -->
 <RobotBackground
