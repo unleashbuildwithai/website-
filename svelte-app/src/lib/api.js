@@ -47,7 +47,10 @@ export async function submitMessage({ name, email, vision, features, discord, re
       timeline: timeline || 'Not specified'
     }),
   });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  if (!res.ok) {
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(errBody.error || `HTTP ${res.status}`);
+  }
   return res.json();
 }
 

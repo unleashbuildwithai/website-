@@ -2,10 +2,10 @@
   "name": "geniusunleashed",
   "version": "1.0.0",
   "private": true,
-  "description": "Genius Unleashed - static production build",
+  "description": "Genius Unleashed - Svelte app with Cloudflare Pages deployment",
   "scripts": {
-    "build": "echo 'Pre-built static site - no build step needed'",
-    "deploy": "npx wrangler pages deploy . --project-name=geniusunleashed --branch=main"
+    "build": "cd svelte-app && npm install && npm run build",
+    "deploy": "npm run build && npx wrangler pages deploy svelte-app/dist --project-name=geniusunleashed --branch=main"
   },
   "devDependencies": {
     "wrangler": "^4.0.0"
