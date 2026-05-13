@@ -14,6 +14,14 @@
   let velocity = 0;
   const unsubVel = scrollVelocity.subscribe(v => { velocity = v; });
 
+  // ── Mouse position (for magnet + astigmatism glow on background stars)
+  let mouseX = -9999;
+  let mouseY = -9999;
+  function onMouseMove(e) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  }
+
   // ─────────────────────────────────────────────────────────
   // DRIFT STATE — regular background stars always drift
   // ─────────────────────────────────────────────────────────
@@ -59,7 +67,11 @@
   // COSMIC SHOOTING STAR SYSTEM
   // ─────────────────────────────────────────────────────────
   const showerStars   = [];
-  const impactFlashes = []; // shockwave rings when a star hits a box
+  const impactFlashes = [];
+
+  // ── 15-second shooting star timer
+  let showerStartTime = 0;
+  const SHOWER_DURATION = 15000; // 15 seconds then stop spawning
 
   const COSMIC_COLOURS = [
     { r: 0,   g: 243, b: 255 },  // neon cyan
@@ -127,7 +139,6 @@
   export function fireCollisionStar(targetX, targetY, onImpact) {
     if (!canvas) { if (onImpact) onImpact(); return; }
 
-    // Pick a non-colliding star closest to target, or spawn fresh
     let star = null;
     let minDist = Infinity;
     for (const s of showerStars) {
@@ -137,7 +148,6 @@
     }
 
     if (!star) {
-      // No free star → spawn one above the box
       star = {
         x:           targetX + (Math.random() - 0.5) * 320,
         y:           -80 - Math.random() * 60,
@@ -157,16 +167,15 @@
       showerStars.push(star);
     }
 
-    // Redirect star toward target at high speed
     const dx    = targetX - star.x;
     const dy    = targetY - star.y;
     const dist  = Math.hypot(dx, dy) || 1;
-    const speed = 18 + Math.random() * 8; // fast & purposeful
+    const speed = 18 + Math.random() * 8;
     star.vx     = (dx / dist) * speed;
     star.vy     = (dy / dist) * speed;
     star.angle  = Math.atan2(dy, dx);
-    star.wobble = 0;   // no drift — committed to target
-    star.trailLen = Math.max(star.trailLen, 100); // extend trail for drama
+    star.wobble = 0;
+    star.trailLen = Math.max(star.trailLen, 100);
 
     star.isColliding    = true;
     star.collisionTarget = { x: targetX, y: targetY };
@@ -227,11 +236,27 @@
     ctx.clearRect(0, 0, W, H);
 
     // ── BACKGROUND STARS ──────────────────────────────────
+    const MAGNET_R = 230; // radius of cursor influence
+
     for (const s of stars) {
+      // Regular drift
       s.y += driftVelocity * s.driftMult;
       if (s.y > H + 20) s.y = -20;
       if (s.y < -20)    s.y = H + 20;
 
+      // ── CURSOR MAGNET: gentle pull toward mouse ────────
+      const mdx   = mouseX - s.x;
+      const mdy   = mouseY - s.y;
+      const mdist = Math.hypot(mdx, mdy);
+      let magnetT = 0;
+      if (mdist < MAGNET_R && mdist > 0.5) {
+        magnetT = 1 - mdist / MAGNET_R;         // 0→1 as star approaches cursor
+        const pull = magnetT * magnetT * 0.42;  // very gentle pull
+        s.x += (mdx / mdist) * pull;
+        s.y += (mdy / mdist) * pull;
+      }
+
+      // Twinkle
       s.twinklePhase += s.twinkleSpeed;
       const rawTwinkle = 0.5 + 0.5 * Math.sin(s.twinklePhase);
 
@@ -252,6 +277,35 @@
       ctx.save();
       ctx.translate(s.x, s.y);
 
+      // ── ASTIGMATISM RAINBOW DIFFRACTION GLOW (near cursor) ──
+      // Like looking at starlight through astigmatic eyes — rainbow laser cross
+      if (magnetT > 0.04) {
+        const armLen = s.size * (5 + 32 * magnetT);
+        const glowA  = magnetT * 0.22 * (0.35 + s.baseOpacity * 0.65);
+        const brite  = Math.min(glowA * 2.4, 0.85);
+
+        // Horizontal spike — warm rainbow l→r
+        const hGrad = ctx.createLinearGradient(-armLen, 0, armLen, 0);
+        hGrad.addColorStop(0,    `rgba(255, 20,160,${glowA})`);
+        hGrad.addColorStop(0.25, `rgba( 50,110,255,${glowA * 0.9})`);
+        hGrad.addColorStop(0.50, `rgba(255,255,255,${brite})`);
+        hGrad.addColorStop(0.75, `rgba(  0,230,175,${glowA * 0.9})`);
+        hGrad.addColorStop(1,    `rgba(255,130,  0,${glowA})`);
+        ctx.fillStyle = hGrad;
+        ctx.fillRect(-armLen, -s.size * 0.6, armLen * 2, s.size * 1.2);
+
+        // Vertical spike — cool rainbow t→b
+        const vGrad = ctx.createLinearGradient(0, -armLen, 0, armLen);
+        vGrad.addColorStop(0,    `rgba(160,  0,255,${glowA})`);
+        vGrad.addColorStop(0.25, `rgba(  0,200,255,${glowA * 0.9})`);
+        vGrad.addColorStop(0.50, `rgba(255,255,255,${brite})`);
+        vGrad.addColorStop(0.75, `rgba(255,220,  0,${glowA * 0.9})`);
+        vGrad.addColorStop(1,    `rgba(255, 50, 50,${glowA})`);
+        ctx.fillStyle = vGrad;
+        ctx.fillRect(-s.size * 0.6, -armLen, s.size * 1.2, armLen * 2);
+      }
+
+      // ── STAR DOT (ellipse on warp, circle at rest) ────────
       if (stretch > 1.05) {
         const ts = 1 + (stretch - 1) * s.driftMult;
         ctx.beginPath();
@@ -295,21 +349,18 @@
 
       const { r, g, b } = f.colour;
 
-      // Outer shockwave
       ctx.beginPath();
       ctx.arc(f.x, f.y, f.r1, 0, Math.PI * 2);
       ctx.strokeStyle = `rgba(${r},${g},${b},${f.alpha * 0.75})`;
       ctx.lineWidth   = 2.5;
       ctx.stroke();
 
-      // Inner white ring
       ctx.beginPath();
       ctx.arc(f.x, f.y, f.r2, 0, Math.PI * 2);
       ctx.strokeStyle = `rgba(255,255,255,${f.alpha * 0.55})`;
       ctx.lineWidth   = 1.5;
       ctx.stroke();
 
-      // Center flash burst (fades early)
       if (f.alpha > 0.35) {
         const bg = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r2);
         bg.addColorStop(0,   `rgba(255,255,255,${f.alpha * 0.7})`);
@@ -322,17 +373,24 @@
       }
     }
 
-    // ── COSMIC SHOOTING STARS ─────────────────────────────
+    // ── COSMIC SHOOTING STARS (10% chance, 15-second window) ─
     if (showStarShower) {
-      // Spawn new stars on cooldown
-      spawnCooldown--;
-      if (spawnCooldown <= 0 && showerStars.length < MAX_SHOWER_STARS) {
-        const count = Math.random() < 0.25 ? 2 : 1;
-        for (let i = 0; i < count; i++) showerStars.push(spawnShootingStar(W, H));
-        spawnCooldown = SPAWN_INTERVAL_MIN +
-          Math.floor(Math.random() * (SPAWN_INTERVAL_MAX - SPAWN_INTERVAL_MIN));
+      // ── Start timer on first frame ─────────────────────
+      if (!showerStartTime) showerStartTime = performance.now();
+      const showerActive = (performance.now() - showerStartTime) < SHOWER_DURATION;
+
+      // Spawn new stars only within the 15-second window
+      if (showerActive) {
+        spawnCooldown--;
+        if (spawnCooldown <= 0 && showerStars.length < MAX_SHOWER_STARS) {
+          const count = Math.random() < 0.25 ? 2 : 1;
+          for (let i = 0; i < count; i++) showerStars.push(spawnShootingStar(W, H));
+          spawnCooldown = SPAWN_INTERVAL_MIN +
+            Math.floor(Math.random() * (SPAWN_INTERVAL_MAX - SPAWN_INTERVAL_MIN));
+        }
       }
 
+      // Always draw & update existing stars (even after timer expires)
       let si = showerStars.length;
       while (si--) {
         const ss = showerStars[si];
@@ -344,7 +402,6 @@
           const dist = Math.hypot(dx, dy);
 
           if (dist < 55) {
-            // IMPACT — fire shockwave flash
             impactFlashes.push({
               x: ss.collisionTarget.x,
               y: ss.collisionTarget.y,
@@ -352,12 +409,11 @@
               alpha: 1.0,
               colour: ss.colour,
             });
-            if (ss.onImpact) ss.onImpact(); // ← triggers launchPuzzleFall
+            if (ss.onImpact) ss.onImpact();
             showerStars.splice(si, 1);
             continue;
           }
 
-          // Steer toward target each frame (smooth homing)
           const speed = Math.hypot(ss.vx, ss.vy);
           ss.vx = (dx / dist) * speed;
           ss.vy = (dy / dist) * speed;
@@ -373,7 +429,6 @@
         ss.x += ss.vx;
         ss.y += ss.vy;
 
-        // Remove off-screen non-colliding stars
         if (
           !ss.isColliding && (
             ss.y > H + ss.trailLen + 60 ||
@@ -390,7 +445,7 @@
         const fadeOutX   = Math.min(1, Math.max(0, Math.min(ss.x / 60, (W - ss.x) / 60)));
         const fadeOutB   = Math.min(1, Math.max(0, (H + 60 - ss.y) / 80));
         const finalAlpha = ss.isColliding
-          ? ss.alpha  // colliding stars stay bright all the way
+          ? ss.alpha
           : ss.alpha * fadeInY * fadeOutX * fadeOutB;
 
         const { r, g, b } = ss.colour;
@@ -474,12 +529,14 @@
     }
 
     window.addEventListener('resize', resize, { passive: true });
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
     animId = requestAnimationFrame(loop);
   });
 
   onDestroy(() => {
     cancelAnimationFrame(animId);
     window.removeEventListener('resize', resize);
+    window.removeEventListener('mousemove', onMouseMove);
     unsubVel();
   });
 </script>

@@ -22,7 +22,7 @@
 
   // ── Page geometry
   const VH      = window.innerHeight;
-  const TOTAL_H = VH * 8;   // 7× viewport — enough room for sequential 1-click breaks
+  const TOTAL_H = VH * 10;  // 9× viewport — more scroll room, ~1 click per letter fade
   const MAX_S   = TOTAL_H - VH;
 
   // ── Section offsets
@@ -32,7 +32,7 @@
 
   // ── GSAP timing anchors (0–1 progress)
   const AP = 0.05;           // Arsenal
-  const PP = AP + 0.50;      // Blueprint (0.55)
+  const PP = AP + 0.55;      // Blueprint (0.60) — more space after Arsenal
   const CP = PP + 0.37;      // CTA (0.92)
   const MOUTH_DY = -(VH * 0.55);
 
@@ -382,8 +382,9 @@
     });
     // Deconstruct header
     tl.to(arsenalUL, { duration: 0.04, opacity: 0, width: '0%' }, AP + 0.205);
+    // Letters drift away one at a time as user scrolls — gentle upward fade
     [...arsenalChs].reverse().forEach((el, i) => {
-      tl.to(el, { duration: 0.03, opacity: 0, y: -220, scale: 0.03, ease: 'power3.in' }, AP + 0.22 + i * 0.012);
+      tl.to(el, { duration: 0.035, opacity: 0, y: -35, ease: 'power2.in' }, AP + 0.22 + i * 0.013);
     });
     // ── 6-B/6-C: Each box snaps invisible — 0.06 apart = 1 scroll click each
     // $1K→AP+0.24  Risk→AP+0.30  FullStack→AP+0.36  Reality→AP+0.42
@@ -568,43 +569,27 @@
     });
     // Deconstruct header
     tl.to(processUL, { duration: 0.04, opacity: 0, scaleX: 0 }, PP + 0.24);
+    // Blueprint letters drift away one at a time — gentle upward fade
     [...processChs].reverse().forEach((el, i) => {
-      tl.to(el, { duration: 0.03, opacity: 0, y: -220, scale: 0.03, ease: 'power3.in' }, PP + 0.26 + i * 0.012);
+      tl.to(el, { duration: 0.035, opacity: 0, y: -35, ease: 'power2.in' }, PP + 0.26 + i * 0.012);
     });
-    // ── 6-B/6-C: Each timeline tab snaps invisible — 0.05 apart = 1 click each
-    // time3→PP+0.25  time2→PP+0.30  time1→PP+0.35
+    // ── 6-B/6-C: Each timeline tab snaps invisible — 0.06 apart (matches Arsenal)
+    // time3→PP+0.25  time2→PP+0.31  time1→PP+0.37
     if (times[2]) tl.to(times[2], { duration: 0.018, opacity: 0 }, PP + 0.25);
-    if (times[1]) tl.to(times[1], { duration: 0.018, opacity: 0 }, PP + 0.30);
-    if (times[0]) tl.to(times[0], { duration: 0.018, opacity: 0 }, PP + 0.35);
+    if (times[1]) tl.to(times[1], { duration: 0.018, opacity: 0 }, PP + 0.31);
+    if (times[0]) tl.to(times[0], { duration: 0.018, opacity: 0 }, PP + 0.37);
     tl.to('.p-char', { duration: 0.03, opacity: 0, force3D: true }, PP + 0.37);
     tl.to(s2, { duration: 0.04, opacity: 0 }, PP + 0.39);
 
-    // ── 6-B/6-C: Blueprint — 3 SEPARATE falls, one per scroll click ──────────
+    // ── 6-B/6-C: Blueprint — 3 SEPARATE falls, 0.06 gaps (matches Arsenal) ──────
     let time3Fallen = false, time2Fallen = false, time1Fallen = false;
-    let blueprintScrollLocked = true;
-    let blueprintLockTimer = null;
 
-    // Lock trigger — 350ms safety lock when items first appear
-    ScrollTrigger.create({
-      trigger: 'body',
-      start:   `${Math.round(MAX_S * (PP + 0.22))} top`,
-      onEnter: () => {
-        blueprintScrollLocked = true;
-        clearTimeout(blueprintLockTimer);
-        blueprintLockTimer = setTimeout(() => { blueprintScrollLocked = false; }, 350);
-      },
-      onLeaveBack: () => {
-        blueprintScrollLocked = true;
-        clearTimeout(blueprintLockTimer);
-      },
-    });
-
-    // time3 falls first (PP+0.25, 1 click after lock expires)
+    // time3 falls first (PP+0.25)
     ScrollTrigger.create({
       trigger: 'body',
       start:   `${Math.round(MAX_S * (PP + 0.25))} top`,
       onEnter: () => {
-        if (!time3Fallen && !blueprintScrollLocked) {
+        if (!time3Fallen) {
           time3Fallen = true;
           collideThenBreak(times[2], () => {
             cleanupSectionFrags(['time3']);
@@ -623,12 +608,12 @@
       },
     });
 
-    // time2 falls second (PP+0.30)
+    // time2 falls second (PP+0.31 — 0.06 gap)
     ScrollTrigger.create({
       trigger: 'body',
-      start:   `${Math.round(MAX_S * (PP + 0.30))} top`,
+      start:   `${Math.round(MAX_S * (PP + 0.31))} top`,
       onEnter: () => {
-        if (!time2Fallen && !blueprintScrollLocked) {
+        if (!time2Fallen) {
           time2Fallen = true;
           collideThenBreak(times[1], () => {
             cleanupSectionFrags(['time2']);
@@ -647,12 +632,12 @@
       },
     });
 
-    // time1 falls last (PP+0.35)
+    // time1 falls last (PP+0.37 — 0.06 gap)
     ScrollTrigger.create({
       trigger: 'body',
-      start:   `${Math.round(MAX_S * (PP + 0.35))} top`,
+      start:   `${Math.round(MAX_S * (PP + 0.37))} top`,
       onEnter: () => {
-        if (!time1Fallen && !blueprintScrollLocked) {
+        if (!time1Fallen) {
           time1Fallen = true;
           collideThenBreak(times[0], () => {
             cleanupSectionFrags(['time1']);
@@ -677,8 +662,6 @@
       start:   `${Math.round(MAX_S * (PP + 0.04))} top`,
       onLeaveBack: () => {
         time3Fallen = time2Fallen = time1Fallen = false;
-        blueprintScrollLocked = true;
-        clearTimeout(blueprintLockTimer);
         cleanupSectionFrags(['time1','time2','time3']);
         times.forEach(t => t && t.classList.remove('puzz-hidden'));
       },
